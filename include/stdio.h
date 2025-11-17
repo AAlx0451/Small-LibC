@@ -2,7 +2,9 @@
 #define STDIO_H
 
 #define EOF (-1)
-#include <stdarg.h>
+#ifndef NO_STDARG
+# include <stdarg.h>
+#endif // NO_STDARG
 #include <unistd.h>
 
 int puts(const char *str);
@@ -11,7 +13,9 @@ int _putchar(int c);
 int printf(const char* format, ...);
 int sprintf(char* buffer, const char* format, ...);
 int snprintf(char* buffer, size_t count, const char* format, ...);
-int vsnprintf(char* buffer, size_t count, const char* format, va_list va);
-int vprintf(const char* format, va_list va);
+#ifndef NO_STDARG
+ int vsnprintf(char* buffer, size_t count, const char* format, va_list va);
+ int vprintf(const char* format, va_list va);
+#endif // NO_STDARG
 
 #endif // STDIO_H
