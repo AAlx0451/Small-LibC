@@ -35,7 +35,7 @@ Undefined symbols for architecture armv7:
       _main in 1-bcf400.o
 ```
 
-You should add `-Lgnu -lgcc` to your build command. By the way, you can re-build libC without printf.c (just mv it) and avoid this thing.
+You should add `-Lllvm -lrt` to your build command.
 
 2. Dynamic lib (1)
 
@@ -75,10 +75,17 @@ include/stdarg.h:4:15: fatal error: 'stdarg.h' file not found
 hello world
 ```
 
-5. Deprecated subtype
+5. Strange source at ./ext
 
 ```
-ld: warning: CPU_SUBTYPE_ARM_ALL subtype is deprecated: gnu/libgcc.a
+/private/var/lina/Small-LibC $ ls ext/csu
+crt.c  dyld_glue.s  etc.tar.xz  start.s
+/private/var/lina/Small-LibC $
 ```
 
-Sorry, but it just works. Beat it.
+To reduce source files weight, I compressed them. Most important files are decompressed. Use tar
+
+## External code
+1. Apple's [Csu 85](https://github.com/apple-oss-distributions/Csu), [tarball](https://github.com/apple-oss-distributions/Csu/archive/refs/tags/Csu-85.tar.gz) – licensed after APSL, see ./apple/LICENSE
+2. LLVM's [compiler-rt](https://github.com/llvm/llvm-project), [tarball](https://releases.llvm.org/6.0.1/compiler-rt-6.0.1.src.tar.xz) – licensed after Apache 2.0 with LLVM exceptions, see ./llvm/LICENSE
+3. mpaland's [printf](https://github.com/mpaland/printf) – licensed after MIT License, see ./ext/printf/LICENSE
