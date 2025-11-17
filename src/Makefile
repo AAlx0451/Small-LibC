@@ -9,7 +9,7 @@ ifneq ($(VERBOSE), 1)
   Q = @
 endif
 
-MAIN_CFLAGS = -I$(INCDIR) -O2 -fPIC
+MAIN_CFLAGS = -I$(INCDIR) -O2 -fPIC -I/usr/share/llvm/lib/clang/6.0.1/include -w -std=c99 -fno-stack-protector
 
 CFLAGS = $(MAIN_CFLAGS) -nostdinc
 
@@ -41,4 +41,4 @@ $(OBJDIR)/%.o: %.c
 .PHONY: clean
 clean:
 	@echo "  CLEAN"
-	$(Q)rm -rf $(TARGET_LIB) $(OBJDIR)
+	$(Q)rm -rf $(TARGET_LIB) $(OBJDIR) ../ext/printf/tmp

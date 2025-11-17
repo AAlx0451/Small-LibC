@@ -10,6 +10,9 @@ Right now, you can use:
 * `puts()` (pure C)
 * `syscall()` (written in C inline assemly)
 * `read()` (#3 syscall)
+* `putchar()` (pure C)
+* `memset()` (pure C)
+* `printf()`, `vprintf()`, etc. (external code, source [here](https://github.com/mpaland/printf))
 
 ## How to use it
 You should check ./example/makefile for more information
@@ -31,7 +34,7 @@ Undefined symbols for architecture armv7:
       _main in 1-bcf400.o
 ```
 
-You should add `-Lgcc -lgcc` to your build command
+You should add `-Lgnu -lgcc` to your build command. By the way, you can re-build libC without printf.c (just mv it) and avoid this thing.
 
 2. Stack protector
 
@@ -60,3 +63,13 @@ ld: symbol dyld_stub_binder not found (normally in libSystem.dylib).  Needed to 
 ```
 
 Do NOT use this lib as dynamic. But you can link Small-LibC with libSystem and it should work
+
+5. stdarg.h
+
+```
+include/stdarg.h:4:15: fatal error: 'stdarg.h' file not found
+#include_next <stdarg.h>
+              ^~~~~~~~~~
+```
+
+You should add `-I/usr/share/llvm/lib/clang/6.0.1/include` if you use my clang (see ./example/makefile)
