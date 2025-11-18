@@ -10,4 +10,7 @@ ssize_t write(int fd, const void *buf, size_t nbyte);
 ssize_t read(int fd, void *buf, size_t nbyte);
 __attribute__((noreturn)) void _exit(int status);
 
+int brk(void *addr);
+void *sbrk(int increment);
+
 #endif // UNISTD_H

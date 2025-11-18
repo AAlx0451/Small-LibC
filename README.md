@@ -86,6 +86,15 @@ crt.c  dyld_glue.s  etc.tar.xz  start.s
 To reduce source files weight, I compressed them. Most important files are decompressed. Use tar
 
 ## External code
-1. Apple's [Csu 85](https://github.com/apple-oss-distributions/Csu), [tarball](https://github.com/apple-oss-distributions/Csu/archive/refs/tags/Csu-85.tar.gz) – licensed after APSL, see ./apple/LICENSE
-2. LLVM's [compiler-rt](https://github.com/llvm/llvm-project), [tarball](https://releases.llvm.org/6.0.1/compiler-rt-6.0.1.src.tar.xz) – licensed after Apache 2.0 with LLVM exceptions, see ./llvm/LICENSE
-3. mpaland's [printf](https://github.com/mpaland/printf) – licensed after MIT License, see ./ext/printf/LICENSE
+1. Apple's [Csu 85](https://github.com/apple-oss-distributions/Csu), [tarball](https://github.com/apple-oss-distributions/Csu/archive/refs/tags/Csu-85.tar.gz) – licensed under APSL, see ./apple/LICENSE
+2. LLVM's [compiler-rt](https://github.com/llvm/llvm-project), [tarball](https://releases.llvm.org/6.0.1/compiler-rt-6.0.1.src.tar.xz) – licensed under Apache 2.0 with LLVM exceptions, see ./llvm/LICENSE
+3. mpaland's [printf](https://github.com/mpaland/printf) – licensed under MIT License, see ./ext/printf/LICENSE
+4. RAGUL1902's [malloc](https://github.com/RAGUL1902/Dynamic-Memory-Allocation-in-C) with various changes (TODO: integrate to LibC) – licensed under MIT Licence
+5. JuliaMath's [OpenLibM](https://github.com/JuliaMath/openlibm) – partly licensed under BSD, ISC, MIT and Sun License (Tests under GPL, but will be removed soon)
+
+## IMPORTANT
+(yes, the last is the most important)
+
+This project is licensed under MIT, but here's the additional "license-like" thing:
+
+THIS IS VERY UNSTABLE!!! sys/types.h NOT IMPLEMENTED, HEADERS ARE STRANGE AND OUTDATED. `brk()` NOT IMPLEMENTED AND malloc() BY RAGUL1902 IS VERY BAD CODE (TODO REFACTOR). SO YOU SHOULD USE PREVIOUS COMMITS WHICH WERE BETTER
