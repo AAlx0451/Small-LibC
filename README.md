@@ -4,7 +4,6 @@ This repo provides a WIP opensource LibC designed for iOS 6
 ## What's made
 Right now, you can use:
 
-* `exit()` and `_exit()` (the same functions temporarily, based on #1 syscall)
 * `string.h` full implementation (Pure C, I used AI for because of it's simplicity and system-independence (header written myself). btw maybe I'll release it separately)
 * `write()` (syscall #4)
 * `puts()` (pure C)
@@ -17,6 +16,7 @@ Right now, you can use:
 * `putchar()` (and `_putchar()` as internal for `printf()` – pure C)
 * stack protection
 * `ctype.h` (external code, source [here](https://github.com/DeidaraC/ctype.h))
+* `stdlib.h` (excluding malloc – pure C with some AI help (NOT TESTED!!!))
 
 ## How to use it
 You should check ./example/makefile for more information
@@ -24,7 +24,7 @@ You should check ./example/makefile for more information
 Briefly: `cc -o bin file.c -nostdlib -nostdinc -Iinclude -L. -lSystem -static`
 
 ## How to build it
-Go to ./src, then `make`
+Go to ./src, then `make`. For (cross-compile: `make -j16 CROSS=1 ARCHES=armv7,armv7s`. Notice you'll need an SDK)
 
 ## Known issues
 
