@@ -1,7 +1,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
-#include "include/malloc.h"
 #include "malloc.h"
 
 /*
@@ -107,6 +106,10 @@ meta_ptr extend_heap(meta_ptr last, size_t size)
  */
 void *malloc(size_t size)
 {
+    if (size <= 0) {
+        return NULL;
+    }
+
     meta_ptr block, last = NULL;
     size_t s;
     s = allign4(size);

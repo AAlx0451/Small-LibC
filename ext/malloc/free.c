@@ -2,7 +2,6 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "malloc.h"
-#include "include/free.h"
 
 /*
  * This file contains the implementaion of the function free()

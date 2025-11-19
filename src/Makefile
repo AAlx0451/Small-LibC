@@ -9,7 +9,7 @@ ifneq ($(VERBOSE), 1)
   Q = @
 endif
 
-MAIN_CFLAGS = -I$(INCDIR) -O2 -fPIC -I/usr/share/llvm/lib/clang/6.0.1/include -w -std=c99
+MAIN_CFLAGS = -I$(INCDIR) -O2 -fPIC -I/usr/share/llvm/lib/clang/6.0.1/include -std=c99
 
 CFLAGS = $(MAIN_CFLAGS) -nostdinc
 
