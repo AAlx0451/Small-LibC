@@ -20,3 +20,4 @@ meta_ptr get_block_addr(void *p); // И этой
 void split_space(meta_ptr block, size_t size); // И этой
 meta_ptr merge_blocks(meta_ptr block);
 void* memcpy(void* dest, const void* src, unsigned long count);
+void *memset(void *ptr, int value, size_t num);
