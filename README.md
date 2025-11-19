@@ -89,10 +89,10 @@ crt.c  dyld_glue.s  etc.tar.xz  start.s
 To reduce source files count, I compressed them. Most important files are decompressed. Use tar
 
 ## C89 Status
-~30% of C89 is implemented.
+~50% of C89 is implemented.
 
 * string.h – 100%
-* stdlib.h – ~20%
+* stdlib.h – ~100%
 * stdio.h – ~10%
 * ctype.h – 100%
 * math.h – NaN (OpenLibM)
