@@ -5,9 +5,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include <sys/mman.h>
 
-#define ALIGN4(x) (((((x) - 1) >> 2) << 2) + 4)
-#define BLOCK_SIZE sizeof(struct meta_block)
+#define ALIGN(x) (((x) + 7) & ~7)
+#define BLOCK_SIZE ALIGN(sizeof(struct meta_block))
 
 typedef struct meta_block *meta_ptr;
 

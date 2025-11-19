@@ -3,7 +3,7 @@
 void *realloc(void *p, size_t size)
 {
     size_t s;
-    meta_ptr old_block, new_block;
+    meta_ptr old_block;
     void *new_ptr;
 
     if (!p) {
@@ -19,23 +19,26 @@ void *realloc(void *p, size_t size)
         return NULL;
     }
 
-    s = ALIGN4(size);
+    s = ALIGN(size);
     old_block = get_block_addr(p);
 
     if (old_block->size >= s) {
-        if (old_block->size >= s + BLOCK_SIZE + 4) {
+        if (old_block->size >= s + BLOCK_SIZE + 8) {
             split_space(old_block, s);
         }
         return p;
     }
 
-    if (old_block->next && old_block->next->free &&
-        (old_block->size + BLOCK_SIZE + old_block->next->size) >= s) {
-        merge_blocks(old_block);
-        if (old_block->size >= s + BLOCK_SIZE + 4) {
-            split_space(old_block, s);
+    if (old_block->next && old_block->next->free) {
+        if ((char *)old_block + BLOCK_SIZE + old_block->size == (char *)old_block->next) {
+            if ((old_block->size + BLOCK_SIZE + old_block->next->size) >= s) {
+                merge_blocks(old_block);
+                if (old_block->size >= s + BLOCK_SIZE + 8) {
+                    split_space(old_block, s);
+                }
+                return p;
+            }
         }
-        return p;
     }
 
     new_ptr = malloc(s);
@@ -43,12 +46,10 @@ void *realloc(void *p, size_t size)
         return NULL;
     }
 
-    new_block = get_block_addr(new_ptr);
-    
     if (old_block->size < s) {
-        memcpy(new_ptr, p, old_block->size);
+        memmove(new_ptr, p, old_block->size);
     } else {
-        memcpy(new_ptr, p, s);
+        memmove(new_ptr, p, s);
     }
 
     free(p);

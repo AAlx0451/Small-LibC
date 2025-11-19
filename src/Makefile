@@ -15,7 +15,7 @@ CFLAGS = $(MAIN_CFLAGS) -nostdinc
 
 SYSCALL_CFLAGS = $(MAIN_CFLAGS) -marm
 
-REGULAR_SOURCES = $(wildcard c/stdlib/*.c c/string/*.c c/unistd/*.c c/stdio/*.c c/runtime/*.c)
+REGULAR_SOURCES = $(wildcard c/stdlib/*.c c/string/*.c c/unistd/*.c c/stdio/*.c c/runtime/*.c c/sys/mman/*.c)
 REGULAR_OBJECTS = $(patsubst %.c, $(OBJDIR)/%.o, $(REGULAR_SOURCES))
 SPECIAL_OBJECTS = $(OBJDIR)/arm/syscall.o
 OBJECTS = $(REGULAR_OBJECTS) $(SPECIAL_OBJECTS)

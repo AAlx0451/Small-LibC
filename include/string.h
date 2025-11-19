@@ -1,10 +1,13 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include <unistd.h> // size_t
+#include <stddef.h>
 
 size_t strlen(const char *str);
+void *memset(void *ptr, int x, size_t n);
+void *memmove(void *dest, const void *src, size_t count);
+void *memcpy(void *dest, const void *src, size_t n);
 
-#define NULL 0
+#define NULL ((void*)0)
 
 #endif
