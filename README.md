@@ -16,6 +16,7 @@ Right now, you can use:
 * `mmap()`, `munmap()` (syscalls)
 * `putchar()` (and `_putchar()` as internal for `printf()` – pure C)
 * stack protection
+* `ctype.h` (external code, source [here](https://github.com/DeidaraC/ctype.h))
 
 ## How to use it
 You should check ./example/makefile for more information
@@ -92,8 +93,8 @@ To reduce source files count, I compressed them. Most important files are decomp
 
 * string.h – 100%
 * stdlib.h – ~20%
-* stdio.h – ~20%
-* ctype.h – 0%
+* stdio.h – ~10%
+* ctype.h – 100%
 * math.h – NaN (OpenLibM)
 * time.h – 0%
 * `assert.h`, `locale.h`, `setjmp.h`, `signal.h` – 0%
@@ -108,4 +109,5 @@ To reduce source files count, I compressed them. Most important files are decomp
 2. LLVM's [compiler-rt](https://github.com/llvm/llvm-project), [tarball](https://releases.llvm.org/6.0.1/compiler-rt-6.0.1.src.tar.xz) – licensed under Apache 2.0 with LLVM exceptions, see ./llvm/LICENSE
 3. mpaland's [printf](https://github.com/mpaland/printf) – licensed under MIT License, see ./ext/printf/LICENSE
 4. RAGUL1902's [malloc](https://github.com/RAGUL1902/Dynamic-Memory-Allocation-in-C) with various changes – licensed under MIT Licence
-5. JuliaMath's [OpenLibM](https://github.com/JuliaMath/openlibm) – partly licensed under BSD, ISC, MIT and Sun License (Tests under GPL, but will be removed soon); not integrated, xz.
+5. JuliaMath's [OpenLibM](https://github.com/JuliaMath/openlibm) – partly licensed under BSD, ISC, MIT and Sun License (Tests under GPL, but will be removed soon); not integrated, xz-ed
+6. DeidaraC's [ctype.h](https://github.com/DeidaraC/ctype.h) – licensed under MIT License

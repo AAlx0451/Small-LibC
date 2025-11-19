@@ -3,7 +3,11 @@
 #ifndef UNISTD_H
 #define UNISTD_H
 
+#ifndef NO_STDDEF
 #include <stddef.h>
+#else
+typedef unsigned long size_t;
+#endif
 
 typedef long ssize_t;
 

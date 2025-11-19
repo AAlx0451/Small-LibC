@@ -9,7 +9,7 @@
 
 
 CC = cc # my repo -> clang-installer package should install CC. main thing is that you don't even need an SDK!
-CFLAGS = -nostdinc -I../include # included with GitHub repo
+CFLAGS = -nostdinc -I../include -DNO_STDDEF # included with GitHub repo
 LDFLAGS = -static -lSystem -L.. -nostdlib # lSystem is a name for our libC. you can make it using "cd ../src; make; cp li*a ..", but it should be included with repo
 TARGET = hello
 
