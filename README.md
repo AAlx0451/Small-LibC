@@ -5,13 +5,12 @@ This repo provides a WIP opensource LibC designed for iOS 6
 Right now, you can use:
 
 * `exit()` and `_exit()` (the same functions temporarily, based on #1 syscall)
-* `strlen()` (small implementarion in pure C)
+* `string.h` full implementation (Pure C, I used AI for because of it's simplicity and system-independence (header written myself). btw maybe I'll release it separately)
 * `write()` (syscall #4)
 * `puts()` (pure C)
 * `syscall()` (written in C inline assemly)
 * `read()` (#3 syscall)
 * `putchar()` (pure C)
-* `memset()`, `memcpy()`, `memmove()` (pure C)
 * `printf()`, `vprintf()`, etc. (external code, source [here](https://github.com/mpaland/printf))
 * `malloc()`, `free()`, etc. (very changed external code, see below, but its buggy)
 * `mmap()`, `munmap()` (syscalls)
@@ -87,6 +86,22 @@ crt.c  dyld_glue.s  etc.tar.xz  start.s
 ```
 
 To reduce source files count, I compressed them. Most important files are decompressed. Use tar
+
+## C89 Status
+~30% of C89 is implemented.
+
+* string.h – 100%
+* stdlib.h – ~20%
+* stdio.h – ~20%
+* ctype.h – 0%
+* math.h – NaN (OpenLibM)
+* time.h – 0%
+* `assert.h`, `locale.h`, `setjmp.h`, `signal.h` – 0%
+* `errno.h` – 100%
+* `limits.h` – NaN/0% (Clang provides this one, but "System headers include a number of constants from POSIX in <limits.h>.")
+* `float.h` – NaN/0% (Clang need a system implementation for it's own header)
+* `stdarg.h` – NaN (Clang fully provides)
+* `stddef.h` – NaN (Clang fully provides, but it looks like it can include system one)
 
 ## External code
 1. Apple's [Csu 85](https://github.com/apple-oss-distributions/Csu), [tarball](https://github.com/apple-oss-distributions/Csu/archive/refs/tags/Csu-85.tar.gz) – licensed under APSL, see ./apple/LICENSE
