@@ -10,10 +10,10 @@
 
 #if defined(__clang__) || defined(__GNUC__)
 # define NORETURN __attribute__((noreturn))
-# define UNREACHBLE __builtin_unreachable()
+# define UNREACHABLE __builtin_unreachable();
 #endif
 
-__attribute__((noreturn)) void _exit(int status) {
-    syscall(SYS_exit, status);
-    UNREACHBLE;
+NORETURN void _exit(int status) {
+    syscall1(SYS_exit, status);
+    UNREACHABLE
 }

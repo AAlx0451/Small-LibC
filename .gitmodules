@@ -1,0 +1,3 @@
+[submodule "src/sysindep/string"]
+	path = src/sysindep/string
+	url = https://github.com/AAlx0451/string

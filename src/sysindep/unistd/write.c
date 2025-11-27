@@ -10,7 +10,7 @@
 
 ssize_t write(int fd, const void *buf, size_t count) {
     long ret;
-    ret = syscall(SYS_write, fd, buf, count);
+    ret = syscall3(SYS_write, fd, (long)buf, count);
     if (ret < 0) {
         return -1;
     }
