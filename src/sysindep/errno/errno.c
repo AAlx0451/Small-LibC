@@ -3,4 +3,4 @@
  * global variable errno
  */
 
-int errno;
+int errno = 0;
