@@ -3,4 +3,6 @@
 
 extern int errno;
 
+#define ENOMEM 12
+
 #endif /* ERRNO_H */
