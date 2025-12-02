@@ -16,7 +16,7 @@ int open(const char *pathname, int flags, ...) {
         va_list args;
         mode_t mode;
         va_start(args, flags);
-        mode = va_arg(args, mode_t);
+        mode = (mode_t)va_arg(args, int);
         va_end(args);
         ret = syscall3(SYS_open, (long)pathname, flags, mode);
     } else {

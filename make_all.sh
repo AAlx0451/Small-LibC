@@ -1,3 +1,4 @@
+git submodule update --init --recursive > /dev/null;
 cd src;
 make -j`nproc`;
 mv libc.a ..;
