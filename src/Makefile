@@ -27,8 +27,8 @@ ifeq ($(CROSS), 1)
   empty :=
   space := $(empty) $(empty)
   ARCH_LIST = $(subst $(comma),$(space),$(ARCHES))
-
-  BASE_CFLAGS = -I$(INCDIR) -Os -fPIC -std=c99 -isysroot $(SDK)
+  PIC = -fPIC
+  BASE_CFLAGS = -I$(INCDIR) -Os $(PIC) -std=c99 -isysroot $(SDK)
 
   define BUILD_ARCH
     OBJS_GENERIC_$(1) := $$(patsubst %.c,$(OBJDIR)/$(1)/%.o,$$(GENERIC_SRCS))
@@ -61,7 +61,8 @@ ifeq ($(CROSS), 1)
 
 else
   AR = ar
-  BASE_CFLAGS = -I$(INCDIR) -Os -fPIC -std=c99 -nostdinc -I/usr/share/llvm/lib/clang/6.0.1/include
+  PIC = -fPIC
+  BASE_CFLAGS = -I$(INCDIR) -Os $(PIC) -std=c99 -nostdinc -I/usr/share/llvm/lib/clang/6.0.1/include
 
   OBJS_GENERIC := $(patsubst %.c,$(OBJDIR)/%.o,$(GENERIC_SRCS))
   OBJS_MARM := $(patsubst %.c,$(OBJDIR)/%.o,$(MARM_SRCS))

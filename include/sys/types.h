@@ -8,7 +8,11 @@
 #  endif
 
 typedef int pid_t;
-typedef int mode_t;
+#  ifdef __APPLE__
+typedef unsigned short mode_t;
+#  else
+typedef unsigned int mode_t;
+#  endif
 typedef long long __int64_t;
 typedef __int64_t off_t;
 
