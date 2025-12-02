@@ -8,7 +8,9 @@
 #  define SYS_read 3
 #  define SYS_write 4
 #  define SYS_open 5
+#  define SYS_close 6
 #  define SYS_getpid 20
+#  define SYS_munmap 73
 #  define SYS_mmap 197
 
 # elif

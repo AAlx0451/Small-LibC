@@ -235,6 +235,41 @@ long syscall6(long number, long arg1, long arg2, long arg3, long arg4, long arg5
     return r0;
 }
 
+/* we need syscall8() for mmap */
+long syscall8(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7, long arg8)
+{
+    long error_flag;
+    register long r0 __asm__("r0") = arg1;
+    register long r1 __asm__("r1") = arg2;
+    register long r2 __asm__("r2") = arg3;
+    register long r3 __asm__("r3") = arg4;
+    register long r12 __asm__("r12") = number;
+
+    __asm__ volatile (
+        "sub sp, sp, #16\n\t"
+        "str %[a5], [sp]\n\t"       /* fd */
+        "str %[a6], [sp, #4]\n\t"   /* pad */
+        "str %[a7], [sp, #8]\n\t"   /* offset low */
+        "str %[a8], [sp, #12]\n\t"  /* offset high */
+        "svc #0x80\n\t"
+        "add sp, sp, #16\n\t"
+        "mov %[err], #0\n\t"
+        "movcs %[err], #1\n\t"
+        : "+r" (r0), [err] "=r" (error_flag)
+        : "r" (r1), "r" (r2), "r" (r3), "r" (r12), 
+          [a5] "r" (arg5), [a6] "r" (arg6), [a7] "r" (arg7), [a8] "r" (arg8)
+        : "memory", "cc"
+    );
+
+    if (error_flag)
+    {
+        errno = (int)r0;
+        return -1;
+    }
+
+    return r0;
+}
+
 # endif
 # ifdef __linux__
 #  error Linux not supported now

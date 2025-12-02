@@ -1,57 +1,55 @@
 #include "malloc.h"
 
-void *realloc(void *p, size_t size)
+void *realloc(void *ptr, size_t size)
 {
-    size_t s;
-    meta_ptr old_block;
+    meta_ptr block;
     void *new_ptr;
+    size_t aligned_size;
 
-    if (!p) {
+    if (!ptr) {
         return malloc(size);
     }
 
     if (size == 0) {
-        free(p);
+        free(ptr);
         return NULL;
     }
 
-    if (!is_addr_valid(p)) {
+    block = get_block_ptr(ptr);
+    if (!is_valid_block(block)) {
         return NULL;
     }
 
-    s = ALIGN(size);
-    old_block = get_block_addr(p);
+    aligned_size = ALIGN(size);
 
-    if (old_block->size >= s) {
-        if (old_block->size >= s + BLOCK_SIZE + 8) {
-            split_space(old_block, s);
+    if (block->size >= aligned_size) {
+        if (block->size >= aligned_size + BLOCK_META_SIZE + ALIGNMENT) {
+             split_block(block, aligned_size);
+             coalesce(block->next); 
         }
-        return p;
+        return ptr;
     }
 
-    if (old_block->next && old_block->next->free) {
-        if ((char *)old_block + BLOCK_SIZE + old_block->size == (char *)old_block->next) {
-            if ((old_block->size + BLOCK_SIZE + old_block->next->size) >= s) {
-                merge_blocks(old_block);
-                if (old_block->size >= s + BLOCK_SIZE + 8) {
-                    split_space(old_block, s);
-                }
-                return p;
+    if (block->next && block->next->magic == MAGIC_FREE) {
+        if ((char *)block + BLOCK_META_SIZE + block->size == (char *)block->next) {
+            size_t combined_size = block->size + BLOCK_META_SIZE + block->next->size;
+            if (combined_size >= aligned_size) {
+                block->magic = MAGIC_FREE;
+                block = coalesce(block);
+                block->magic = MAGIC_USED;
+                split_block(block, aligned_size);
+                return ptr;
             }
         }
     }
 
-    new_ptr = malloc(s);
+    new_ptr = malloc(aligned_size);
     if (!new_ptr) {
         return NULL;
     }
 
-    if (old_block->size < s) {
-        memmove(new_ptr, p, old_block->size);
-    } else {
-        memmove(new_ptr, p, s);
-    }
+    memcpy(new_ptr, ptr, block->size);
+    free(ptr);
 
-    free(p);
     return new_ptr;
 }

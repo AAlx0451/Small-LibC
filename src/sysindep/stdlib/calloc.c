@@ -1,5 +1,4 @@
 #include "malloc.h"
-#include <string.h>
 
 void *calloc(size_t number, size_t size)
 {
@@ -10,13 +9,11 @@ void *calloc(size_t number, size_t size)
         return NULL;
     }
 
-    if (size > SIZE_MAX / number) {
+    if (__builtin_mul_overflow(number, size, &total_size)) {
         return NULL;
     }
 
-    total_size = number * size;
     ptr = malloc(total_size);
-
     if (ptr) {
         memset(ptr, 0, total_size);
     }
