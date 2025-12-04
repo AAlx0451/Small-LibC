@@ -48,6 +48,7 @@ long syscall(long number, ...) /* we use long, which is redundant */
     return r0;
 }
 
+#   ifndef NO_SLIBC
 long syscall0(long number)
 {
     long error_flag;
@@ -234,7 +235,7 @@ long syscall6(long number, long arg1, long arg2, long arg3, long arg4, long arg5
 
     return r0;
 }
-
+#   endif
 /* we need syscall8() for mmap */
 long syscall8(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7, long arg8)
 {
