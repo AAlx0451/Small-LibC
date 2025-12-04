@@ -1,33 +1,24 @@
-### Small-LibC
-Just a devel lib designed for iOS easy to port. 
+## Welcome to Small-LibC
+Small-LibC is an iOS development library, which implements some of standart C functions
 
-### List
-* `mmap()`
-* `calloc()`
-* `exit()`
-* `free()`
-* `malloc()`
-* `realloc()`
-* `_exit()`
-* `getpid()`
-* `open()`
-* `read()`
-* `write()`
-* `syscall()`
-* `syscall0()`
-* `syscall1()`
-* `syscall2()`
-* `syscall3()`
-* `syscall4()`
-* `syscall5()`
-* `syscall6()`
-* `fork()`
+## Get started
+If you're on iOS, just run `./make_all.sh`, then you'll be able to use it
 
-Also, [string.h](https://github.com/AAlx0451/string) git submodule included. 
+If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile flags are `SDK`, `ARCHES` (armv7 default, armv4t-7s permitted), `CFLAGS`, `CPPFLAGS`. If you have cctools, use Makefile flag `LLVM-PREFIX=""`. To turn off PIC use `PIC=""`
 
-For port purposes see `./include/*.h` and `./src/sysdep`. To build all (using iOS device with JB) run `./make_all.sh`. For cross compilation `cd ./src && make CROSS=1`
+## Status
+About 15% of C89 is implemented. Anyway, some funtions from stdlib.h and unistd.h are done. Also, string.h is done, but it's git submodule. Run `git submodule update --recursive --init`
 
-### Supported arches and OSes
-iOS (6) fully supported. ARM BSD should work as well. For Linux you should replace syscall.c and fork.c. i386 syscall.h should work, but ARM assembly sysdeps wouldn't
+## License
+All of my code licensed under MIT License
 
-For math.h recommended are OpenLibM and UNIXv7 LibM
+## Structure
+
+1. ./apple – Apple's code under APSL, C Start Up code
+2. ./src – LibC's source
+3. ./include – LibC's headers (stdint.h licensed under APSL)
+4. ./src/sysindep – Probably system-independent code
+5. ./src/sysdep (see below)
+
+## Portage
+To port this one, you just need to make `./src/sysdep/*/*` files and replace `./include/sys/*` (and some other headers). Simplest way is to export symbols from gLibC
