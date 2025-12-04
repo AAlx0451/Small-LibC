@@ -10,6 +10,6 @@
 
 pid_t getpid(void) {
     long ret;
-    ret = syscall0(SYS_fork);
+    ret = syscall0(SYS_getpid);
     return (pid_t)ret;
 }
