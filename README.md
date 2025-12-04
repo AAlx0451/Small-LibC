@@ -19,6 +19,7 @@ All of my code licensed under MIT License
 3. ./include – LibC's headers (stdint.h licensed under APSL)
 4. ./src/sysindep – Probably system-independent code
 5. ./src/sysdep (see below)
+6. ./test – unittests
 
 ## Portage
 To port this one, you just need to make `./src/sysdep/*/*` files and replace `./include/sys/*` (and some other headers). Simplest way is to export symbols from gLibC
