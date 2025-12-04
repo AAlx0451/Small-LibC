@@ -9,6 +9,7 @@
 #  define SYS_write 4
 #  define SYS_open 5
 #  define SYS_close 6
+#  define SYS_wait4 7
 #  define SYS_getpid 20
 #  define SYS_munmap 73
 #  define SYS_mmap 197

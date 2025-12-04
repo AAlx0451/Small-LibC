@@ -3,6 +3,9 @@ INCDIR = ../include
 OBJDIR = obj
 TARGET_LIB = libc.a
 
+CFLAGS ?=
+CPPFLAGS ?=
+
 GENERIC_SRCS := $(wildcard sysindep/*/*.c sysindep/*/src/*.c)
 MARM_SRCS := sysdep/syscall.c $(wildcard sysdep/unistd/*.c)
 
@@ -17,24 +20,24 @@ ifeq ($(CROSS), 1)
   ifndef SDK
     $(error SDK path must be set for cross-compilation)
   endif
-	
+
   LLVM_PREFIX = llvm-
   AR = $(LLVM_PREFIX)ar
   LIPO = $(LLVM_PREFIX)lipo
-  
+
   ARCHES ?= armv7
   comma := ,
   empty :=
   space := $(empty) $(empty)
   ARCH_LIST = $(subst $(comma),$(space),$(ARCHES))
   PIC = -fPIC
-  BASE_CFLAGS = -I$(INCDIR) -Os $(PIC) -std=c99 -isysroot $(SDK)
+  BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -I$(INCDIR) -Os $(PIC) -std=c99 -isysroot $(SDK)
 
   define BUILD_ARCH
     OBJS_GENERIC_$(1) := $$(patsubst %.c,$(OBJDIR)/$(1)/%.o,$$(GENERIC_SRCS))
     OBJS_MARM_$(1) := $$(patsubst %.c,$(OBJDIR)/$(1)/%.o,$$(MARM_SRCS))
     LIB_$(1) := $(OBJDIR)/libSystem-$(1).a
-    
+
     ARCH_LIBS += $$(LIB_$(1))
 
     $$(LIB_$(1)): $$(OBJS_GENERIC_$(1)) $$(OBJS_MARM_$(1))
@@ -62,7 +65,7 @@ ifeq ($(CROSS), 1)
 else
   AR = ar
   PIC = -fPIC
-  BASE_CFLAGS = -I$(INCDIR) -Os $(PIC) -std=c99 -nostdinc -I/usr/share/llvm/lib/clang/6.0.1/include
+  BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -I$(INCDIR) -Os $(PIC) -std=c99 -nostdinc -I/usr/share/llvm/lib/clang/6.0.1/include
 
   OBJS_GENERIC := $(patsubst %.c,$(OBJDIR)/%.o,$(GENERIC_SRCS))
   OBJS_MARM := $(patsubst %.c,$(OBJDIR)/%.o,$(MARM_SRCS))
