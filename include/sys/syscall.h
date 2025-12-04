@@ -11,8 +11,10 @@
 #  define SYS_close 6
 #  define SYS_wait4 7
 #  define SYS_getpid 20
+#  define SYS_execve 59
 #  define SYS_munmap 73
 #  define SYS_mmap 197
+#  define SYS_lseek 199
 
 # elif
 
