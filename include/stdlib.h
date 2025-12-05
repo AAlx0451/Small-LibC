@@ -1,7 +1,11 @@
 #ifndef STDLIB_H
 #define STDLIB_H
 
-#include <stddef.h>
+# include <stddef.h>
+
+/* macros */
+# define EXIT_SUCCESS 0
+# define EXIT_FAILURE 1
 
 /* types */
 typedef struct {

@@ -37,5 +37,6 @@ int close(int fd);
 int open(const char *pathname, int flags, ...);
 int execve(const char *pathname, char *const argv[], char *const envp[]);
 off_t lseek(int fd, off_t offset, int whence);
+unsigned int sleep(unsigned int seconds);
 
 #endif
