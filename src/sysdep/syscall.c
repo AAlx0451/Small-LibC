@@ -23,19 +23,19 @@ long syscall(long number, ...) /* we use long, which is redundant */
     register long r1 __asm__("r1") = arg2;
     register long r2 __asm__("r2") = arg3;
     register long r3 __asm__("r3") = arg4;
+    register long r4 __asm__("r4") = arg5;
+    register long r5 __asm__("r5") = arg6;
     register long r12 __asm__("r12") = number; /* syscall number register */
 
     __asm__ volatile (
-        "sub sp, sp, #8\n\t"        /* Allocate stack for arg5, arg6 */
-        "str %[a5], [sp]\n\t"       /* Store arg5 */
-        "str %[a6], [sp, #4]\n\t"   /* Store arg6 */
-        "svc #0x80\n\t"             /* Execute syscall */
-        "add sp, sp, #8\n\t"        /* Restore stack */
-        "mov %[err], #0\n\t"        /* Reset error flag */
-        "movcs %[err], #1\n\t"      /* Set error flag if Carry Bit is set */
+        "push {r4, r5, r6, r7}\n\t"
+        "svc #0x80\n\t"
+        "mov %[err], #0\n\t"
+        "movcs %[err], #1\n\t"
+        "pop {r4, r5, r6, r7}\n\t"
         : "+r" (r0), [err] "=r" (error_flag)
-        : "r" (r1), "r" (r2), "r" (r3), "r" (r12), [a5] "r" (arg5), [a6] "r" (arg6)
-        : "memory", "cc"
+        : "r" (r1), "r" (r2), "r" (r3), "r" (r12), "r" (r4), "r" (r5)
+        : "memory", "cc", "r6", "r7"
     );
 
     // Error handling
@@ -48,7 +48,6 @@ long syscall(long number, ...) /* we use long, which is redundant */
     return r0;
 }
 
-#   ifndef NO_SLIBC
 long syscall0(long number)
 {
     long error_flag;
@@ -182,18 +181,18 @@ long syscall5(long number, long arg1, long arg2, long arg3, long arg4, long arg5
     register long r1 __asm__("r1") = arg2;
     register long r2 __asm__("r2") = arg3;
     register long r3 __asm__("r3") = arg4;
+    register long r4 __asm__("r4") = arg5;
     register long r12 __asm__("r12") = number;
 
     __asm__ volatile (
-        "sub sp, sp, #4\n\t"        /* Allocate stack for arg5 */
-        "str %[a5], [sp]\n\t"       /* Store arg5 */
+        "push {r4, r5, r6, r7}\n\t" 
         "svc #0x80\n\t"
-        "add sp, sp, #4\n\t"        /* Restore stack */
         "mov %[err], #0\n\t"
         "movcs %[err], #1\n\t"
+	"pop {r4, r5, r6, r7}\n\t"
         : "+r" (r0), [err] "=r" (error_flag)
-        : "r" (r1), "r" (r2), "r" (r3), "r" (r12), [a5] "r" (arg5)
-        : "memory", "cc"
+        : "r" (r1), "r" (r2), "r" (r3), "r" (r12), "r" (r4)
+        : "memory", "cc", "r5", "r6", "r7"
     );
 
     if (error_flag)
@@ -212,19 +211,19 @@ long syscall6(long number, long arg1, long arg2, long arg3, long arg4, long arg5
     register long r1 __asm__("r1") = arg2;
     register long r2 __asm__("r2") = arg3;
     register long r3 __asm__("r3") = arg4;
+    register long r4 __asm__("r4") = arg5;
+    register long r5 __asm__("r5") = arg6;
     register long r12 __asm__("r12") = number;
 
     __asm__ volatile (
-        "sub sp, sp, #8\n\t"        /* Allocate stack for arg5, arg6 */
-        "str %[a5], [sp]\n\t"       /* Store arg5 */
-        "str %[a6], [sp, #4]\n\t"   /* Store arg6 */
+        "push {r4, r5, r6, r7}\n\t"
         "svc #0x80\n\t"
-        "add sp, sp, #8\n\t"        /* Restore stack */
         "mov %[err], #0\n\t"
         "movcs %[err], #1\n\t"
+	"pop {r4, r5, r6, r7}\n\t"
         : "+r" (r0), [err] "=r" (error_flag)
-        : "r" (r1), "r" (r2), "r" (r3), "r" (r12), [a5] "r" (arg5), [a6] "r" (arg6)
-        : "memory", "cc"
+        : "r" (r1), "r" (r2), "r" (r3), "r" (r12), "r" (r4), "r" (r5)
+        : "memory", "cc", "r6", "r7"
     );
 
     if (error_flag)
@@ -235,7 +234,7 @@ long syscall6(long number, long arg1, long arg2, long arg3, long arg4, long arg5
 
     return r0;
 }
-#   endif
+
 /* we need syscall8() for mmap */
 long syscall8(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7, long arg8)
 {
@@ -244,21 +243,20 @@ long syscall8(long number, long arg1, long arg2, long arg3, long arg4, long arg5
     register long r1 __asm__("r1") = arg2;
     register long r2 __asm__("r2") = arg3;
     register long r3 __asm__("r3") = arg4;
+    register long r4 __asm__("r4") = arg5;
+    register long r5 __asm__("r5") = arg6;
+    register long r6 __asm__("r6") = arg7;
+    register long r7 __asm__("r7") = arg8;
     register long r12 __asm__("r12") = number;
 
     __asm__ volatile (
-        "sub sp, sp, #16\n\t"
-        "str %[a5], [sp]\n\t"       /* fd */
-        "str %[a6], [sp, #4]\n\t"   /* pad */
-        "str %[a7], [sp, #8]\n\t"   /* offset low */
-        "str %[a8], [sp, #12]\n\t"  /* offset high */
+        "push {r4, r5, r6, r7}\n\t"
         "svc #0x80\n\t"
-        "add sp, sp, #16\n\t"
         "mov %[err], #0\n\t"
         "movcs %[err], #1\n\t"
+	"pop {r4, r5, r6, r7}\n\t"
         : "+r" (r0), [err] "=r" (error_flag)
-        : "r" (r1), "r" (r2), "r" (r3), "r" (r12), 
-          [a5] "r" (arg5), [a6] "r" (arg6), [a7] "r" (arg7), [a8] "r" (arg8)
+        : "r" (r1), "r" (r2), "r" (r3), "r" (r12), "r" (r4), "r" (r5), "r" (r6), "r" (r7)
         : "memory", "cc"
     );
 

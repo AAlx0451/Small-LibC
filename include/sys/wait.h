@@ -61,6 +61,8 @@ union wait {
 # define W_STOPCODE(sig)        ((sig) << 8 | _WSTOPPED)
 
 pid_t wait(int *wstatus);
+pid_t waitpid(pid_t pid, int *status, int options);
+pid_t wait3(int *status, int options, struct rusage *rusage);
 pid_t wait4(pid_t pid, int *status, int options, struct rusage *rusage);
 
 #endif
