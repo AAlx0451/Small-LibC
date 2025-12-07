@@ -2,12 +2,13 @@
 #define STDLIB_H
 
 # include <stddef.h>
+# include <unistd.h> // NORETURN
 
-/* macros */
+/* CONSTANTS */
 # define EXIT_SUCCESS 0
 # define EXIT_FAILURE 1
 
-/* types */
+/* TYPES */
 typedef struct {
   int quot;
   int rem;
@@ -18,17 +19,25 @@ typedef struct {
   long rem;
 } ldiv_t;
 
-/* functions */
+/* FUNCTIONS */
+
+// memory allocation
 void free(void *ptr);
 void *malloc(size_t size);
 void *calloc(size_t number, size_t size);
 void *realloc(void *p, size_t size);
 
-__attribute__((noreturn)) void exit(int status);
+// exit
+NORETURN void exit(int status);
 
+// math
 int abs(int num);
 long labs(long num);
 div_t div(int numer, int denom);
 ldiv_t ldiv(long numer, long denom);
+
+// general
+int atoi(const char *nptr);
+void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *));
 
 #endif
