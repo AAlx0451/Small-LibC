@@ -21,49 +21,13 @@
 
 #define REG(name, val) register long name __asm__(#name) = val
 
-FORCE_ARM
-long syscall(long number, ...)
-{
-    va_list args;
-    long arg1, arg2, arg3, arg4, arg5, arg6;
-    long error_flag;
+#define _SYSCALL_GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, N, ...) N
+#define _SYSCALL_COUNT_ARGS(...) _SYSCALL_GET_NTH_ARG(0, ##__VA_ARGS__, 6, 5, 4, 3, 2, 1, 0)
+#define _SYSCALL_CONCAT_IMPL(name, count) name##count
+#define _SYSCALL_CONCAT(name, count) _SYSCALL_CONCAT_IMPL(name, count)
 
-    va_start(args, number);
-    arg1 = va_arg(args, long);
-    arg2 = va_arg(args, long);
-    arg3 = va_arg(args, long);
-    arg4 = va_arg(args, long);
-    arg5 = va_arg(args, long);
-    arg6 = va_arg(args, long);
-    va_end(args);
-
-    REG(r0, arg1); REG(r1, arg2); REG(r2, arg3); REG(r3, arg4); REG(r12, number);
-
-    __asm__ volatile (
-        "push {r5}\n\t"
-        "push {r4}\n\t"
-        "mov r5, %[a6]\n\t"
-        "mov r4, %[a5]\n\t"
-        "push {r5}\n\t"
-        "push {r4}\n\t"
-        "svc #0x80\n\t"
-        "pop {r4}\n\t"
-        "pop {r5}\n\t"
-        "pop {r4}\n\t"
-        "pop {r5}\n\t"
-        "mov %[err], #0\n\t"
-        "movcs %[err], #1\n\t"
-        : "+r" (r0), [err] "=r" (error_flag)
-        : "r" (r1), "r" (r2), "r" (r3), "r" (r12), [a5] "r" (arg5), [a6] "r" (arg6)
-        : "memory", "cc"
-    );
-
-    if (error_flag) {
-        errno = (int)r0;
-        return -1;
-    }
-    return r0;
-}
+#define syscall(number, ...) \
+    _SYSCALL_CONCAT(syscall, _SYSCALL_COUNT_ARGS(__VA_ARGS__))(number, ##__VA_ARGS__)
 
 #define DEFINE_SYSCALL(n, args, regs, asm_code, ...) \
 FORCE_ARM \
@@ -78,7 +42,7 @@ long syscall##n args \
         "movcs %[err], #1\n\t" \
         : "+r" (r0), [err] "=r" (error_flag) \
         : __VA_ARGS__ \
-        : "memory", "cc" \
+        : "memory", "cc", "r4", "r5", "r6", "r8" \
     ); \
     \
     if (error_flag) { \
