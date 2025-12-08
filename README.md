@@ -16,12 +16,14 @@ All of my code licensed under MIT License
 
 ## Structure
 
-1. ./apple – Apple's code under APSL, C Start Up code
+1. ~./apple – Apple's code under APSL, C Start Up code~ (deprecated)
 2. ./src – LibC's source
 3. ./include – LibC's headers (stdint.h licensed under APSL)
 4. ./src/sysindep – Probably system-independent code
 5. ./src/sysdep (see below)
-6. ./test – unittests (low priority, may be outdated)
+6. ./src/runtime/sysdep (C Startup, beta)
+7. ./src/runtime/sysindep – stack canary
+8. ./test – unittests (low priority, may be outdated)
 
-## Portage
-To port this one, you just need to make `./src/sysdep/*/*` files and replace `./include/sys/*` (and some other headers). Simplest way is to export symbols from gLibC
+## Porting
+To port this one, you just need to make `./src/sysdep/*/*` files and replace `./include/sys/*` (and some other headers). Simplest way is to import symbols from gLibC
