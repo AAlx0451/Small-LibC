@@ -1,14 +1,6 @@
 git submodule update --init --recursive > /dev/null;
 cd src;
 make -j`nproc`;
-mv libc.a ..;
-cd ../apple/src;
-./make.sh;
-mv crt1.o ../..;
-cd ../..;
-echo "  AR   libc.a";
-ar rcs libc.a crt1.o;
-echo "  CLEAN";
-cd src; make clean > /dev/null;
+mv libc.a librt.a ..;
+make clean > /dev/null;
 cd ..;
-rm crt1.o;
