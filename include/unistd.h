@@ -12,8 +12,8 @@
 #else
 # define NORETURN
 #endif
-#define _SYSCALL_GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, N, ...) N
-#define _SYSCALL_COUNT_ARGS(...) _SYSCALL_GET_NTH_ARG(0, ##__VA_ARGS__, 6, 5, 4, 3, 2, 1, 0)
+#define _SYSCALL_GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
+#define _SYSCALL_COUNT_ARGS(...) _SYSCALL_GET_NTH_ARG(0, ##__VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1, 0)
 #define _SYSCALL_CONCAT_IMPL(name, count) name##count
 #define _SYSCALL_CONCAT(name, count) _SYSCALL_CONCAT_IMPL(name, count)
 
@@ -31,7 +31,7 @@
 
 /* FUNCTIONS */
 
-// main syscall wrapper, up to 6 args
+// main syscall wrapper, up to 8 args
 #define syscall(number, ...) \
     _SYSCALL_CONCAT(syscall, _SYSCALL_COUNT_ARGS(__VA_ARGS__))(number, ##__VA_ARGS__)
 
@@ -43,11 +43,8 @@ long syscall3(long number, long arg1, long arg2, long arg3);
 long syscall4(long number, long arg1, long arg2, long arg3, long arg4);
 long syscall5(long number, long arg1, long arg2, long arg3, long arg4, long arg5);
 long syscall6(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6);
-
-// syscall8 is special - it's made for apple mmap() and can't be replaced with up-to-six syscall
-#ifdef __APPLE__
+long syscall7(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7); /* unused! */
 long syscall8(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7, long arg8);
-#endif /* __APPLE */
 
 // POSIX function based on syscalls
 NORETURN void _exit(int status); // 1
