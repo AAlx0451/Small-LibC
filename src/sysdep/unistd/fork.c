@@ -20,6 +20,7 @@ pid_t fork(void) {
     __asm__ volatile (
         "svc #0x80\n\t"
         "mov %[err], #0\n\t"
+	"it cs\n\t"
         "movcs %[err], #1\n\t"
         : "=r" (r0), "=r" (r1), [err] "=r" (error_flag)
         : "r" (r12)

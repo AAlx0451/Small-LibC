@@ -7,11 +7,18 @@
  * to implement syscall(). I tried.
  */
 
+/* btw it's not that I can't manage stack
+ * my sub sp, sp, #8
+ * str %[a5], [sp]
+ * str %[a6], [sp, #4]
+ * add sp, sp, #8 was correct. I think 
+ */
+
 #include <stdarg.h>
 #include <errno.h>
 
 #if defined(__GNUC__) || defined(__clang__)
-# define FORCE_ARM __attribute__((target("arm")))
+# define FORCE_ARM 
 #else
 # define FORCE_ARM
 #endif
@@ -39,6 +46,7 @@ long syscall##n args \
     __asm__ volatile ( \
         asm_code \
         "mov %[err], #0\n\t" \
+        "it cs\n\t"          /* Thumb-2 requirement for conditional execution */ \
         "movcs %[err], #1\n\t" \
         : "+r" (r0), [err] "=r" (error_flag) \
         : __VA_ARGS__ \
