@@ -43,6 +43,6 @@ __asm__(
     "    add r2, r0, #1\n"
     "    add r2, r1, r2, lsl #2\n"
     "    bic sp, sp, #7\n"    
-    "    bl _c_startup\n"
+    "    bl __c_startup\n"
     "    trap\n"
 );
