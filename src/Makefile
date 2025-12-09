@@ -99,7 +99,7 @@ else
   $(OBJS_MARM): $(OBJDIR)/%.o: %.c
 		@echo "  CC   $<"
 		@mkdir -p $(dir $@)
-		$(Q)$(CC) $(BASE_CFLAGS) -marm -c $< -o $@
+		$(Q)$(CC) $(BASE_CFLAGS) -c $< -o $@
 
 endif
 
