@@ -9,4 +9,6 @@ struct timeval
         suseconds_t    tv_usec;
 };
 
+int gettimeofday(struct timeval *tv, void *tz);
+
 #endif
