@@ -11,11 +11,9 @@
 
 typedef int pid_t;
 typedef unsigned short mode_t;
-typedef long long __int64_t;
-typedef __int64_t off_t;
-typedef int __int32_t;
+typedef int64_t off_t;
 typedef long time_t;
-typedef __int32_t suseconds_t;
+typedef int32_t suseconds_t;
 typedef unsigned int id_t;
 typedef unsigned int uid_t;
 typedef long ssize_t;
