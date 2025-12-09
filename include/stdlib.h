@@ -7,6 +7,7 @@
 /* CONSTANTS */
 # define EXIT_SUCCESS 0
 # define EXIT_FAILURE 1
+# define RAND_MAX 0x7FFFFFFF
 
 /* TYPES */
 typedef struct {
@@ -35,6 +36,8 @@ int abs(int num);
 long labs(long num);
 div_t div(int numer, int denom);
 ldiv_t ldiv(long numer, long denom);
+void srand(uint64_t seed);
+uint32_t rand(void);
 
 // general
 int atoi(const char *nptr);
