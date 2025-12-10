@@ -24,4 +24,8 @@ struct  rusage {
 #define ru_last         ru_nivcsw       /* internal: ruadd() range end */
 };
 
+# define RUSAGE_SELF 0
+
+int getrusage(int who, struct rusage *usage);
+
 #endif
