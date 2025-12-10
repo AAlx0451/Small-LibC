@@ -1,9 +1,20 @@
 #include <stdlib.h>
 
-int NXArgc = 0;
-char **NXArgv = 0;
-char **environ = 0;
-char *__progname = 0;
+int NXArgc;
+char **NXArgv;
+char **environ;
+char *__progname;
+
+__asm__(
+    ".globl _NXArgc\n"
+    ".desc _NXArgc, 0x10\n"
+    ".globl _NXArgv\n"
+    ".desc _NXArgv, 0x10\n"
+    ".globl _environ\n"
+    ".desc _environ, 0x10\n"
+    ".globl ___progname\n"
+    ".desc ___progname, 0x10\n"
+);
 
 extern int main(int argc, char **argv, char **envp, char **apple);
 
@@ -46,3 +57,4 @@ __asm__(
     "    bl __c_startup\n"
     "    trap\n"
 );
+

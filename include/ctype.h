@@ -18,7 +18,7 @@ unsigned char __toupper(unsigned char c);
 unsigned char __tolower(unsigned char c);
 
 /* MACROS */
-#define __ismask(x) (_ctype[(int)(unsigned char)(x)])
+#define __ismask(x) (_ctype[(int)(unsigned char)(x) + 1])
 #define isalnum(c) ((__ismask(c) & (_U | _L | _D)) != 0)
 #define isalpha(c) ((__ismask(c) & (_U | _L)) != 0)
 #define isblank(c) ((__ismask(c) & (_HT | _SP)) != 0)

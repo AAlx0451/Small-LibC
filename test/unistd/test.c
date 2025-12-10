@@ -2,11 +2,10 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/wait.h>
-#include <sys/types.h> // Для off_t в тесте lseek
+#include <sys/types.h>
+#include <sys/resource.h>
 
-// --- Вспомогательные функции (без изменений) ---
-
-static char* itoa(int n, char* s) { 
+static char* itoa(int n, char* s) {
     char* p = s, t;
     unsigned u = n < 0 ? -n : n;
     do { *p++ = u % 10 + '0'; } while(u /= 10);
@@ -44,8 +43,6 @@ static void print_test_result(const char* test_name, int success) {
     print_string(test_name);
     print_string("\n");
 }
-
-// --- Существующие тесты (без изменений) ---
 
 void test_write_stdout_and_getpid() {
     const char* test_name = "write to stdout & getpid";
@@ -180,6 +177,57 @@ void test_fork_wait_exit() {
     print_test_result(test_name, success);
 }
 
+void test_waitpid() {
+    const char* test_name = "waitpid";
+    print_test_header(test_name);
+
+    int success = 1;
+    const int exit_code1 = 11;
+    const int exit_code2 = 22;
+
+    pid_t pid1 = fork();
+    if (pid1 < 0) {
+        success = 0;
+        print_string("Error: first fork() for waitpid failed.\n");
+    } else if (pid1 == 0) {
+        _exit(exit_code1);
+    }
+
+    pid_t pid2 = fork();
+    if (pid2 < 0) {
+        success = 0;
+        print_string("Error: second fork() for waitpid failed.\n");
+    } else if (pid2 == 0) {
+        _exit(exit_code2);
+    }
+
+    if (pid1 > 0 && pid2 > 0) {
+        int status;
+        pid_t waited_pid = waitpid(pid2, &status, 0);
+
+        if (waited_pid != pid2) {
+            success = 0;
+            print_string("Error: waitpid() waited for the wrong process first.\n");
+        }
+        if (!WIFEXITED(status) || WEXITSTATUS(status) != exit_code2) {
+            success = 0;
+            print_string("Error: second child had wrong exit status.\n");
+        }
+
+        waited_pid = waitpid(pid1, &status, 0);
+        if (waited_pid != pid1) {
+            success = 0;
+            print_string("Error: waitpid() waited for the wrong process second.\n");
+        }
+        if (!WIFEXITED(status) || WEXITSTATUS(status) != exit_code1) {
+            success = 0;
+            print_string("Error: first child had wrong exit status.\n");
+        }
+    }
+    print_test_result(test_name, success);
+}
+
+
 void test_execve() {
     const char* test_name = "execve";
     print_test_header(test_name);
@@ -207,8 +255,6 @@ void test_execve() {
     print_test_result(test_name, success);
 }
 
-// --- Новые тесты ---
-
 void test_lseek() {
     const char* test_name = "lseek";
     print_test_header(test_name);
@@ -220,7 +266,6 @@ void test_lseek() {
     char c;
     off_t pos;
 
-    // 1. Создать и записать в файл
     int fd = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
     if (fd < 0) {
         success = 0;
@@ -232,8 +277,7 @@ void test_lseek() {
         }
         close(fd);
     }
-    
-    // 2. Открыть для чтения и проверить lseek
+
     if (success) {
         fd = open(filename, O_RDONLY);
         if (fd < 0) {
@@ -243,7 +287,6 @@ void test_lseek() {
     }
 
     if (success) {
-        // 2a. Проверка SEEK_SET
         pos = lseek(fd, 5, SEEK_SET);
         if (pos != 5 || read(fd, &c, 1) != 1 || c != '5') {
             success = 0;
@@ -252,8 +295,7 @@ void test_lseek() {
     }
 
     if (success) {
-        // 2b. Проверка SEEK_CUR (с текущей позиции 6)
-        pos = lseek(fd, 2, SEEK_CUR); // 6 + 2 = 8
+        pos = lseek(fd, 2, SEEK_CUR);
         if (pos != 8 || read(fd, &c, 1) != 1 || c != '8') {
             success = 0;
             print_string("Error: lseek(SEEK_CUR) positive failed.\n");
@@ -261,17 +303,15 @@ void test_lseek() {
     }
 
     if (success) {
-        // 2c. Проверка SEEK_CUR с отрицательным смещением (с текущей позиции 9)
-        pos = lseek(fd, -4, SEEK_CUR); // 9 - 4 = 5
+        pos = lseek(fd, -4, SEEK_CUR);
         if (pos != 5 || read(fd, &c, 1) != 1 || c != '5') {
             success = 0;
             print_string("Error: lseek(SEEK_CUR) negative failed.\n");
         }
     }
-    
+
     if (success) {
-        // 2d. Проверка SEEK_END
-        pos = lseek(fd, -1, SEEK_END); // end - 1
+        pos = lseek(fd, -1, SEEK_END);
         if (pos != (off_t)(content_len - 1) || read(fd, &c, 1) != 1 || c != '9') {
             success = 0;
             print_string("Error: lseek(SEEK_END) failed.\n");
@@ -289,7 +329,7 @@ void test_lseek() {
 void test_sleep_usleep() {
     const char* test_name = "sleep/usleep";
     print_test_header(test_name);
-    
+
     int success = 1;
 
     print_string("Info: testing sleep(1), please wait...\n");
@@ -299,7 +339,7 @@ void test_sleep_usleep() {
     }
 
     print_string("Info: testing usleep(10000)...\n");
-    if (usleep(10000) != 0) { // 10ms
+    if (usleep(10000) != 0) {
         success = 0;
         print_string("Error: usleep(10000) returned a non-zero value.\n");
     }
@@ -307,16 +347,90 @@ void test_sleep_usleep() {
     print_test_result(test_name, success);
 }
 
+void test_sbrk() {
+    const char* test_name = "sbrk";
+    print_test_header(test_name);
+
+    int success = 1;
+    const intptr_t increment = 1024;
+
+    void* initial_brk = sbrk(0);
+    if (initial_brk == (void*)-1) {
+        success = 0;
+        print_string("Error: initial sbrk(0) failed.\n");
+    }
+
+    if (success) {
+        void* old_brk = sbrk(increment);
+        if (old_brk != initial_brk) {
+            success = 0;
+            print_string("Error: sbrk(increment) returned wrong previous break.\n");
+        }
+    }
+
+    if (success) {
+        void* new_brk = sbrk(0);
+        if (new_brk != (void*)((char*)initial_brk + increment)) {
+            success = 0;
+            print_string("Error: program break not incremented correctly.\n");
+        }
+    }
+
+    if (success) {
+        sbrk(-increment);
+        void* final_brk = sbrk(0);
+        if (final_brk != initial_brk) {
+            success = 0;
+            print_string("Error: program break not restored correctly.\n");
+        }
+    }
+
+    print_test_result(test_name, success);
+}
+
+void test_getrusage() {
+    const char* test_name = "getrusage";
+    print_test_header(test_name);
+    
+    int success = 1;
+    struct rusage usage_before, usage_after;
+
+    if (getrusage(RUSAGE_SELF, &usage_before) != 0) {
+        success = 0;
+        print_string("Error: initial getrusage() call failed.\n");
+    }
+    
+    for (volatile int i = 0; i < 2000000; ++i);
+
+    if (getrusage(RUSAGE_SELF, &usage_after) != 0) {
+        success = 0;
+        print_string("Error: second getrusage() call failed.\n");
+    }
+
+    if (success) {
+        long usec_before = usage_before.ru_utime.tv_sec * 1000000 + usage_before.ru_utime.tv_usec;
+        long usec_after = usage_after.ru_utime.tv_sec * 1000000 + usage_after.ru_utime.tv_usec;
+        if (usec_after < usec_before) {
+            success = 0;
+            print_string("Error: user time decreased after work.\n");
+        }
+    }
+
+    print_test_result(test_name, success);
+}
 
 int main() {
     print_string("========== Unistd Test Suite ==========\n");
 
     test_write_stdout_and_getpid();
     test_open_write_read_close();
-    test_lseek(); // Новый тест
+    test_lseek();
+    test_sbrk();
     test_fork_wait_exit();
+    test_waitpid();
     test_execve();
-    test_sleep_usleep(); // Новый тест
+    test_sleep_usleep();
+    test_getrusage();
 
     print_string("=======================================\n");
     if (g_failures == 0) {
