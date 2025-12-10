@@ -29,6 +29,8 @@
 # define NULL ((void *)0)
 #endif /* NULL */
 
+#define SEEK_CUR 1
+
 /* FUNCTIONS */
 
 // main syscall wrapper, up to 8 args
