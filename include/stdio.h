@@ -5,5 +5,6 @@
 
 int puts(const char *s);
 int sprintf(char *str, const char *format, ...); /* unavialible */
+void perror(const char *s);
 
 #endif
