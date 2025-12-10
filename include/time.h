@@ -2,6 +2,7 @@
 #define TIME_H
 
 #include <sys/types.h>
+#include <stddef.h>
 
 #ifndef NULL
 #define NULL ((void*)0)
@@ -28,5 +29,10 @@ clock_t clock(void);
 struct tm *gmtime(const time_t *timer);
 struct tm *localtime(const time_t *timer);
 void tzset(void);
+double difftime(time_t time1, time_t time0);
+char *asctime(const struct tm *timeptr);
+char *ctime(const time_t *timer);
+time_t mktime(struct tm *tm);
+size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
 
 #endif /* TIME_H */
