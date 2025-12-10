@@ -4,5 +4,6 @@
 extern int errno;
 
 #define ENOMEM 12
+#define ERANGE 34
 
 #endif /* ERRNO_H */
