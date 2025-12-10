@@ -305,37 +305,3 @@ int tz_lookup(const tz_db_t* db, int64_t timestamp, tz_result_t* result)
 
     return 1;
 }
-
-/* --- PROOF OF CONCEPT (NO STDIO) --- */
-
-/* Simple helper to write string to stdout without printf */
-static void print_str(const char* s) {
-    if (s) write(STDOUT_FILENO, s, strlen(s));
-}
-
-static void print_err(const char* s) {
-    if (s) write(STDERR_FILENO, s, strlen(s));
-}
-
-/* Simple helper to write integer to stdout */
-static void print_long(long n) {
-    char buf[32];
-    char* p = buf + sizeof(buf) - 1;
-    int is_neg = 0;
-    
-    if (n < 0) {
-        is_neg = 1;
-        n = -n;
-    }
-    
-    *p = '\0';
-    do {
-        *--p = (n % 10) + '0';
-        n /= 10;
-    } while (n > 0);
-    
-    if (is_neg) *--p = '-';
-    
-    print_str(p);
-}
-
