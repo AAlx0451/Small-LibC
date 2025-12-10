@@ -41,6 +41,9 @@ uint32_t rand(void);
 
 // general
 int atoi(const char *nptr);
+long atol(const char *nptr);
+double atof(const char *str);
+double strtod(const char *str, char **end);
 void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *));
 char *getenv(const char *name);	
 
