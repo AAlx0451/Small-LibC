@@ -7,7 +7,7 @@ If you're on iOS, just run `./make_all.sh`, then you'll be able to use it as lib
 If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile flags are `SDK`, `ARCHES` (armv7 default, armv4t-7s permitted), `CFLAGS`, `CPPFLAGS`. If you have cctools, use Makefile flag `LLVM-PREFIX=""`. To turn off PIC use `PIC=""`
 
 ## Status
-About 15% of C89 is implemented. Anyway, some funtions from stdlib.h and unistd.h are done. Also, string.h is done, but it's git submodule. Run `git submodule update --recursive --init`
+About 35% of C89 is implemented.
 
 Some of POSIX is implemented, e.g. sleep(), usleep(), select(), fork(), etc.
 
