@@ -17,6 +17,7 @@ typedef int32_t suseconds_t;
 typedef unsigned int id_t;
 typedef unsigned int uid_t;
 typedef long ssize_t;
+typedef unsigned long clock_t;
 
 # endif /* SYS_TYPES_H */
 

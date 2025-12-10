@@ -15,6 +15,7 @@
 #  define SYS_munmap 73
 #  define SYS_select 93
 #  define SYS_gettimeofday 116
+#  define SYS_getrusage 117
 #  define SYS_waitid 173
 #  define SYS_mmap 197
 #  define SYS_lseek 199
