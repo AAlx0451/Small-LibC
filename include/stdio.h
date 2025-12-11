@@ -1,10 +1,65 @@
-#ifndef STDIO_H
-# define STDIO_H
+#ifndef _STDIO_H
+#define _STDIO_H
 
-# define EOF (-1)
+#include <stddef.h>
+#include <sys/types.h>
 
-int puts(const char *s);
-int sprintf(char *str, const char *format, ...); /* unavialible */
+#define BUFSIZ 8192
+#define EOF (-1)
+#ifndef NULL
+#define NULL ((void*)0)
+#endif
+
+#define SEEK_SET 0
+#define SEEK_CUR 1
+#define SEEK_END 2
+
+#define _IOFBF 0
+#define _IOLBF 1
+#define _IONBF 2
+
+typedef struct __sFILE {
+    int _fd;
+    unsigned char *_base;
+    unsigned char *_ptr;
+    size_t _bsize;
+    size_t _cnt;
+    unsigned int _flags;
+    int _err;
+    struct __sFILE *_next;
+} FILE;
+
+#define __S_RD      0x0001
+#define __S_WR      0x0002
+#define __S_RW      0x0004
+#define __S_ERR     0x0008
+#define __S_EOF     0x0010
+#define __S_DIRTY   0x0020
+#define __S_FREEBUF 0x0040
+#define __S_NBF     0x0080
+#define __S_STR     0x0100
+
+extern FILE *stdin, *stdout, *stderr;
+
+FILE *fopen(const char *pathname, const char *mode);
+int fclose(FILE *stream);
+int fflush(FILE *stream);
+size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
 void perror(const char *s);
+int fgetc(FILE *stream);
+int fputc(int c, FILE *stream);
+int ungetc(int c, FILE *stream);
+
+void clearerr(FILE *stream);
+#define feof(p) ((p)->_flags & __S_EOF)
+#define ferror(p) ((p)->_flags & __S_ERR)
+#define fileno(p) ((p)->_fd)
+
+void __stdio_init(void);
+int __stdio_flush_impl(FILE *stream);
+int __stdio_fill_impl(FILE *stream);
+void __stdio_add_file(FILE *f);
+void __stdio_remove_file(FILE *f);
+void __stdio_flush_all(void);
 
 #endif
