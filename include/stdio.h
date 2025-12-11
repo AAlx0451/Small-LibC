@@ -1,11 +1,13 @@
-#ifndef _STDIO_H
-#define _STDIO_H
+#ifndef STDIO_H
+#define STDIO_H
 
 #include <stddef.h>
 #include <sys/types.h>
+#include <stdarg.h>
 
 #define BUFSIZ 1024
 #define EOF (-1)
+
 #ifndef NULL
 #define NULL ((void*)0)
 #endif
@@ -26,6 +28,7 @@ typedef struct __sFILE {
     size_t _cnt;
     unsigned int _flags;
     int _err;
+    int _lock; 
     struct __sFILE *_next;
 } FILE;
 
@@ -44,6 +47,18 @@ extern FILE *stdin, *stdout, *stderr;
 int fflush(FILE *stream);
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
 void perror(const char *s);
+int fgetc(FILE *f);
+int fputc(int c, FILE *f);
+int vfprintf(FILE *stream, const char *format, va_list arg);
+int printf(const char *format, ...);
+int fprintf(FILE *stream, const char *format, ...);
+int vprintf(const char *format, va_list ap);
+int sprintf(char *str, const char *format, ...);
+int vsprintf(char *str, const char *format, va_list ap);
+int snprintf(char *str, size_t size, const char *format, ...);
+int vsnprintf(char *str, size_t size, const char *format, va_list ap);
+FILE *fopen(const char *pathname, const char *mode);
+int fclose(FILE *f);
 
 #define feof(p) ((p)->_flags & __S_EOF)
 #define ferror(p) ((p)->_flags & __S_ERR)
