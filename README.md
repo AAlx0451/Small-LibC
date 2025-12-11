@@ -32,3 +32,7 @@ All of my code is a Public Domain (Unlicense). Note that 0ae2e51 commit and olde
 ### K&R status:
 
 * currently, you can't pass 2.5 of 1st K&R (due to no getchar and putchar)
+
+## Pssss.... MY REMORSE AND CONFESSION
+
+* although it's tested and public domain, I MUST say it. it's mostly written using AI!!!! so I'm bad :)
