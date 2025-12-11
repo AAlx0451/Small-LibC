@@ -14,7 +14,6 @@
 #define MAGIC_FREE 0xDEADBEEF
 #define MAGIC_USED 0xBA5EBA11
 
-
 typedef struct block_meta {
     size_t size;
     struct block_meta *next;
@@ -23,13 +22,12 @@ typedef struct block_meta {
 } *meta_ptr;
 
 extern meta_ptr heap_base;
+extern volatile int malloc_lock;
 
 void *malloc(size_t size);
 void free(void *ptr);
 void *calloc(size_t number, size_t size);
 void *realloc(void *ptr, size_t size);
-
-/* Internal Inlined Logic */
 
 static inline meta_ptr get_block_ptr(void *ptr) {
     return (meta_ptr)((char *)ptr - BLOCK_META_SIZE);
@@ -46,10 +44,10 @@ static inline void split_block(meta_ptr block, size_t size) {
         new_block->next = block->next;
         new_block->prev = block;
         new_block->magic = MAGIC_FREE;
-        
+
         block->size = size;
         block->next = new_block;
-        
+
         if (new_block->next) {
             new_block->next->prev = new_block;
         }
@@ -66,7 +64,7 @@ static inline meta_ptr coalesce(meta_ptr block) {
             }
         }
     }
-    
+
     if (block->prev && block->prev->magic == MAGIC_FREE) {
         if ((char *)block->prev + BLOCK_META_SIZE + block->prev->size == (char *)block) {
             meta_ptr prev = block->prev;
@@ -87,7 +85,7 @@ static inline meta_ptr request_space(meta_ptr last, size_t size) {
     size_t alloc_size = (total_size + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1);
 
     block = (meta_ptr)mmap(NULL, alloc_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-    
+
     if (block == MAP_FAILED) {
         return NULL;
     }
@@ -100,7 +98,7 @@ static inline meta_ptr request_space(meta_ptr last, size_t size) {
     if (last) {
         last->next = block;
     }
-    
+
     return block;
 }
 
