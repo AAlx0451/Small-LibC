@@ -151,6 +151,13 @@ void __stdio_init(void) {
     _f_stderr._lock = 0;
     stderr = &_f_stderr;
 
+    if (isatty(fileno(stdin))) {
+        setvbuf(stdin, NULL, _IOLBF, BUFSIZ);
+    }
+    if (isatty(fileno(stdout))) {
+        setvbuf(stdout, NULL, _IOLBF, BUFSIZ);
+    }
+
     __stdio_add_file(&_f_stderr);
     __stdio_add_file(&_f_stdout);
     __stdio_add_file(&_f_stdin);
