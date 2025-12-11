@@ -1,3 +1,6 @@
 [submodule "src/sysindep/string"]
 	path = src/sysindep/string
 	url = https://github.com/AAlx0451/string
+[submodule "src/math"]
+	path = src/math
+	url = https://github.com/AAlx0451/math
