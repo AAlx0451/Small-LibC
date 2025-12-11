@@ -66,6 +66,6 @@ unsigned int sleep(unsigned int seconds); // SYS_select
 unsigned int usleep(unsigned int microseconds); // SYS_select
 void *brk(void *x); // SYS_mmap
 void *sbrk(intptr_t size); // SYS_mmap
-
+int isatty(int fd); // SYS_ioctl
 
 #endif
