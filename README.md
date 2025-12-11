@@ -31,7 +31,7 @@ All of my code is a Public Domain (Unlicense). Note that 0ae2e51 commit and olde
 
 ### K&R status:
 
-* currently, you can't pass 2.5 of 1st K&R (due to no getchar and putchar)
+* currently, you can't pass 4.7 of 1st K&R (due to no getline (not an ANSI btw))
 
 ## Pssss.... MY REMORSE AND CONFESSION
 

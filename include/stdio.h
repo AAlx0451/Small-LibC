@@ -41,6 +41,7 @@ typedef struct __sFILE {
 #define __S_FREEBUF 0x0040
 #define __S_NBF     0x0080
 #define __S_STR     0x0100
+#define __S_LBF     0x0200
 
 extern FILE *stdin, *stdout, *stderr;
 
@@ -59,6 +60,9 @@ int snprintf(char *str, size_t size, const char *format, ...);
 int vsnprintf(char *str, size_t size, const char *format, va_list ap);
 FILE *fopen(const char *pathname, const char *mode);
 int fclose(FILE *f);
+int getchar(void);
+int putchar(int c);
+int setvbuf(FILE *stream, char *buf, int mode, size_t size);
 
 #define feof(p) ((p)->_flags & __S_EOF)
 #define ferror(p) ((p)->_flags & __S_ERR)
