@@ -5,6 +5,7 @@ void *realloc(void *ptr, size_t size)
     meta_ptr block;
     void *new_ptr;
     size_t aligned_size;
+    size_t copy_size;
 
     if (!ptr) {
         return malloc(size);
@@ -15,18 +16,24 @@ void *realloc(void *ptr, size_t size)
         return NULL;
     }
 
-    block = get_block_ptr(ptr);
-    if (!is_valid_block(block)) {
-        return NULL;
+    aligned_size = ALIGN(size);
+
+    while (__sync_lock_test_and_set(&malloc_lock, 1)) {
+        while (malloc_lock);
     }
 
-    aligned_size = ALIGN(size);
+    block = get_block_ptr(ptr);
+    if (!is_valid_block(block)) {
+        __sync_lock_release(&malloc_lock);
+        return NULL;
+    }
 
     if (block->size >= aligned_size) {
         if (block->size >= aligned_size + BLOCK_META_SIZE + ALIGNMENT) {
              split_block(block, aligned_size);
              coalesce(block->next); 
         }
+        __sync_lock_release(&malloc_lock);
         return ptr;
     }
 
@@ -38,17 +45,21 @@ void *realloc(void *ptr, size_t size)
                 block = coalesce(block);
                 block->magic = MAGIC_USED;
                 split_block(block, aligned_size);
+                __sync_lock_release(&malloc_lock);
                 return ptr;
             }
         }
     }
 
-    new_ptr = malloc(aligned_size);
+    __sync_lock_release(&malloc_lock);
+
+    new_ptr = malloc(size);
     if (!new_ptr) {
         return NULL;
     }
 
-    memcpy(new_ptr, ptr, block->size);
+    copy_size = block->size < aligned_size ? block->size : aligned_size;
+    memcpy(new_ptr, ptr, copy_size);
     free(ptr);
 
     return new_ptr;
