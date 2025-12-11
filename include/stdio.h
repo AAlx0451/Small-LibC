@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <sys/types.h>
 
-#define BUFSIZ 8192
+#define BUFSIZ 1024
 #define EOF (-1)
 #ifndef NULL
 #define NULL ((void*)0)
@@ -41,16 +41,10 @@ typedef struct __sFILE {
 
 extern FILE *stdin, *stdout, *stderr;
 
-FILE *fopen(const char *pathname, const char *mode);
-int fclose(FILE *stream);
 int fflush(FILE *stream);
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
 void perror(const char *s);
-int fgetc(FILE *stream);
-int fputc(int c, FILE *stream);
-int ungetc(int c, FILE *stream);
 
-void clearerr(FILE *stream);
 #define feof(p) ((p)->_flags & __S_EOF)
 #define ferror(p) ((p)->_flags & __S_ERR)
 #define fileno(p) ((p)->_fd)
