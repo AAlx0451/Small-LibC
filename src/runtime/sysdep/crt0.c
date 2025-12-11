@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 
 int NXArgc;
 char **NXArgv;
@@ -40,6 +41,7 @@ void _c_startup(int argc, char **argv, char **envp) {
         ptr++;
     }
     apple = ptr + 1;
+    __stdio_init();
     exit(main(argc, argv, envp, apple));
 }
 

@@ -47,5 +47,7 @@ double strtod(const char *str, char **end);
 void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *));
 char *getenv(const char *name);	
 void abort(void);
+int atexit(void (*func)(void));
+void _call_atexit_handlers(void);
 
 #endif
