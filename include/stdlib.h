@@ -46,5 +46,6 @@ double atof(const char *str);
 double strtod(const char *str, char **end);
 void qsort(void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *));
 char *getenv(const char *name);	
+void abort(void);
 
 #endif
