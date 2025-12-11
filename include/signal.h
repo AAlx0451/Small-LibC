@@ -3,6 +3,8 @@
 
 # include<sys/types.h>
 
+# define SIGABRT 6
+
 union sigval {
         int     sival_int;
         void    *sival_ptr;
@@ -20,5 +22,8 @@ typedef struct __siginfo {
         long    si_band;
         unsigned long   __pad[7];
 } siginfo_t;
+
+int kill(pid_t pid, int sig);
+int raise(int sig);
 
 #endif
