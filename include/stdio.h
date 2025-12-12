@@ -63,11 +63,14 @@ int fclose(FILE *f);
 int getchar(void);
 int putchar(int c);
 int setvbuf(FILE *stream, char *buf, int mode, size_t size);
+int ungetc(int c, FILE *f);
+int getc(FILE *f);
 
 #define feof(p) ((p)->_flags & __S_EOF)
 #define ferror(p) ((p)->_flags & __S_ERR)
 #define fileno(p) ((p)->_fd)
 
+#define SMALL_LIBC
 void __stdio_init(void);
 int __stdio_flush_impl(FILE *stream);
 int __stdio_fill_impl(FILE *stream);

@@ -13,6 +13,8 @@ Some of POSIX is implemented, e.g. sleep(), usleep(), select(), fork(), etc.
 
 Full time and string are implemented. Full ANSI printf is implemented. StdLib is TODO, Locale is VERY low-priority
 
+Note that LibM (IEEE&ANSI full BTW) and string are git submodules, so run git submodule update --recursive --init
+
 ## License
 All of my code is a Public Domain (Unlicense). Note that 0ae2e51 commit and older are MIT-licensed
 
