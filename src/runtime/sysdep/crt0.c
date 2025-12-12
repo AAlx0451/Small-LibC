@@ -1,21 +1,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-int NXArgc;
-char **NXArgv;
-char **environ;
-char *__progname;
+#define _Used __attribute__((used)) /* readability */
 
-__asm__(
-    ".globl _NXArgc\n"
-    ".desc _NXArgc, 0x10\n"   /* N_NO_DEAD_STRIP */
-    ".globl _NXArgv\n"
-    ".desc _NXArgv, 0x10\n"
-    ".globl _environ\n"
-    ".desc _environ, 0x10\n"
-    ".globl ___progname\n"
-    ".desc ___progname, 0x10\n"
-);
+_Used int NXArgc;
+_Used char **NXArgv;
+_Used char **environ;
+_Used char *__progname;
 
 extern int main(int argc, char **argv, char **envp, char **apple);
 
@@ -29,8 +20,7 @@ static char *get_basename(const char *path) {
     return (char *)p;
 }
 
-__attribute__((used))
-void _c_startup(int argc, char **argv, char **envp) {
+_Used void _c_startup(int argc, char **argv, char **envp) {
     char **ptr;
     char **apple = NULL;
     NXArgc = argc;
