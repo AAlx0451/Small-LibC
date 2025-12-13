@@ -1,6 +1,6 @@
 #include <string.h>
 #include <unistd.h>
-#include "stdio.h"
+#include <stdio.h>
 
 extern void _spin_lock(volatile int *lock);
 extern void _spin_unlock(volatile int *lock);
@@ -13,21 +13,28 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
 
     if (!stream || !ptr || size == 0 || nmemb == 0) return 0;
 
-    // Lock critical section to prevent Data Race on stream fields
     _spin_lock(&stream->_lock);
-
+    
     total_bytes = size * nmemb;
     to_write = total_bytes;
 
+    // Handle both Read->Write transition AND Neutral->Write transition
     if (stream->_flags & __S_RD) {
-        stream->_flags = (stream->_flags & ~__S_RD) | __S_WR;
+        stream->_flags &= ~__S_RD;
+        stream->_flags |= __S_WR;
         stream->_cnt = stream->_bsize;
         stream->_ptr = stream->_base;
+    } else if (!(stream->_flags & __S_WR)) {
+        // Stream was neutral, set to Write
+        stream->_flags |= __S_WR;
+        // If pointers weren't initialized (e.g. after fseek cleanup), init them
+        if (stream->_cnt == 0 && stream->_ptr == stream->_base) {
+             stream->_cnt = stream->_bsize;
+        }
     }
 
     while (to_write > 0) {
         space = stream->_cnt;
-
         if (to_write <= space) {
             memcpy(stream->_ptr, p, to_write);
             stream->_ptr += to_write;
