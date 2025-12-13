@@ -27,7 +27,6 @@ typedef struct __sFILE {
     size_t _bsize;
     size_t _cnt;
     unsigned int _flags;
-/*    int _err;*/
     int _lock; 
     struct __sFILE *_next;
 } FILE;
@@ -42,6 +41,7 @@ typedef struct __sFILE {
 #define __S_NBF     0x0080
 #define __S_STR     0x0100
 #define __S_LBF     0x0200
+#define __S_RESERVE 0x0400 /* Flag to indicate buffer has a reserve byte for ungetc */
 
 extern FILE *stdin, *stdout, *stderr;
 
@@ -77,5 +77,6 @@ int __stdio_fill_impl(FILE *stream);
 void __stdio_add_file(FILE *f);
 void __stdio_remove_file(FILE *f);
 void __stdio_flush_all(void);
+void __stdio_free_buffer(FILE *f);
 
 #endif

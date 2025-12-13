@@ -1,3 +1,4 @@
+./getlibmach.sh
 git submodule update --init --recursive > /dev/null;
 cd src;
 make -j`nproc`;

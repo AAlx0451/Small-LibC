@@ -2,6 +2,9 @@
 #include <unistd.h>
 #include "stdio.h"
 
+extern void _spin_lock(volatile int *lock);
+extern void _spin_unlock(volatile int *lock);
+
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
     size_t to_write, space;
     const unsigned char *p = (const unsigned char *)ptr;
@@ -9,6 +12,9 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
     size_t bytes_written = 0;
 
     if (!stream || !ptr || size == 0 || nmemb == 0) return 0;
+
+    // Lock critical section to prevent Data Race on stream fields
+    _spin_lock(&stream->_lock);
 
     total_bytes = size * nmemb;
     to_write = total_bytes;
@@ -57,5 +63,6 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
         }
     }
 
+    _spin_unlock(&stream->_lock);
     return bytes_written / size;
 }

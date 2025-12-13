@@ -11,6 +11,8 @@ About 65% of C89 is implemented.
 
 Some of POSIX is implemented, e.g. sleep(), usleep(), select(), fork(), etc.
 
+Some Mach syscalls implemented with libMach. To obtain one (required for stdio), use `./getlibmach.sh`
+
 Full time and string are implemented. Full ANSI printf is implemented. StdLib is TODO, Locale is VERY low-priority
 
 Note that LibM (IEEE&ANSI full BTW) and string are git submodules, so run git submodule update --recursive --init
