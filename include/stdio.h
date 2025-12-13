@@ -27,7 +27,7 @@ typedef struct __sFILE {
     size_t _bsize;
     size_t _cnt;
     unsigned int _flags;
-    int _lock; 
+    volatile int _lock; // Marked volatile to prevent compiler reordering around locks
     struct __sFILE *_next;
 } FILE;
 
@@ -65,11 +65,20 @@ int putchar(int c);
 int setvbuf(FILE *stream, char *buf, int mode, size_t size);
 int ungetc(int c, FILE *f);
 int getc(FILE *f);
+size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
+int fseek(FILE *stream, long offset, int whence);
+int fseeko(FILE *stream, off_t offset, int whence);
+long ftell(FILE *stream);
+off_t ftello(FILE *stream);
+void rewind(FILE *stream);
 
 #define feof(p) ((p)->_flags & __S_EOF)
 #define ferror(p) ((p)->_flags & __S_ERR)
 #define fileno(p) ((p)->_fd)
+#define clearerr(p) ((void)((p)->_flags &= ~(__S_ERR | __S_EOF)))
 
+
+/* Internal API */
 #define SMALL_LIBC
 void __stdio_init(void);
 int __stdio_flush_impl(FILE *stream);
@@ -78,5 +87,7 @@ void __stdio_add_file(FILE *f);
 void __stdio_remove_file(FILE *f);
 void __stdio_flush_all(void);
 void __stdio_free_buffer(FILE *f);
+void _spin_lock(volatile int *lock);
+void _spin_unlock(volatile int *lock);
 
 #endif
