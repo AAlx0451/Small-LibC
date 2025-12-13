@@ -23,6 +23,8 @@ typedef struct __siginfo {
         unsigned long   __pad[7];
 } siginfo_t;
 
+typedef uint32_t sigset_t;
+
 int kill(pid_t pid, int sig);
 int raise(int sig);
 
