@@ -47,8 +47,9 @@ FILE *fopen(const char *pathname, const char *mode) {
         return NULL;
     }
 
-    unsigned char *buf = malloc(BUFSIZ);
-    if (!buf) {
+    // Allocate +1 byte for ungetc reserve.
+    unsigned char *alloc_buf = malloc(BUFSIZ + 1);
+    if (!alloc_buf) {
         close(fd);
         free(f);
         errno = ENOMEM;
@@ -56,9 +57,15 @@ FILE *fopen(const char *pathname, const char *mode) {
     }
 
     f->_fd = fd;
-    f->_flags = stdio_flags;
-    f->_base = buf;
-    f->_ptr = buf;
+    
+    // Set __S_FREEBUF since we allocated buf
+    // Set __S_RESERVE to indicate offset base
+    f->_flags = stdio_flags | __S_FREEBUF | __S_RESERVE;
+    
+    // Offset base by 1 to allow ungetc at start of stream
+    f->_base = alloc_buf + 1;
+    f->_ptr = f->_base;
+    
     f->_bsize = BUFSIZ;
     f->_lock = 0;
     f->_next = NULL;
@@ -68,7 +75,7 @@ FILE *fopen(const char *pathname, const char *mode) {
     } else {
         f->_cnt = BUFSIZ;
     }
-    
+
     __stdio_add_file(f);
 
     return f;

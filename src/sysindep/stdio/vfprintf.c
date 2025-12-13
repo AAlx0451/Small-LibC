@@ -1,27 +1,5 @@
 /*
  * implementation of vfprintf compliant with ANSI C (C89/C90).
- *
- * Supported specifiers:
- *   d, i, u, o, x, X, c, s, p, n, %
- *   f, F, e, E, g, G (floating point with scientific notation)
- *   b (binary output extension)
- *
- * Supported flags:
- *   - (left-justify)
- *   + (force sign)
- *   ' ' (space for positive numbers)
- *   # (alternative form)
- *   0 (zero-padding)
- *
- * Supported length modifiers:
- *   h, hh, l, ll, z, t, L
- *
- * Features:
- *   - Full width and precision support (* and static).
- *   - Correct precision behavior for integers (leading zeros).
- *   - Correct '0' flag vs precision interaction (precision overrides '0' for ints).
- *   - Automatic selection of f/e format for g/G.
- *   - Infinity and NaN handling (basic).
  */
 
 #include <stdio.h>
@@ -38,32 +16,49 @@
 #define PRINT_OCT 64
 #define PRINT_ALT 128
 
+#define MAX_PRECISION 256
+#define MAX_WIDTH     256
+
 extern void _spin_lock(volatile int *lock);
 extern void _spin_unlock(volatile int *lock);
 extern int __stdio_flush_impl(FILE *f);
 
 static int _out_char(FILE *f, int c) {
+    // Optimization for sprintf (String buffer) - no locking, no flushing logic needed
     if (f->_flags & __S_STR) {
         if (f->_cnt > 0) {
             *f->_ptr++ = (unsigned char)c;
             f->_cnt--;
         }
         return 1;
+    } 
+    
+    // Regular file stream logic
+    // NOTE: We rely on the caller (vfprintf) holding the lock.
+    // We must NOT call fputc() here, as it would try to lock again -> Deadlock.
+
+    if (f->_cnt > 0) {
+        *f->_ptr++ = (unsigned char)c;
+        f->_cnt--;
+        f->_flags |= __S_DIRTY;
     } else {
-        if (f->_cnt > 0) {
-            *f->_ptr++ = (unsigned char)c;
-            f->_cnt--;
-            f->_flags |= __S_DIRTY; /* <--- ИСПРАВЛЕНИЕ */
-            return 1;
-        }
+        // Buffer full, flush using internal impl (no lock required)
         if (__stdio_flush_impl(f) == 0) {
             *f->_ptr++ = (unsigned char)c;
             f->_cnt--;
-            f->_flags |= __S_DIRTY; /* <--- ИСПРАВЛЕНИЕ */
-            return 1;
+            f->_flags |= __S_DIRTY;
+        } else {
+            return 0; // Error
         }
     }
-    return 0;
+
+    // Support Line Buffering (_IOLBF). 
+    // Without this, printf("\n") won't show output until buffer fills.
+    if ((f->_flags & __S_LBF) && (c == '\n')) {
+        __stdio_flush_impl(f);
+    }
+
+    return 1;
 }
 
 static void _reverse(char *s, int len) {
@@ -93,13 +88,13 @@ static int _itoa_base(uintmax_t val, int base, int flags, char *buf) {
 static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
     char *orig = buf;
     int exp = 0;
-    
+
     if (val != val) {
         if (type >= 'a' && type <= 'z') strcpy(buf, "nan");
         else strcpy(buf, "NAN");
         return 3;
     }
-    
+
     double tmp = (val < 0) ? -val : val;
     if (tmp > 1.7976931348623157E+308) { 
         if (type >= 'a' && type <= 'z') strcpy(buf, "inf"); 
@@ -113,14 +108,14 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
     if (type == 'g' || type == 'G') {
         if (prec < 0) prec = 6;
         else if (prec == 0) prec = 1;
-        
+
         double v = val;
         int e = 0;
         if (v != 0) {
             while (v >= 10.0) { v /= 10.0; e++; }
             while (v < 1.0) { v *= 10.0; e--; }
         }
-        
+
         if (prec > e && e >= -4) {
             prec = prec - 1 - e;
             fmt_type = (type == 'g') ? 'f' : 'F';
@@ -152,11 +147,11 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
 
     char *num_start = buf;
     buf += _itoa_base(ipart, 10, 0, buf);
-    
+
     if (prec > 0 || (flags & PRINT_ALT)) {
         *buf++ = '.';
     }
-    
+
     if (prec > 0) {
         for (int i = 0; i < prec; i++) {
             fpart *= 10.0;
@@ -178,13 +173,13 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
             }
         }
     }
-    
+
     if (fmt_type == 'e' || fmt_type == 'E') {
         _reverse(num_start, buf-num_start);
         *buf++ = fmt_type;
         *buf++ = (exp >= 0) ? '+' : '-';
         if (exp < 0) exp = -exp;
-        
+
         char *exp_start = buf;
         int elen = _itoa_base(exp, 10, 0, buf);
         if (elen < 2) *buf++ = '0';
@@ -192,7 +187,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
     } else {
          _reverse(num_start, buf - num_start);
     }
-    
+
     return buf - orig;
 }
 
@@ -200,10 +195,13 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
 int vfprintf(FILE *stream, const char *format, va_list arg) {
     const char *p = format;
     int total_written = 0;
-    char temp_buf[512];
+    char temp_buf[512]; 
 
     if (!stream) return -1;
 
+    // Acquire lock ONCE for the entire operation.
+    // Internal functions called here (_out_char -> __stdio_flush_impl) 
+    // must NOT acquire the lock again.
     if (!(stream->_flags & __S_STR)) {
         _spin_lock(&stream->_lock);
     }
@@ -215,7 +213,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
         }
 
         p++;
-        
+
         int flags = 0;
         int width = 0;
         int prec = -1;
@@ -241,6 +239,8 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                 p++;
             }
         }
+        
+        if (width > MAX_WIDTH) width = MAX_WIDTH;
 
         if (*p == '.') {
             p++;
@@ -257,6 +257,8 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
             }
         }
 
+        if (prec > MAX_PRECISION) prec = MAX_PRECISION;
+
         if (*p == 'h') { len_mod = 1; p++; if (*p == 'h') { len_mod = 2; p++; } }
         else if (*p == 'l') { len_mod = 3; p++; if (*p == 'l') { len_mod = 4; p++; } }
         else if (*p == 'L') { len_mod = 5; p++; }
@@ -266,11 +268,11 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
         char type = *p++;
         char *str_val = NULL;
         int slen = 0;
-        
+
         uintmax_t uval = 0;
         intmax_t sval = 0;
         double fval = 0.0;
-        
+
         int base = 10;
         int is_signed = 0;
         int is_integer = 0;
@@ -301,7 +303,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                 else if (type == 'x') { base = 16; flags |= PRINT_HEX_LO; }
                 else if (type == 'X') { base = 16; flags |= PRINT_HEX_UP; }
                 else if (type == 'b') { base = 2; }
-                
+
                 if (len_mod == 4) uval = va_arg(arg, unsigned long long);
                 else if (len_mod == 3) uval = va_arg(arg, unsigned long);
                 else if (len_mod == 6) uval = va_arg(arg, size_t);

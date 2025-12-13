@@ -1,6 +1,8 @@
 #include <unistd.h>
 #include <errno.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <sched.h> // for sched_yield
 
 static FILE *__s_file_list_head = NULL;
 static volatile int __stdio_list_lock = 0;
@@ -19,7 +21,10 @@ FILE *stderr;
 
 void _spin_lock(volatile int *lock) {
     while (__sync_lock_test_and_set(lock, 1)) {
-        while (*lock);
+        while (*lock) {
+            // Prevent Livelock by yielding CPU
+            sched_yield();
+        }
     }
 }
 
@@ -50,6 +55,21 @@ void __stdio_remove_file(FILE *f) {
     _spin_unlock(&__stdio_list_lock);
 }
 
+// Centralized buffer freeing logic
+void __stdio_free_buffer(FILE *f) {
+    if (f->_flags & __S_FREEBUF) {
+        // If __S_RESERVE is set, the actual pointer returned by malloc was
+        // f->_base - 1. See fopen.c
+        unsigned char *real_ptr = f->_base;
+        if (f->_flags & __S_RESERVE) {
+            real_ptr--;
+        }
+        free(real_ptr);
+        f->_flags &= ~(__S_FREEBUF | __S_RESERVE);
+        f->_base = NULL;
+    }
+}
+
 void __stdio_flush_all(void) {
     FILE *p;
     _spin_lock(&__stdio_list_lock);
@@ -71,10 +91,10 @@ int __stdio_flush_impl(FILE *f) {
     if ((f->_flags & __S_DIRTY) && (f->_flags & __S_WR)) {
         size_t size = f->_ptr - f->_base;
         unsigned char *p = f->_base;
-        
+
         while (size > 0) {
             ssize_t written = write(f->_fd, p, size);
-            
+
             if (written < 0) {
                 if (errno == EINTR) continue;
                 f->_flags |= __S_ERR;
@@ -84,11 +104,11 @@ int __stdio_flush_impl(FILE *f) {
                 f->_flags |= __S_ERR;
                 return EOF;
             }
-            
+
             p += written;
             size -= written;
         }
-        
+
         f->_ptr = f->_base;
         f->_cnt = f->_bsize;
         f->_flags &= ~__S_DIRTY;
