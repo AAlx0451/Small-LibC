@@ -40,7 +40,12 @@ int ungetc(int c, FILE *f) {
 
     _spin_lock(&f->_lock);
 
-    if (f->_base && f->_ptr > f->_base) {
+    // Allow ungetc even if ptr == base, provided we have a reserve byte (set in fopen)
+    // If we have reserve, valid range is >= base - 1.
+    int has_reserve = (f->_flags & __S_RESERVE) ? 1 : 0;
+    unsigned char *min_ptr = f->_base - has_reserve;
+
+    if (f->_base && f->_ptr > min_ptr) {
         f->_ptr--;
         *f->_ptr = (unsigned char)c;
         f->_cnt++;

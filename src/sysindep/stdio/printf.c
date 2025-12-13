@@ -34,11 +34,12 @@ int sprintf(char *str, const char *format, ...) {
     f._cnt = 0x7FFFFFFF; 
     f._bsize = 0x7FFFFFFF;
     f._fd = -1;
+    f._lock = 0; // Explicitly initialize lock on stack-allocated FILE
 
     va_start(ap, format);
     ret = vfprintf(&f, format, ap);
     va_end(ap);
-    
+
     *f._ptr = '\0';
     return ret;
 }
@@ -53,6 +54,7 @@ int vsprintf(char *str, const char *format, va_list ap) {
     f._cnt = 0x7FFFFFFF;
     f._bsize = 0x7FFFFFFF;
     f._fd = -1;
+    f._lock = 0;
 
     ret = vfprintf(&f, format, ap);
     *f._ptr = '\0';
@@ -72,6 +74,7 @@ int snprintf(char *str, size_t size, const char *format, ...) {
     f._cnt = size - 1;
     f._bsize = size - 1;
     f._fd = -1;
+    f._lock = 0;
 
     va_start(ap, format);
     ret = vfprintf(&f, format, ap);
@@ -97,6 +100,7 @@ int vsnprintf(char *str, size_t size, const char *format, va_list ap) {
     f._cnt = size - 1;
     f._bsize = size - 1;
     f._fd = -1;
+    f._lock = 0;
 
     ret = vfprintf(&f, format, ap);
 
