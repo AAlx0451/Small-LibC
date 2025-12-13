@@ -27,7 +27,7 @@ typedef struct __sFILE {
     size_t _bsize;
     size_t _cnt;
     unsigned int _flags;
-    int _err;
+/*    int _err;*/
     int _lock; 
     struct __sFILE *_next;
 } FILE;

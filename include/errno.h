@@ -10,5 +10,6 @@ extern int errno;
 #define EINVAL 22
 #define ERANGE 34
 #define EDOM 33
+#define EOVERFLOW 84
 
 #endif /* ERRNO_H */
