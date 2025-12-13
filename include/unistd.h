@@ -3,7 +3,7 @@
 
 #include <stddef.h> /* size_t */
 #include <sys/types.h> /* types, null ptr */
-
+#include <signal.h> /* sigset_t */
 /* INTERNAL */
 #if defined(__GNUC__) || defined(__clang__)
 # define NORETURN __attribute__((noreturn))
@@ -58,7 +58,10 @@ ssize_t write(int fd, const void *buf, size_t count); // 4
 int open(const char *pathname, int flags, ...); // 5
 int close(int fd); // 6
 pid_t getpid(void); // 20
+int pipe(int pipefd[2]); // 42
+int sigprocmask(int how, const sigset_t *set, sigset_t *oldset); // 48
 int execve(const char *pathname, char *const argv[], char *const envp[]); // 59
+int dup2(int oldfd, int newfd); // 90
 off_t lseek(int fd, off_t offset, int whence); // 199
 
 // POSIX functions - emulation
@@ -67,5 +70,7 @@ unsigned int usleep(unsigned int microseconds); // SYS_select
 void *brk(void *x); // SYS_mmap
 void *sbrk(intptr_t size); // SYS_mmap
 int isatty(int fd); // SYS_ioctl
+int execv(const char *path, char *const argv[]); // execve()
+int execl(const char *path, const char *arg, ...); // execve()
 
 #endif
