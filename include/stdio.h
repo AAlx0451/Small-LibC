@@ -20,6 +20,8 @@
 #define _IOLBF 1
 #define _IONBF 2
 
+typedef off_t fpos_t;
+
 typedef struct __sFILE {
     int _fd;
     unsigned char *_base;
@@ -71,6 +73,13 @@ int fseeko(FILE *stream, off_t offset, int whence);
 long ftell(FILE *stream);
 off_t ftello(FILE *stream);
 void rewind(FILE *stream);
+char *fgets(char *s, int size, FILE *stream);
+char *gets(char *s);
+int fputs(const char *s, FILE *stream);
+int puts(const char *s);
+int fgetpos(FILE *stream, fpos_t *pos);
+int fsetpos(FILE *stream, const fpos_t *pos);
+
 
 #define feof(p) ((p)->_flags & __S_EOF)
 #define ferror(p) ((p)->_flags & __S_ERR)
