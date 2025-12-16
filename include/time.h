@@ -24,6 +24,11 @@ struct tm {
         char    *tm_zone;       /* timezone abbreviation */
 };
 
+struct timespec {
+	time_t tv_sec; 
+	long   tv_nsec;
+};
+
 time_t time(time_t *tloc);
 clock_t clock(void);
 struct tm *gmtime(const time_t *timer);

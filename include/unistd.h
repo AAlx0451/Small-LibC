@@ -57,11 +57,14 @@ ssize_t read(int fd, void *buf, size_t count); // 3
 ssize_t write(int fd, const void *buf, size_t count); // 4
 int open(const char *pathname, int flags, ...); // 5
 int close(int fd); // 6
+int link(const char *oldpath, const char *newpath); // 9
+int unlink(const char *pathname); // 10
 pid_t getpid(void); // 20
 int pipe(int pipefd[2]); // 42
 int sigprocmask(int how, const sigset_t *set, sigset_t *oldset); // 48
 int execve(const char *pathname, char *const argv[], char *const envp[]); // 59
 int dup2(int oldfd, int newfd); // 90
+int rmdir(const char *path); // 137
 off_t lseek(int fd, off_t offset, int whence); // 199
 
 // POSIX functions - emulation

@@ -79,7 +79,9 @@ int fputs(const char *s, FILE *stream);
 int puts(const char *s);
 int fgetpos(FILE *stream, fpos_t *pos);
 int fsetpos(FILE *stream, const fpos_t *pos);
-
+void setbuf(FILE *restrict stream, char *restrict buf);
+int rename(const char *oldpath, const char *newpath);
+int remove(const char *pathname);
 
 #define feof(p) ((p)->_flags & __S_EOF)
 #define ferror(p) ((p)->_flags & __S_ERR)
