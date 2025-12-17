@@ -8,7 +8,6 @@ TARGET_LIBM = libm.a
 CFLAGS ?=
 CPPFLAGS ?=
 
-# Поиск исходников согласно вашему дереву каталогов
 GENERIC_SRCS := $(wildcard sysindep/*/*.c sysindep/*/src/*.c)
 SYSDEP_SRCS := sysdep/syscall.c $(wildcard sysdep/*/*.c)
 RT_SRCS := $(wildcard runtime/*/*.c)
@@ -96,11 +95,9 @@ ifeq ($(CROSS), 1)
 		$(Q)$(LIPO) -create -output $@ $^
 
 else
-# --- NATIVE BUILD ---
-# Обратите внимание: присвоения переменных БЕЗ отступов табами
+
 AR = ar
 PIC = -fPIC
-# Путь к include clang может потребоваться скорректировать под вашу систему
 BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -I$(INCDIR) -Os $(PIC) -std=gnu99 -nostdinc -I/usr/share/llvm/lib/clang/6.0.1/include
 
 OBJS_GENERIC := $(patsubst %.c,$(OBJDIR)/%.o,$(GENERIC_SRCS))
@@ -120,13 +117,11 @@ $(TARGET_LIBM): $(OBJS_MATH)
 	@echo "  AR   $@"
 	$(Q)$(AR) rcs $@ $^
 
-# Правило для math, runtime и sysindep
 $(OBJS_GENERIC) $(OBJS_RT) $(OBJS_MATH): $(OBJDIR)/%.o: %.c
 	@echo "  CC   $<"
 	@mkdir -p $(dir $@)
 	$(Q)$(CC) $(BASE_CFLAGS) -c $< -o $@
 
-# Правило для sysdep
 $(OBJS_SYSDEP): $(OBJDIR)/%.o: %.c
 	@echo "  CC   $<"
 	@mkdir -p $(dir $@)
@@ -137,3 +132,8 @@ endif
 clean:
 	@echo "  CLEAN"
 	$(Q)rm -rf $(TARGET_LIBC) $(TARGET_LIBRT) $(TARGET_LIBM) $(OBJDIR)
+
+install: all
+	@echo "This lib can't be installed..."
+
+uninstall: clean

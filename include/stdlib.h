@@ -66,4 +66,7 @@ void abort(void);
 int atexit(void (*func)(void));
 int system(const char *command);
 
+// posix
+int mkstemp(char *template);
+
 #endif
