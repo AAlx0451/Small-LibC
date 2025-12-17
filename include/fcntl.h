@@ -11,6 +11,7 @@
 #  define O_APPEND 0x0008
 #  define O_CREAT 0x0200
 #  define O_TRUNC 0x0400
+#  define O_EXCL 0x0800
 
 # endif /* FCNTL_H */
 

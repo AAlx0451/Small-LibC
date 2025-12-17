@@ -8,6 +8,7 @@ extern int errno;
 #define EBADF 9
 #define ENOMEM 12
 #define EFAULT 14
+#define EEXIST 17
 #define EISDIR 21
 #define EINVAL 22
 #define ERANGE 34

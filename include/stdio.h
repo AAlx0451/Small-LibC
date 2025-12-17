@@ -66,6 +66,7 @@ int getchar(void);
 int putchar(int c);
 int setvbuf(FILE *stream, char *buf, int mode, size_t size);
 int ungetc(int c, FILE *f);
+int putc(int c, FILE *f);
 int getc(FILE *f);
 size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);
 int fseek(FILE *stream, long offset, int whence);
