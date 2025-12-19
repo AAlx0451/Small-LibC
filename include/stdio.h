@@ -83,6 +83,12 @@ int fsetpos(FILE *stream, const fpos_t *pos);
 void setbuf(FILE *restrict stream, char *restrict buf);
 int rename(const char *oldpath, const char *newpath);
 int remove(const char *pathname);
+int vfscanf(FILE *stream, const char *format, va_list arg);
+int scanf(const char *format, ...);
+int fscanf(FILE *stream, const char *format, ...);
+int vscanf(const char *format, va_list arg);
+int vsscanf(const char *str, const char *format, va_list arg);
+int sscanf(const char *str, const char *format, ...);
 
 #define feof(p) ((p)->_flags & __S_EOF)
 #define ferror(p) ((p)->_flags & __S_ERR)

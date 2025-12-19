@@ -2,20 +2,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-void _spin_lock(volatile int *lock);
-void _spin_unlock(volatile int *lock);
-
-// Use internal flush to avoid recursive locking
-extern int __stdio_flush_impl(FILE *stream);
-extern void __stdio_free_buffer(FILE *f);
-
 int setvbuf(FILE *stream, char *buf, int mode, size_t size)
 {
     _spin_lock(&stream->_lock);
-
-    // FIX: Calling fflush() here caused a deadlock because fflush() 
-    // tries to acquire the same lock we just took.
-    // Use the internal implementation which assumes lock is held.
     if (stream->_flags & __S_WR) {
         __stdio_flush_impl(stream);
     }

@@ -19,10 +19,6 @@
 #define MAX_PRECISION 256
 #define MAX_WIDTH     256
 
-extern void _spin_lock(volatile int *lock);
-extern void _spin_unlock(volatile int *lock);
-extern int __stdio_flush_impl(FILE *f);
-
 static int _out_char(FILE *f, int c) {
     // Optimization for sprintf (String buffer) - no locking, no flushing logic needed
     if (f->_flags & __S_STR) {
@@ -32,7 +28,7 @@ static int _out_char(FILE *f, int c) {
         }
         return 1;
     } 
-    
+
     // Regular file stream logic
     // NOTE: We rely on the caller (vfprintf) holding the lock.
     // We must NOT call fputc() here, as it would try to lock again -> Deadlock.
@@ -199,11 +195,24 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
 
     if (!stream) return -1;
 
-    // Acquire lock ONCE for the entire operation.
-    // Internal functions called here (_out_char -> __stdio_flush_impl) 
-    // must NOT acquire the lock again.
     if (!(stream->_flags & __S_STR)) {
         _spin_lock(&stream->_lock);
+    }
+
+    if (stream->_flags & __S_RD) {
+        // Transition from Read to Write
+        stream->_flags &= ~__S_RD;
+        stream->_flags |= __S_WR;
+        // Invalidate read buffer
+        stream->_cnt = stream->_bsize;
+        stream->_ptr = stream->_base;
+    } else if (!(stream->_flags & __S_WR)) {
+        // Transition from Neutral to Write
+        stream->_flags |= __S_WR;
+        // Initialize buffer pointers if they were cleared by a seek operation
+        if (stream->_cnt == 0 && stream->_ptr == stream->_base) {
+             stream->_cnt = stream->_bsize;
+        }
     }
 
     while (*p) {
@@ -239,7 +248,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                 p++;
             }
         }
-        
+
         if (width > MAX_WIDTH) width = MAX_WIDTH;
 
         if (*p == '.') {

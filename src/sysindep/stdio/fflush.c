@@ -1,8 +1,5 @@
 #include <stdio.h>
 
-extern void _spin_lock(volatile int *lock);
-extern void _spin_unlock(volatile int *lock);
-
 int fflush(FILE *stream) {
     if (!stream) {
         __stdio_flush_all();
