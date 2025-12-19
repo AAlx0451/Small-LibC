@@ -5,9 +5,6 @@
 #include <errno.h>
 #include <stdio.h>
 
-extern void _spin_unlock(volatile int *lock);
-extern void _spin_lock(volatile int *lock);
-
 int fclose(FILE *f) {
     if (!f) {
         errno = EINVAL;

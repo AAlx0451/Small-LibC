@@ -1,14 +1,25 @@
 #include <stdio.h>
 
-extern void _spin_lock(volatile int *lock);
-extern void _spin_unlock(volatile int *lock);
-
 int fputc(int c, FILE *f) {
     int ret = (unsigned char)c;
 
     if (!f) return EOF;
 
     _spin_lock(&f->_lock);
+    /* This handles both R->W and Neutral->W transitions. */
+    if (f->_flags & __S_RD) {
+        f->_flags &= ~__S_RD;
+        f->_flags |= __S_WR;
+        f->_cnt = f->_bsize;
+        f->_ptr = f->_base;
+    } else if (!(f->_flags & __S_WR)) {
+        f->_flags |= __S_WR;
+        // Initialize buffer pointers if they were cleared by a seek operation
+        if (f->_cnt == 0 && f->_ptr == f->_base) {
+             f->_cnt = f->_bsize;
+        }
+    }
+
     if (f->_cnt <= 1 && (f->_flags & __S_NBF)) {
         if (__stdio_flush_impl(f) != 0) {
              ret = EOF;

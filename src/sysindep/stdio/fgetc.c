@@ -1,9 +1,6 @@
 #include <stdio.h>
 #include <errno.h>
 
-extern void _spin_lock(volatile int *lock);
-extern void _spin_unlock(volatile int *lock);
-
 int fgetc(FILE *f) {
     int c;
 

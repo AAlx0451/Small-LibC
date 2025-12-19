@@ -2,9 +2,6 @@
 #include <unistd.h>
 #include <stdio.h>
 
-extern void _spin_lock(volatile int *lock);
-extern void _spin_unlock(volatile int *lock);
-
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
     size_t to_write, space;
     const unsigned char *p = (const unsigned char *)ptr;
