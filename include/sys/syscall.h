@@ -14,6 +14,7 @@
 #  define SYS_link 9
 #  define SYS_unlink 10
 #  define SYS_getpid 20
+#  define SYS_access 33
 #  define SYS_kill 37
 #  define SYS_pipe 42
 #  define SYS_sigprocmask 48

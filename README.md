@@ -7,13 +7,13 @@ If you're on iOS, just run `./make_all.sh`, then you'll be able to use it as lib
 If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile flags are `SDK`, `ARCHES` (armv7 default, 7s permitted, 2+ arches suppirted as `ARCHES=armv7,armv7s`), `CFLAGS`, `CPPFLAGS`. If you have cctools, use Makefile flag `LLVM-PREFIX=""` (default behavior is to call `$(LLVM-PREFIX)lipo`). To turn off PIC use `PIC=""` (default PIC is `-fPIC`)
 
 ## Status
-About 65% of C89 is implemented.
+About 90% of C89 is implemented.
 
 Some of POSIX is implemented, e.g. sleep(), usleep(), select(), fork(), etc.
 
 Some Mach syscalls implemented with libMach. To obtain one (required for stdio), use `./getlibmach.sh`
 
-Full time and string are implemented. Full ANSI printf is implemented. StdLib is TODO, Locale is VERY low-priority
+Full time, stdio and string are implemented. StdLib is TODO, Locale is VERY low-priority, but RuneLocale parser already done (reverse-engeneered)
 
 Note that LibM (IEEE&ANSI full BTW) and string are git submodules, so run git submodule update --recursive --init
 
@@ -23,7 +23,7 @@ All of my code is a Public Domain (Unlicense). Note that 0ae2e51 commit and olde
 ## Structure
 
 1. ./src – LibC's source
-2. ./include – LibC's headers (stdint.h licensed under APSL, be careful!)
+2. ./include – LibC's headers (some licensed under APSL, be careful!)
 3. ./src/sysindep – Probably system-independent code
 4. ./src/sysdep – VERY system dependent code with inline asm
 5. ./src/runtime/sysdep (C Startup fully compatible with Apple's, beta)
