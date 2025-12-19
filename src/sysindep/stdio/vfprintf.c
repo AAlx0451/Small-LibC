@@ -23,7 +23,11 @@ static int _out_char(FILE *f, int c) {
     // Optimization for sprintf (String buffer) - no locking, no flushing logic needed
     if (f->_flags & __S_STR) {
         if (f->_cnt > 0) {
-            *f->_ptr++ = (unsigned char)c;
+            // Check if base is not NULL before writing. 
+            // This allows passing NULL buffer to calculate length.
+            if (f->_base != NULL) {
+                *f->_ptr++ = (unsigned char)c;
+            }
             f->_cnt--;
         }
         return 1;

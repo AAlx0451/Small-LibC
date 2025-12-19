@@ -8,19 +8,21 @@ void free(void *ptr)
         return;
     }
 
-    while (__sync_lock_test_and_set(&malloc_lock, 1)) {
-        while (malloc_lock);
+    if (((uintptr_t)ptr & (ALIGNMENT - 1)) != 0) {
+        return;
     }
+
+    __malloc_spin_lock(&malloc_lock);
 
     block = get_block_ptr(ptr);
 
-    if (!is_valid_block(block) || block->magic == MAGIC_FREE) {
-        __sync_lock_release(&malloc_lock);
+    if (!is_valid_block(block) || block->magic != MAGIC_USED) {
+        __malloc_spin_unlock(&malloc_lock);
         return;
     }
 
     block->magic = MAGIC_FREE;
     coalesce(block);
-    
-    __sync_lock_release(&malloc_lock);
+
+    __malloc_spin_unlock(&malloc_lock);
 }

@@ -5,6 +5,8 @@
 #include <string.h>
 #include <stdint.h>
 #include <sys/mman.h>
+#include <sched.h>
+#include <errno.h>
 
 #define ALIGNMENT 16
 #define ALIGN(size) (((size) + (ALIGNMENT - 1)) & ~(ALIGNMENT - 1))
@@ -14,12 +16,14 @@
 #define MAGIC_FREE 0xDEADBEEF
 #define MAGIC_USED 0xBA5EBA11
 
-typedef struct block_meta {
+struct block_meta {
     size_t size;
     struct block_meta *next;
     struct block_meta *prev;
     uint32_t magic;
-} *meta_ptr;
+};
+
+typedef struct block_meta *meta_ptr;
 
 extern meta_ptr heap_base;
 extern volatile int malloc_lock;
@@ -29,17 +33,29 @@ void free(void *ptr);
 void *calloc(size_t number, size_t size);
 void *realloc(void *ptr, size_t size);
 
+static inline void __malloc_spin_lock(volatile int *lock) {
+    while (__sync_lock_test_and_set(lock, 1)) {
+        sched_yield();
+    }
+}
+
+static inline void __malloc_spin_unlock(volatile int *lock) {
+    __sync_lock_release(lock);
+}
+
 static inline meta_ptr get_block_ptr(void *ptr) {
     return (meta_ptr)((char *)ptr - BLOCK_META_SIZE);
 }
 
 static inline int is_valid_block(meta_ptr block) {
-    return block && (block->magic == MAGIC_USED || block->magic == MAGIC_FREE);
+    if (!block) return 0;
+    return (block->magic == MAGIC_USED || block->magic == MAGIC_FREE);
 }
 
 static inline void split_block(meta_ptr block, size_t size) {
     if (block->size >= size + BLOCK_META_SIZE + ALIGNMENT) {
         meta_ptr new_block = (meta_ptr)((char *)block + BLOCK_META_SIZE + size);
+        
         new_block->size = block->size - size - BLOCK_META_SIZE;
         new_block->next = block->next;
         new_block->prev = block;
@@ -81,8 +97,18 @@ static inline meta_ptr coalesce(meta_ptr block) {
 
 static inline meta_ptr request_space(meta_ptr last, size_t size) {
     meta_ptr block;
-    size_t total_size = size + BLOCK_META_SIZE;
-    size_t alloc_size = (total_size + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1);
+    size_t total_size; 
+    size_t alloc_size;
+
+    if (__builtin_add_overflow(size, BLOCK_META_SIZE, &total_size)) {
+        return NULL;
+    }
+    
+    alloc_size = (total_size + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1);
+    
+    if (alloc_size < total_size) {
+        return NULL;
+    }
 
     block = (meta_ptr)mmap(NULL, alloc_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 

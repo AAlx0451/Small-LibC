@@ -8,15 +8,13 @@ void *malloc(size_t size)
     meta_ptr block, last;
     size_t aligned_size;
 
-    if (size == 0) {
+    if (size == 0 || size > (SIZE_MAX - BLOCK_META_SIZE)) {
         return NULL;
     }
 
     aligned_size = ALIGN(size);
 
-    while (__sync_lock_test_and_set(&malloc_lock, 1)) {
-        while (malloc_lock);
-    }
+    __malloc_spin_lock(&malloc_lock);
 
     block = heap_base;
     last = NULL;
@@ -25,7 +23,7 @@ void *malloc(size_t size)
         if (block->magic == MAGIC_FREE && block->size >= aligned_size) {
             block->magic = MAGIC_USED;
             split_block(block, aligned_size);
-            __sync_lock_release(&malloc_lock);
+            __malloc_spin_unlock(&malloc_lock);
             return (void *)((char *)block + BLOCK_META_SIZE);
         }
         last = block;
@@ -34,7 +32,7 @@ void *malloc(size_t size)
 
     block = request_space(last, aligned_size);
     if (!block) {
-        __sync_lock_release(&malloc_lock);
+        __malloc_spin_unlock(&malloc_lock);
         return NULL;
     }
 
@@ -45,6 +43,6 @@ void *malloc(size_t size)
     split_block(block, aligned_size);
     block->magic = MAGIC_USED;
 
-    __sync_lock_release(&malloc_lock);
+    __malloc_spin_unlock(&malloc_lock);
     return (void *)((char *)block + BLOCK_META_SIZE);
 }
