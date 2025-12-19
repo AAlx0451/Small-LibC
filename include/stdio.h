@@ -20,6 +20,9 @@
 #define _IOLBF 1
 #define _IONBF 2
 
+#define L_tmpnam 1024
+#define TMP_MAX 10000
+
 typedef off_t fpos_t;
 
 typedef struct __sFILE {
@@ -92,6 +95,9 @@ int sscanf(const char *str, const char *format, ...);
 int dprintf(int fd, const char *format, ...);
 int vasprintf(char **strp, const char *fmt, va_list ap);
 int asprintf(char **strp, const char *fmt, ...);
+FILE *freopen(const char *pathname, const char *mode, FILE *stream);
+FILE *tmpfile(void);
+char *tmpnam(char *s);
 
 #define feof(p) ((p)->_flags & __S_EOF)
 #define ferror(p) ((p)->_flags & __S_ERR)

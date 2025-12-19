@@ -33,6 +33,8 @@
 #define SEEK_CUR 1
 #define SEEK_END 2
 
+#define F_OK 0
+
 /* FUNCTIONS */
 
 // main syscall wrapper, up to 8 args
@@ -60,6 +62,7 @@ int close(int fd); // 6
 int link(const char *oldpath, const char *newpath); // 9
 int unlink(const char *pathname); // 10
 pid_t getpid(void); // 20
+int access(const char *pathname, int mode); // 33
 int pipe(int pipefd[2]); // 42
 int sigprocmask(int how, const sigset_t *set, sigset_t *oldset); // 48
 int execve(const char *pathname, char *const argv[], char *const envp[]); // 59
