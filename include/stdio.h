@@ -89,6 +89,9 @@ int fscanf(FILE *stream, const char *format, ...);
 int vscanf(const char *format, va_list arg);
 int vsscanf(const char *str, const char *format, va_list arg);
 int sscanf(const char *str, const char *format, ...);
+int dprintf(int fd, const char *format, ...);
+int vasprintf(char **strp, const char *fmt, va_list ap);
+int asprintf(char **strp, const char *fmt, ...);
 
 #define feof(p) ((p)->_flags & __S_EOF)
 #define ferror(p) ((p)->_flags & __S_ERR)
