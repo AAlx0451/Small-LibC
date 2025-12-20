@@ -1,106 +1,114 @@
+/*
+ * runelocaleparse.h
+ *
+ * iOS 6 LC_CTYPE Binary Parser
+ *
+ * This header defines the In-Memory representation of the RuneLocale structure.
+ * It is designed to handle the proprietary binary format found in /usr/share/locale
+ * on legacy OSX/iOS systems.
+ *
+ * REVERSE ENGINEERING SUMMARY:
+ * - Format: Big-Endian.
+ * - Alignment: Strict 16-byte alignment for all Unicode tables
+ * - ASCII Tables: 256 entries (0x00-0xFF), missing the standard EOF entry at index 0.
+ */
+
 #ifndef RUNE_LOCALE_PARSE_H
 #define RUNE_LOCALE_PARSE_H
 
 #include <stdint.h>
-#include <stddef.h>
+#include <stdio.h> /* for EOF */
 
-/*
- * ============================================================================
- * Constants based on Reverse Engineering of iOS 6 LC_CTYPE
- * ============================================================================
- */
-#define _CACHED_RUNES   (256)      /* Size of ASCII optimization tables */
-#define _RUNE_MAGIC_A   "RuneMagA" /* Magic signature */
+/* Magic signature found at the start of the file */
+#define _RUNE_MAGIC_A   "RuneMagA"
 
-/*
- * ============================================================================
- * Data Structures
- * ============================================================================
- */
+/* Size of the ASCII cache tables (0-255) */
+#define _CACHED_RUNES   (256)
 
-/* 
- * Represents a single range of Unicode characters with shared properties.
- * Corresponds to the 12-byte struct in the file at 0x0C3C.
+/**
+ * RuneEntry (In-Memory)
+ * Represents a contiguous range of Unicode characters with specific properties.
+ * 
+ * @min:   First character code in the range.
+ * @max:   Last character code in the range.
+ * @map:   Base property mask (CTYPE) for this range.
+ * @types: Pointer to an array of property masks in variable_data. 
+ *         Used when characters in the range have differing properties.
+ *         If NULL, all characters in range use 'map'.
  */
 typedef struct {
-    uint32_t min;           /* First unicode code point in range (Calculated) */
-    uint32_t max;           /* Last unicode code point in range (From file) */
-    uint32_t map;           /* Type mask or offset into variable data */
-    uint32_t *types;        /* Pointer to specific types if map is an offset (NULL if uniform) */
+    uint32_t min;
+    uint32_t max;
+    uint32_t map;
+    uint32_t *types;
 } RuneEntry;
 
-/*
- * Represents a case mapping (Lower <-> Upper).
- * Corresponds to the 12-byte struct in the file at 0x247C and 0x3E0C.
+/**
+ * RuneCasePair (In-Memory)
+ * Represents a case mapping range (tolower/toupper).
+ * 
+ * @min: First character code.
+ * @max: Last character code.
+ * @map: Base value for conversion.
+ *       Algorithm: converted_char = map + (original_char - min)
  */
 typedef struct {
-    uint32_t from;          /* Source code point */
-    uint32_t to;            /* Destination code point */
+    uint32_t min;
+    uint32_t max;
+    int32_t  map; 
 } RuneCasePair;
 
-/*
- * The main container for Locale Character Type data.
- * This structure sits in memory after parsing the binary file.
+/**
+ * RuneLocale (In-Memory)
+ * The main container for locale data, mimicking the internal libc structure.
  */
 typedef struct {
     /* 
-     * ASCII Lookup Tables (0x00 - 0xFF)
-     * Indexed by (c + 1). Index 0 is EOF (-1).
+     * ASCII Look-up Tables (Cache).
+     * The internal libc logic uses index 0 for EOF (-1).
+     * Indices 1..256 correspond to char codes 0x00..0xFF.
      */
-    uint32_t    __s_ctype[_CACHED_RUNES + 2];   /* Character type masks */
-    int32_t     __s_tolower[_CACHED_RUNES + 2]; /* To Lower mapping */
-    int32_t     __s_toupper[_CACHED_RUNES + 2]; /* To Upper mapping */
+    uint32_t    __s_ctype[_CACHED_RUNES + 1];
+    int32_t     __s_tolower[_CACHED_RUNES + 1];
+    int32_t     __s_toupper[_CACHED_RUNES + 1];
 
-    /* 
-     * Unicode Range Table 
-     * Used for characters > 0xFF.
-     */
-    int         runetype_count;     /* Number of ranges */
-    RuneEntry   *runetype_ext;      /* Array of range entries */
+    /* Unicode Character Properties Ranges */
+    int         runetype_count;
+    RuneEntry   *runetype_ext;
 
-    /*
-     * Case Mappings for Unicode
-     */
-    int             maplower_count;
-    RuneCasePair    *maplower_ext;  /* Array of Upper -> Lower mappings */
+    /* Unicode To-Lower Mapping Ranges */
+    int         maplower_count;
+    RuneCasePair *maplower_ext;
 
-    int             mapupper_count;
-    RuneCasePair    *mapupper_ext;  /* Array of Lower -> Upper mappings */
+    /* Unicode To-Upper Mapping Ranges */
+    int         mapupper_count;
+    RuneCasePair *mapupper_ext;
 
-    /* 
-     * Raw Variable Data Block 
-     * Holds individual masks for complex ranges.
-     */
+    /* Storage blob for variable-length type arrays */
     void        *variable_data;
     size_t      variable_data_len;
-
 } RuneLocale;
 
-/*
- * ============================================================================
- * API Functions
- * ============================================================================
- */
-
-/*
- * Loads and parses a binary LC_CTYPE file.
- * Returns NULL on failure.
+/**
+ * rune_locale_load
+ * Parses the LC_CTYPE binary file using dynamic header analysis.
+ * 
+ * @path: Filesystem path to the locale file.
+ * @return: Pointer to allocated RuneLocale, or NULL on failure.
  */
 RuneLocale *rune_locale_load(const char *path);
 
-/*
- * Frees memory associated with the locale.
+/**
+ * rune_locale_free
+ * Frees all memory associated with the locale.
  */
 void rune_locale_free(RuneLocale *rl);
 
-/*
- * Core Lookup Logic (to be used by iswalpha, iswdigit, etc.)
+/* 
+ * API Functions 
+ * These provide the standard functionality of <ctype.h> / <wctype.h>.
  */
 uint32_t rl_get_ctype(RuneLocale *rl, int32_t c);
-
-/*
- * Core Case Conversion Logic (to be used by towlower, towupper)
- */
 int32_t rl_toupper(RuneLocale *rl, int32_t c);
 int32_t rl_tolower(RuneLocale *rl, int32_t c);
 
