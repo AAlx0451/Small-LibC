@@ -13,7 +13,7 @@ Some of POSIX is implemented, e.g. sleep(), usleep(), select(), fork(), etc.
 
 Some Mach syscalls implemented with libMach. To obtain one (required for stdio), use `./getlibmach.sh`
 
-Full time, stdio and string are implemented. StdLib is TODO, Locale is VERY low-priority, but RuneLocale parser already done (reverse-engeneered)
+Full time, stdio, stdlib and string are implemented. Locale is VERY low-priority, but RuneLocale parser already done (reverse-engeneered)
 
 Note that LibM (IEEE&ANSI full BTW) and string are git submodules, so run git submodule update --recursive --init
 
