@@ -98,6 +98,7 @@ int asprintf(char **strp, const char *fmt, ...);
 FILE *freopen(const char *pathname, const char *mode, FILE *stream);
 FILE *tmpfile(void);
 char *tmpnam(char *s);
+ssize_t getline(char **lineptr, size_t *n, FILE *stream);
 
 #define feof(p) ((p)->_flags & __S_EOF)
 #define ferror(p) ((p)->_flags & __S_ERR)

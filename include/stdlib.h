@@ -69,4 +69,11 @@ int system(const char *command);
 // posix
 int mkstemp(char *template);
 
+// utf8
+int mblen(const char *s, size_t n);
+size_t mbstowcs(wchar_t *pwcs, const char *s, size_t n);
+int mbtowc(wchar_t *pwc, const char *s, size_t n);
+size_t wcstombs(char *s, const wchar_t *pwcs, size_t n);
+int wctomb(char *s, wchar_t wchar);
+
 #endif
