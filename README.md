@@ -1,42 +1,57 @@
-## Welcome to Small-LibC
-Small-LibC is an iOS development library, which implements some of C Stamdart Library functions
+## Welcome to Small-LibC!
+Small-LibC is an iOS development library, which implements full ANSI C89, some C99 and POSIX functions
 
 ## Get started
 If you're on iOS, just run `./make_all.sh`, then you'll be able to use it as libc.a (recommended way for on-device)
 
+<details>
+    <summary>If you're cross-compiling</summary>
 If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile flags are `SDK`, `ARCHES` (armv7 default, 7s permitted, 2+ arches suppirted as `ARCHES=armv7,armv7s`), `CFLAGS`, `CPPFLAGS`. If you have cctools, use Makefile flag `LLVM-PREFIX=""` (default behavior is to call `$(LLVM-PREFIX)lipo`). To turn off PIC use `PIC=""` (default PIC is `-fPIC`)
+</details>
 
 ## Status
-About 90% of C89 is implemented.
+* FULL ANSI C89
+* POSIX isn't targeted, but some useful functions are implemented, including obscure like dprintf()
+* Some Mach syscalls implemented with libMach. To compile it (required for stdio), use `./getlibmach.sh`. It's very small.
+* ANSI requires support for "C" locale only, which this library does. You can find runelocale parser at `./src/sysindep/locale/unused`
 
-Some of POSIX is implemented, e.g. sleep(), usleep(), select(), fork(), etc.
-
-Some Mach syscalls implemented with libMach. To obtain one (required for stdio), use `./getlibmach.sh`
-
-Full time, stdio, stdlib and string are implemented. Locale is VERY low-priority, but RuneLocale parser already done (reverse-engeneered)
-
-Note that LibM (IEEE&ANSI full BTW) and string are git submodules, so run git submodule update --recursive --init
+Note that LibM and string are git submodules, so run git submodule update --recursive --init before compiling (of course, if you need it. if don't, just `touch src/math/dummy.c` and it will pass)
 
 ## License
-All of my code is a Public Domain (Unlicense). Note that 0ae2e51 commit and older are MIT-licensed
-
+This project is a Public Domain and licensed under The Unlicense. Note that 570161d commit and older are MIT-licensed
+ 
 ## Structure
 
 1. ./src – LibC's source
-2. ./include – LibC's headers (some licensed under APSL, be careful!)
+2. ./include – LibC's headers (some `sys` licensed under APSL, be careful!)
 3. ./src/sysindep – Probably system-independent code
-4. ./src/sysdep – VERY system dependent code with inline asm
-5. ./src/runtime/sysdep (C Startup fully compatible with Apple's, beta)
-5. ./src/runtime/sysindep – stack canary, division runtime
-6. ./src/math – libM (almost full, Public Domain)
-7. ./test – unittests
+4. ./src/sysdep – "system-dependent" code: uses inline asm. can be used like `xnu-tree/libsyscall/custom`
+5. ./src/runtime/sysdep – C Startup code
+6. ./src/runtime/sysindep – stack canary, division runtime
+7. ./src/math – libM
 
-## And one more thing....
+## Notes
 
-### K&R status:
+### Why sysindep us "probably" system-independent?
 
-* currently, you can't pass 4.7 of 1st K&R (due to no getline (not an ANSI btw))
+TL;DL: I'm lazy
 
-## Pssss.... MY REMORSE AND CONFESSION
+Actually, it should be named "c", not "sysindep", but I don't want to change it – I'm too lazy to rewrite Makefile and change `string` submodude path
 
-* although it's tested and public domain, I MUST say it. it's mostly written using AI!!!! so I'm bad :)
+### Is it compatible?
+
+TL;DR: no, it's not.
+
+The only thing that must be compatible is runtime and it is. Actually, this library can be used with libSystem if you'll remove `./src/sysindep/stdio` – it's uncompatible.
+
+### Is dynamic linking supported?
+
+TL;DR: no
+
+See previous pls. And of course it can't replace libSystem
+
+### Is it thread-safe? What about pthreads?
+
+TL;DR: malloc and stdio are safe. libmach is required for pthreads
+
+`*alloc`, `free`, stdio functions are protected with spinlocks.

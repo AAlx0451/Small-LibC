@@ -76,7 +76,8 @@ unsigned int usleep(unsigned int microseconds); // SYS_select
 void *brk(void *x); // SYS_mmap
 void *sbrk(intptr_t size); // SYS_mmap
 int isatty(int fd); // SYS_ioctl
-int execv(const char *path, char *const argv[]); // execve()
-int execl(const char *path, const char *arg, ...); // execve()
+int execv(const char *path, char *const argv[]); // SYS_execve
+int execl(const char *path, const char *arg, ...); // SYS_execve
+unsigned int alarm(unsigned int seconds); // SYS_setitimer
 
 #endif
