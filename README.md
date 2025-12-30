@@ -55,3 +55,9 @@ See previous pls. And of course it can't replace libSystem
 TL;DR: malloc and stdio are safe. libmach is required for pthreads
 
 `*alloc`, `free`, stdio functions are protected with spinlocks.
+
+### Is it stable
+
+TL;DR: I think so
+
+Of course, it's not 100% tested, but it works for me :)

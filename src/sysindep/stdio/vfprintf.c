@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <string.h>
+#include <unistd.h> /* for write() */
 
 #define PAD_RIGHT 1
 #define PAD_ZERO  2
@@ -20,11 +21,10 @@
 #define MAX_WIDTH     256
 
 static int _out_char(FILE *f, int c) {
-    // Optimization for sprintf (String buffer) - no locking, no flushing logic needed
+    /* Optimization for sprintf (String buffer) - no locking, no flushing logic needed */
     if (f->_flags & __S_STR) {
         if (f->_cnt > 0) {
-            // Check if base is not NULL before writing. 
-            // This allows passing NULL buffer to calculate length.
+            /* Check if base is not NULL before writing. */
             if (f->_base != NULL) {
                 *f->_ptr++ = (unsigned char)c;
             }
@@ -33,27 +33,39 @@ static int _out_char(FILE *f, int c) {
         return 1;
     } 
 
-    // Regular file stream logic
-    // NOTE: We rely on the caller (vfprintf) holding the lock.
-    // We must NOT call fputc() here, as it would try to lock again -> Deadlock.
+    /* Handle Unbuffered I/O (_IONBF) directly to avoid NULL pointer dereference */
+    if (f->_flags & __S_NBF) {
+        unsigned char ch = (unsigned char)c;
+        if (write(f->_fd, &ch, 1) != 1) {
+            return 0; /* Error */
+        }
+        return 1;
+    }
 
+    /* Regular buffered stream logic */
     if (f->_cnt > 0) {
         *f->_ptr++ = (unsigned char)c;
         f->_cnt--;
         f->_flags |= __S_DIRTY;
     } else {
-        // Buffer full, flush using internal impl (no lock required)
+        /* Buffer full, flush using internal impl */
         if (__stdio_flush_impl(f) == 0) {
-            *f->_ptr++ = (unsigned char)c;
-            f->_cnt--;
-            f->_flags |= __S_DIRTY;
+            /* After flush, pointers should be reset. Double check we have space now. */
+            /* If flush succeeded but we still have no buffer (unlikely if not NBF), write directly */
+            if (f->_cnt > 0) {
+                *f->_ptr++ = (unsigned char)c;
+                f->_cnt--;
+                f->_flags |= __S_DIRTY;
+            } else {
+                unsigned char ch = (unsigned char)c;
+                if (write(f->_fd, &ch, 1) != 1) return 0;
+            }
         } else {
-            return 0; // Error
+            return 0; /* Error */
         }
     }
 
-    // Support Line Buffering (_IOLBF). 
-    // Without this, printf("\n") won't show output until buffer fills.
+    /* Support Line Buffering (_IOLBF) */
     if ((f->_flags & __S_LBF) && (c == '\n')) {
         __stdio_flush_impl(f);
     }
@@ -204,16 +216,16 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
     }
 
     if (stream->_flags & __S_RD) {
-        // Transition from Read to Write
+        /* Transition from Read to Write */
         stream->_flags &= ~__S_RD;
         stream->_flags |= __S_WR;
-        // Invalidate read buffer
+        /* Invalidate read buffer */
         stream->_cnt = stream->_bsize;
         stream->_ptr = stream->_base;
     } else if (!(stream->_flags & __S_WR)) {
-        // Transition from Neutral to Write
+        /* Transition from Neutral to Write */
         stream->_flags |= __S_WR;
-        // Initialize buffer pointers if they were cleared by a seek operation
+        /* Initialize buffer pointers if they were cleared */
         if (stream->_cnt == 0 && stream->_ptr == stream->_base) {
              stream->_cnt = stream->_bsize;
         }
