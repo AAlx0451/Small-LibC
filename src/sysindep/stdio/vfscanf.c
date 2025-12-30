@@ -1,7 +1,3 @@
-/*
- * implementation of vfscanf compliant with ANSI C (C89/C90) and POSIX.
- */
-
 #include <stdio.h>
 #include <stdarg.h>
 #include <ctype.h>
@@ -9,17 +5,15 @@
 #include <string.h>
 #include <limits.h>
 #include <stddef.h>
+#include <unistd.h>
 
-/* Internal limits */
 #define MAX_SCAN_WIDTH 256
 
-/*
- * Helper: _in_char
- * Reads a character from the stream, handling buffering and locking requirements.
- * Assumes caller holds stream->_lock.
- */
+static int _safe_isspace(int c) {
+    return (c != EOF) && isspace((unsigned char)c);
+}
+
 static int _in_char(FILE *f) {
-    /* Handle String Streams (sscanf) */
     if (f->_flags & __S_STR) {
         if (f->_cnt > 0) {
             f->_cnt--;
@@ -28,13 +22,19 @@ static int _in_char(FILE *f) {
         return EOF;
     }
 
-    /* Handle File Streams */
     if (f->_cnt > 0) {
         f->_cnt--;
         return (unsigned char)(*f->_ptr++);
     }
 
-    /* Buffer empty, attempt refill */
+    if (f->_flags & __S_NBF) {
+        unsigned char c;
+        if (read(f->_fd, &c, 1) == 1) {
+            return (int)c;
+        }
+        return EOF;
+    }
+
     if (__stdio_fill_impl(f) == 0) {
         if (f->_cnt > 0) {
             f->_cnt--;
@@ -45,15 +45,9 @@ static int _in_char(FILE *f) {
     return EOF;
 }
 
-/*
- * Helper: _unget_char
- * Pushes back a character to the stream.
- * Assumes caller holds stream->_lock.
- */
 static void _unget_char(FILE *f, int c) {
     if (c == EOF) return;
 
-    /* String stream */
     if (f->_flags & __S_STR) {
         if (f->_ptr > f->_base) {
             f->_ptr--;
@@ -62,28 +56,37 @@ static void _unget_char(FILE *f, int c) {
         return;
     }
 
-    /* File stream */
-    f->_ptr--;
-    f->_cnt++;
-    *f->_ptr = (unsigned char)c;
-    f->_flags &= ~__S_EOF;
+    /* FIX: Handle ungetc for Unbuffered (NBF) streams by allocating a tiny buffer */
+    if (f->_flags & __S_NBF) {
+        if (f->_base == NULL) {
+            f->_base = (unsigned char *)malloc(1);
+            if (f->_base == NULL) return;
+            f->_flags |= __S_FREEBUF;
+            f->_bsize = 1;
+            f->_ptr = f->_base + 1;
+            f->_cnt = 0;
+        } else if (f->_cnt == 0) {
+            f->_ptr = f->_base + 1;
+        }
+    }
+
+    if (f->_ptr > f->_base) {
+        f->_ptr--;
+        f->_cnt++;
+        *f->_ptr = (unsigned char)c;
+        f->_flags &= ~__S_EOF;
+    }
 }
 
-/* 
- * Helper: skip_whitespace
- */
 static int _skip_whitespace(FILE *f, int *consumed) {
     int c;
     while ((c = _in_char(f)) != EOF) {
         (*consumed)++;
-        if (!isspace(c)) return c;
+        if (!_safe_isspace(c)) return c;
     }
     return EOF;
 }
 
-/* 
- * Flag definitions for internal parser state 
- */
 #define FL_SPLAT    0x01
 #define FL_WIDTH    0x02
 #define FL_LONG     0x04
@@ -101,14 +104,13 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
     int conversion_char;
     char buf[MAX_SCAN_WIDTH + 1]; 
     int i;
-    int chars_consumed = 0; // For %n specifier
+    int chars_consumed = 0;
 
     if (!stream || !format) return EOF;
 
-    /* LOCKING */
     if (!(stream->_flags & __S_STR)) {
         _spin_lock(&stream->_lock);
-        
+
         if (stream->_flags & __S_DIRTY) {
             if (__stdio_flush_impl(stream) == EOF) {
                 stream->_flags |= __S_ERR;
@@ -116,7 +118,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                 return EOF;
             }
         }
-        
+
         if (stream->_flags & __S_WR) {
             stream->_flags &= ~__S_WR;
             stream->_cnt = 0;
@@ -125,17 +127,19 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
 
         if (!(stream->_flags & __S_RD)) {
             stream->_flags |= __S_RD;
-            stream->_cnt = 0;
-            stream->_ptr = stream->_base;
+            if (!(stream->_flags & __S_NBF)) {
+                stream->_cnt = 0;
+                stream->_ptr = stream->_base;
+            }
         }
     }
 
     while (*p) {
-        if (isspace((unsigned char)*p)) {
-            while (isspace((unsigned char)*p)) p++;
+        if (_safe_isspace(*p)) {
+            while (_safe_isspace(*p)) p++;
             c = _skip_whitespace(stream, &chars_consumed);
             _unget_char(stream, c);
-            if (c != EOF) chars_consumed--; // Correct for unget
+            if (c != EOF) chars_consumed--;
             continue;
         }
 
@@ -202,32 +206,36 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
             c = _skip_whitespace(stream, &chars_consumed);
             if (c == EOF) goto input_failure;
             _unget_char(stream, c);
-            if (c != EOF) chars_consumed--; // Correct for unget
+            if (c != EOF) chars_consumed--;
         }
 
         switch (conversion_char) {
             case 'n':
                 if (!(flags & FL_SPLAT)) {
-                    *va_arg(arg, int*) = chars_consumed;
+                    if (flags & FL_LONGLONG) *va_arg(arg, long long*) = chars_consumed;
+                    else if (flags & FL_LONG) *va_arg(arg, long*) = chars_consumed;
+                    else if (flags & FL_SHORT) *va_arg(arg, short*) = (short)chars_consumed;
+                    else if (flags & FL_SHORTSHORT) *va_arg(arg, char*) = (char)chars_consumed;
+                    else *va_arg(arg, int*) = chars_consumed;
                 }
-                continue; // %n does not perform a conversion, continue main loop
+                continue;
 
             case 'd': case 'i': case 'u': case 'x': case 'X': case 'o': case 'p': {
                 int base = 10;
                 int is_neg = 0;
                 int has_digit = 0;
-                
+
                 if (conversion_char == 'i') base = 0;
                 else if (conversion_char == 'x' || conversion_char == 'X' || conversion_char == 'p') base = 16;
                 else if (conversion_char == 'o') base = 8;
-                
+
                 c = _in_char(stream);
                 if (c != EOF) chars_consumed++;
                 if (c == EOF) goto input_failure;
 
                 if (c == '-') { is_neg = 1; c = _in_char(stream); if(c!=EOF) chars_consumed++; if(width>0) width--; }
                 else if (c == '+') { c = _in_char(stream); if(c!=EOF) chars_consumed++; if(width>0) width--; }
-                
+
                 i = 0;
                 if (is_neg) buf[i++] = '-';
 
@@ -244,16 +252,12 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                              c = _in_char(stream);
                              if(c!=EOF) chars_consumed++;
                          } else {
-                             if (base == 0) base = 8;
                              _unget_char(stream, next);
                              if(next!=EOF) chars_consumed--;
+                             if (base == 0) base = 8;
                          }
-                    } else if (base == 0) {
-                        base = 8;
-                    }
-                } else if (base == 0) {
-                    base = 10;
-                }
+                    } else if (base == 0) base = 8;
+                } else if (base == 0) base = 10;
 
                 while (c != EOF) {
                     if (width == 0) { _unget_char(stream, c); if(c!=EOF) chars_consumed--; break; }
@@ -278,20 +282,24 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                 if (!has_digit) goto match_failure;
 
                 if (!(flags & FL_SPLAT)) {
-                    unsigned long long res = strtoull(buf, NULL, base);
-                    if (conversion_char == 'd' || conversion_char == 'i') {
-                        long long sres = (long long)res;
-                        if (flags & FL_LONGLONG) *va_arg(arg, long long*) = sres;
-                        else if (flags & FL_LONG) *va_arg(arg, long*) = (long)sres;
-                        else if (flags & FL_SHORT) *va_arg(arg, short*) = (short)sres;
-                        else if (flags & FL_SHORTSHORT) *va_arg(arg, char*) = (char)sres;
-                        else *va_arg(arg, int*) = (int)sres;
+                    if (conversion_char == 'p') {
+                        *va_arg(arg, void**) = (void*)(uintptr_t)strtoull(buf, NULL, 16);
                     } else {
-                        if (flags & FL_LONGLONG) *va_arg(arg, unsigned long long*) = res;
-                        else if (flags & FL_LONG) *va_arg(arg, unsigned long*) = (unsigned long)res;
-                        else if (flags & FL_SHORT) *va_arg(arg, unsigned short*) = (unsigned short)res;
-                        else if (flags & FL_SHORTSHORT) *va_arg(arg, unsigned char*) = (unsigned char)res;
-                        else *va_arg(arg, unsigned int*) = (unsigned int)res;
+                        unsigned long long res = strtoull(buf, NULL, base);
+                        if (conversion_char == 'd' || conversion_char == 'i') {
+                            long long sres = (long long)res;
+                            if (flags & FL_LONGLONG) *va_arg(arg, long long*) = sres;
+                            else if (flags & FL_LONG) *va_arg(arg, long*) = (long)sres;
+                            else if (flags & FL_SHORT) *va_arg(arg, short*) = (short)sres;
+                            else if (flags & FL_SHORTSHORT) *va_arg(arg, char*) = (char)sres;
+                            else *va_arg(arg, int*) = (int)sres;
+                        } else {
+                            if (flags & FL_LONGLONG) *va_arg(arg, unsigned long long*) = res;
+                            else if (flags & FL_LONG) *va_arg(arg, unsigned long*) = (unsigned long)res;
+                            else if (flags & FL_SHORT) *va_arg(arg, unsigned short*) = (unsigned short)res;
+                            else if (flags & FL_SHORTSHORT) *va_arg(arg, unsigned char*) = (unsigned char)res;
+                            else *va_arg(arg, unsigned int*) = (unsigned int)res;
+                        }
                     }
                     nmatch++;
                 }
@@ -312,29 +320,11 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                 }
 
                 int digits = 0;
-                int has_dot = 0, has_exp = 0;
-                while (c != EOF) {
+                while (c != EOF && i < MAX_SCAN_WIDTH) {
                     if (width == 0) { _unget_char(stream, c); if(c!=EOF) chars_consumed--; break; }
-                    if (isdigit(c)) {
-                        if (i < MAX_SCAN_WIDTH) buf[i++] = c;
-                        digits++;
-                    } else if (c == '.') {
-                        if (has_dot || has_exp) { _unget_char(stream, c); if(c!=EOF) chars_consumed--; break; }
-                        has_dot = 1;
-                        if (i < MAX_SCAN_WIDTH) buf[i++] = c;
-                    } else if (c == 'e' || c == 'E') {
-                        if (has_exp || digits == 0) { _unget_char(stream, c); if(c!=EOF) chars_consumed--; break; }
-                        has_exp = 1;
-                        if (i < MAX_SCAN_WIDTH) buf[i++] = c;
-                        c = _in_char(stream);
-                        if (c != EOF) chars_consumed++;
-                        if (c == '+' || c == '-') {
-                             if (i < MAX_SCAN_WIDTH) buf[i++] = c;
-                             if (width > 0) width--;
-                        } else {
-                            _unget_char(stream, c);
-                            if(c!=EOF) chars_consumed--;
-                        }
+                    if (isdigit(c) || c == '.' || c == 'e' || c == 'E' || c == '+' || c == '-') {
+                         if (isdigit(c)) digits = 1;
+                         buf[i++] = (char)c;
                     } else {
                         _unget_char(stream, c);
                         if(c!=EOF) chars_consumed--;
@@ -345,8 +335,8 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                     if (c != EOF) chars_consumed++;
                 }
                 buf[i] = '\0';
-                
-                if (digits == 0) goto match_failure;
+
+                if (!digits) goto match_failure;
 
                 if (!(flags & FL_SPLAT)) {
                     double val = strtod(buf, NULL);
@@ -360,19 +350,23 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
 
             case 's': {
                 char *str = (flags & FL_SPLAT) ? NULL : va_arg(arg, char*);
-                // Note: %s skips leading whitespace, which is handled by the block before switch
                 c = _in_char(stream);
                 if (c != EOF) chars_consumed++;
                 if (c == EOF) goto input_failure;
 
-                while (c != EOF && !isspace(c)) {
+                while (c != EOF && !_safe_isspace(c)) {
                     if (width == 0) { _unget_char(stream, c); if(c!=EOF) chars_consumed--; break; }
                     if (str) *str++ = (char)c;
                     if (width > 0) width--;
                     c = _in_char(stream);
                     if (c != EOF) chars_consumed++;
                 }
-                if (isspace(c)) { _unget_char(stream, c); if(c!=EOF) chars_consumed--; }
+                
+                if (c != EOF && _safe_isspace(c)) { 
+                    _unget_char(stream, c); 
+                    chars_consumed--; 
+                }
+                
                 if (str) { *str = '\0'; nmatch++; }
                 break;
             }
@@ -383,7 +377,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                 while (width-- > 0) {
                     c = _in_char(stream);
                     if (c != EOF) chars_consumed++;
-                    if (c == EOF) { if (width == -1 && nmatch==0) goto input_failure; break; }
+                    if (c == EOF) { if (nmatch==0) goto input_failure; break; }
                     if (str) *str++ = (char)c;
                 }
                 if (!(flags & FL_SPLAT)) nmatch++;
@@ -399,7 +393,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                 if (*p == '^') { invert = 1; p++; }
                 if (*p == ']') { scanset[']'] = 1; p++; }
                 while (*p && *p != ']') {
-                    if (*p == '-' && p[1] != ']' && p[-1] != (invert ? '^' : '[')) {
+                    if (*p == '-' && p[1] != ']' && p[1] != 0 && p[-1] != (invert ? '^' : '[')) {
                         unsigned char start = (unsigned char)p[-1];
                         unsigned char end = (unsigned char)p[1];
                         int k;
@@ -415,7 +409,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                 c = _in_char(stream);
                 if (c != EOF) chars_consumed++;
                 if (c == EOF) goto input_failure;
-                
+
                 int matched = 0;
                 while (c != EOF) {
                     if (width == 0) { _unget_char(stream, c); if(c!=EOF) chars_consumed--; break; }
@@ -428,7 +422,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                     c = _in_char(stream);
                     if (c != EOF) chars_consumed++;
                 }
-                
+
                 if (matched == 0) goto match_failure;
                 if (str) { *str = '\0'; nmatch++; }
                 break;

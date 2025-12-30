@@ -1,9 +1,28 @@
 #include <stdio.h>
-#include <sys/types.h> // off_t
+#include <stdlib.h>
+#include <sys/types.h>
+
+#ifndef BUFSIZ
+#define BUFSIZ 1024
+#endif
 
 int puts(const char *s) {
     int result = 0;
     _spin_lock(&stdout->_lock);
+
+    if (stdout->_base == NULL) {
+        size_t size = (stdout->_flags & __S_NBF) ? 1 : BUFSIZ;
+        stdout->_base = (unsigned char *)malloc(size);
+        if (stdout->_base == NULL) {
+            result = EOF;
+            goto done;
+        }
+        stdout->_flags |= __S_FREEBUF;
+        stdout->_bsize = size;
+        stdout->_ptr = stdout->_base;
+        stdout->_cnt = size;
+    }
+
     if (stdout->_flags & __S_RD) {
         stdout->_flags &= ~__S_RD;
         stdout->_flags |= __S_WR;
@@ -19,23 +38,25 @@ int puts(const char *s) {
     stdout->_flags |= __S_DIRTY;
 
     while (*s) {
-        if (stdout->_cnt == 0) {
+        if (stdout->_cnt <= 0) {
             if (__stdio_flush_impl(stdout) == EOF) {
                 result = EOF;
                 goto done;
             }
             stdout->_cnt = stdout->_bsize;
+            stdout->_ptr = stdout->_base;
         }
         *stdout->_ptr++ = *s++;
         stdout->_cnt--;
     }
 
-    if (stdout->_cnt == 0) {
+    if (stdout->_cnt <= 0) {
         if (__stdio_flush_impl(stdout) == EOF) {
             result = EOF;
             goto done;
         }
         stdout->_cnt = stdout->_bsize;
+        stdout->_ptr = stdout->_base;
     }
     *stdout->_ptr++ = '\n';
     stdout->_cnt--;
@@ -48,5 +69,5 @@ int puts(const char *s) {
 
 done:
     _spin_unlock(&stdout->_lock);
-    return result;
+    return (result == EOF) ? EOF : 0;
 }

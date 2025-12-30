@@ -1,12 +1,15 @@
 #include <stdio.h>
+#include <unistd.h> /* for write() */
 
 int fputc(int c, FILE *f) {
-    int ret = (unsigned char)c;
+    unsigned char ch = (unsigned char)c;
+    int ret = (int)ch;
 
     if (!f) return EOF;
 
     _spin_lock(&f->_lock);
-    /* This handles both R->W and Neutral->W transitions. */
+
+    /* Ensure stream is in write mode (same logic as before) */
     if (f->_flags & __S_RD) {
         f->_flags &= ~__S_RD;
         f->_flags |= __S_WR;
@@ -14,41 +17,37 @@ int fputc(int c, FILE *f) {
         f->_ptr = f->_base;
     } else if (!(f->_flags & __S_WR)) {
         f->_flags |= __S_WR;
-        // Initialize buffer pointers if they were cleared by a seek operation
         if (f->_cnt == 0 && f->_ptr == f->_base) {
              f->_cnt = f->_bsize;
         }
     }
 
-    if (f->_cnt <= 1 && (f->_flags & __S_NBF)) {
-        if (__stdio_flush_impl(f) != 0) {
-             ret = EOF;
-             goto cleanup;
-        }
-        *f->_ptr++ = (unsigned char)c;
-        f->_flags |= __S_DIRTY;
-        if (__stdio_flush_impl(f) != 0) {
+    /* If stream is unbuffered, write directly and we are done. */
+    if (f->_flags & __S_NBF) {
+        if (write(f->_fd, &ch, 1) != 1) {
             ret = EOF;
+            f->_flags |= __S_ERR;
         }
-        goto cleanup;
+        goto cleanup; /* Skip all buffer logic */
     }
 
+    /* Logic for buffered streams (_IOFBF, _IOLBF) */
+
+    /* If buffer is full, flush it. */
     if (f->_cnt == 0) {
-        if (f->_flags & __S_STR) {
-            ret = EOF;
-            goto cleanup;
-        }
         if (__stdio_flush_impl(f) != 0) {
             ret = EOF;
             goto cleanup;
         }
     }
 
-    *f->_ptr++ = (unsigned char)c;
+    /* Write character to buffer */
+    *f->_ptr++ = ch;
     f->_cnt--;
     f->_flags |= __S_DIRTY;
 
-    if ((f->_flags & __S_LBF && c == '\n') || f->_cnt == 0) {
+    /* If buffer becomes full now, or it's line-buffered and we got a newline, flush */
+    if (f->_cnt == 0 || ((f->_flags & __S_LBF) && c == '\n')) {
         if (__stdio_flush_impl(f) != 0) {
             ret = EOF;
         }
