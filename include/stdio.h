@@ -23,6 +23,9 @@
 #define L_tmpnam 1024
 #define TMP_MAX 10000
 
+#define FOPEN_MAX 20
+#define FILENAME_MAX 1024
+
 typedef off_t fpos_t;
 
 typedef struct __sFILE {
