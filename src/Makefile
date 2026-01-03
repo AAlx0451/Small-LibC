@@ -25,20 +25,19 @@ ifeq ($(CROSS), 1)
 		$(error SDK path must be set for cross-compilation)
 	endif
 
-	LLVM_PREFIX = llvm-
-	AR = $(LLVM_PREFIX)ar
-	LIPO = $(LLVM_PREFIX)lipo
-
-	ARCHES ?= armv7
-	comma := ,
-	empty :=
-	space := $(empty) $(empty)
-	ARCH_LIST = $(subst $(comma),$(space),$(ARCHES))
-	PIC = -fPIC
-	BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -I$(INCDIR) -Os $(PIC) -std=gnu99 -isysroot $(SDK)
-	ARCH_LIBS_C :=
-	ARCH_LIBS_RT :=
-	ARCH_LIBS_M :=
+    LLVM_PREFIX = llvm-
+    AR = $(LLVM_PREFIX)ar
+    LIPO = $(LLVM_PREFIX)lipo
+    ARCHES ?= armv7
+    comma := ,
+    empty :=
+    space := $(empty) $(empty)
+    ARCH_LIST = $(subst $(comma),$(space),$(ARCHES))
+    PIC = -fPIC
+    BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -I$(INCDIR) -Os $(PIC) -std=gnu99 -isysroot $(SDK)
+    ARCH_LIBS_C :=
+    ARCH_LIBS_RT :=
+    ARCH_LIBS_M :=
 
 	define BUILD_ARCH
 		OBJS_GENERIC_$(1) := $$(patsubst %.c,$(OBJDIR)/$(1)/%.o,$$(GENERIC_SRCS))
@@ -98,7 +97,7 @@ else
 
 AR = ar
 PIC = -fPIC
-BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -I$(INCDIR) -Os $(PIC) -std=gnu99 -nostdinc -I/usr/share/llvm/lib/clang/6.0.1/include
+BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -I$(INCDIR) -Os $(PIC) -std=gnu99 -nostdinc -I/usr/share/llvm/lib/clang/7.1.0/include -I/usr/share/llvm/lib/clang/6.0.1/include
 
 OBJS_GENERIC := $(patsubst %.c,$(OBJDIR)/%.o,$(GENERIC_SRCS))
 OBJS_SYSDEP := $(patsubst %.c,$(OBJDIR)/%.o,$(SYSDEP_SRCS))

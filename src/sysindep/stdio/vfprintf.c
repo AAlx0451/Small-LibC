@@ -160,6 +160,9 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
     char *num_start = buf;
     buf += _itoa_base(ipart, 10, 0, buf);
 
+    /* Fixed incorrect mirroring: reverse integer part immediately so it is forward-oriented, matching the fractional part. */
+    _reverse(num_start, buf - num_start);
+
     if (prec > 0 || (flags & PRINT_ALT)) {
         *buf++ = '.';
     }
@@ -187,7 +190,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
     }
 
     if (fmt_type == 'e' || fmt_type == 'E') {
-        _reverse(num_start, buf-num_start);
+        /* No global reverse needed here anymore */
         *buf++ = fmt_type;
         *buf++ = (exp >= 0) ? '+' : '-';
         if (exp < 0) exp = -exp;
@@ -197,7 +200,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
         if (elen < 2) *buf++ = '0';
         _reverse(exp_start, buf - exp_start);
     } else {
-         _reverse(num_start, buf - num_start);
+         /* No global reverse needed here anymore */
     }
 
     return buf - orig;
