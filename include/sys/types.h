@@ -18,6 +18,13 @@ typedef unsigned int id_t;
 typedef unsigned int uid_t;
 typedef long ssize_t;
 typedef unsigned long clock_t;
+typedef uint32_t gid_t;
+typedef int32_t dev_t;
+typedef int32_t segsz_t;
+typedef unsigned int u_int;
+typedef unsigned char u_char;
+typedef unsigned short u_short;
+typedef unsigned long u_long;
 
 # endif /* SYS_TYPES_H */
 

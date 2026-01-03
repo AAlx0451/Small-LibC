@@ -10,8 +10,8 @@ If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile 
 </details>
 
 ## Status
-* FULL ANSI C89
-* POSIX isn't targeted, but some useful functions are implemented, including obscure like dprintf()
+* Full ANSI C89
+* POSIX is partly implemented. POSIX-1.1990 is work-in-progress, but VERY incomplete.
 * Some Mach syscalls implemented with libMach. To compile it (required for stdio), use `./getlibmach.sh`. It's very small.
 * ANSI requires support for "C" locale only, which this library does. You can find Apple `LC_CTYPE` parser at `./src/sysindep/locale/unused`
 

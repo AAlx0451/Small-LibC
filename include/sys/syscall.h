@@ -33,8 +33,8 @@
 #  define SYS_sigreturn 184
 #  define SYS_mmap 197
 #  define SYS_lseek 199
-
-# elif
+#  define SYS___sysctl 202
+# else
 
 /* we should include your own syscall.h. place it at sys/msyscall.c and define -DMSYSCALL */
 
