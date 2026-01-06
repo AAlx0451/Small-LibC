@@ -8,6 +8,7 @@
 #  endif
 
 # include<stdint.h>
+# include<stddef.h>
 
 typedef int pid_t;
 typedef unsigned short mode_t;
@@ -25,6 +26,10 @@ typedef unsigned int u_int;
 typedef unsigned char u_char;
 typedef unsigned short u_short;
 typedef unsigned long u_long;
+typedef uint8_t u_int8_t;
+typedef uint16_t u_int16_t;
+typedef uint32_t u_int32_t;
+typedef uint32_t ino_t;
 
 # endif /* SYS_TYPES_H */
 

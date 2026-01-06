@@ -12,6 +12,7 @@ extern int errno;
 #define EEXIST 17
 #define EISDIR 21
 #define EINVAL 22
+#define ENOSPC 28
 #define ERANGE 34
 #define EDOM 33
 #define EOVERFLOW 84
