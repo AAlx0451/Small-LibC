@@ -12,6 +12,7 @@
 #  define O_CREAT 0x0200
 #  define O_TRUNC 0x0400
 #  define O_EXCL 0x0800
+#  define O_DIRECTORY 0x100000
 
 # endif /* FCNTL_H */
 

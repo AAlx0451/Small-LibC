@@ -34,6 +34,7 @@
 #  define SYS_mmap 197
 #  define SYS_lseek 199
 #  define SYS___sysctl 202
+#  define SYS_getdirentries64 344
 # else
 
 /* we should include your own syscall.h. place it at sys/msyscall.c and define -DMSYSCALL */
