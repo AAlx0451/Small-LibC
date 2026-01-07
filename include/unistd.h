@@ -3,7 +3,7 @@
 
 #include <stddef.h> /* size_t */
 #include <sys/types.h> /* types, null ptr */
-#include <signal.h> /* sigset_t */
+
 /* INTERNAL */
 #if defined(__GNUC__) || defined(__clang__)
 # define NORETURN __attribute__((noreturn))
@@ -64,7 +64,6 @@ int unlink(const char *pathname); // 10
 pid_t getpid(void); // 20
 int access(const char *pathname, int mode); // 33
 int pipe(int pipefd[2]); // 42
-int sigprocmask(int how, const sigset_t *set, sigset_t *oldset); // 48
 int execve(const char *pathname, char *const argv[], char *const envp[]); // 59
 int dup2(int oldfd, int newfd); // 90
 int rmdir(const char *path); // 137

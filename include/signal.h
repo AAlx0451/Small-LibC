@@ -93,5 +93,6 @@ int sigaction(int sig, const struct sigaction *act, struct sigaction *oact);
 int sigreturn(void *uctx, int infostyle);
 int raise(int sig);
 int kill(pid_t pid, int sig);
+int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
 
 #endif /* SIGNAL_H */

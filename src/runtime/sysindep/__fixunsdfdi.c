@@ -1,38 +1,30 @@
 #include <limits.h>
+#include <string.h>
 
 unsigned long long __fixunsdfdi(double a) {
-    union {
-        double d;
-        unsigned long long u;
-    } conv;
-    conv.d = a;
-    unsigned long long bits = conv.u;
-    const unsigned long long sign = (bits >> 63);
-    const int biased_exponent = (bits >> 52) & 0x7FF; // 11 бит экспоненты
-    const unsigned long long mantissa = bits & 0x000FFFFFFFFFFFFFULL;
-    if (sign == 1) {
-        return 0;
-    }
-    if (biased_exponent == 0x7FF) {
-        return ULLONG_MAX;
-    }
-    if (biased_exponent == 0) {
-        return 0;
+    if (a != a || a <= 0.0) return 0; // NaN or negative
+
+    unsigned long long bits;
+    memcpy(&bits, &a, sizeof(bits));
+
+    int exponent_raw = (bits >> 52) & 0x7FF;
+    unsigned long long mantissa_raw = bits & 0xFFFFFFFFFFFFFULL;
+    
+    if (exponent_raw == 0x7FF) return ULLONG_MAX; // Infinity
+    
+    int exponent = exponent_raw - 1023;
+    if (exponent < 0) return 0;
+    if (exponent >= 64) return ULLONG_MAX;
+
+    unsigned long long result;
+    if (exponent_raw == 0) { // Subnormal number
+        result = mantissa_raw;
+    } else { // Normal number
+        result = mantissa_raw | (1ULL << 52);
     }
 
-    const int exponent = biased_exponent - 1023;
-    if (exponent < 0) {
-        return 0;
-    }
-
-    if (exponent >= (sizeof(unsigned long long) * CHAR_BIT)) {
-        return ULLONG_MAX;
-    }
-
-    const unsigned long long full_mantissa = (1ULL << 52) | mantissa;
-    if (exponent < 52) {
-        return full_mantissa >> (52 - exponent);
-    } else {
-        return full_mantissa << (exponent - 52);
-    }
+    if (exponent > 52)
+        return result << (exponent - 52);
+    else
+        return result >> (52 - exponent);
 }
