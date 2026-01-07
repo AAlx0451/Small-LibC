@@ -1,10 +1,33 @@
 #include <stdint.h>
 #include <unistd.h>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-uintptr_t __stack_chk_guard = 0x01010101;
+uintptr_t __stack_chk_guard;
 
 __attribute__((noreturn))
 void __stack_chk_fail(void)
 {
-    _exit(127);
+    const char msg[] = "*** stack smashing detected ***\n";
+    write(STDERR_FILENO, msg, sizeof(msg) - 1);
+    abort();
+}
+
+void __stack_chk_guard_init(void)
+{
+    int fd = open("/dev/urandom", O_RDONLY);
+    if (fd == -1) {
+        perror("Could not open /dev/urandom");
+        abort();
+    }
+
+    ssize_t bytes_read = read(fd, &__stack_chk_guard, sizeof(__stack_chk_guard));
+    close(fd);
+
+    if (bytes_read != sizeof(__stack_chk_guard)) {
+        abort();
+    }
+
+    ((unsigned char *) &__stack_chk_guard)[0] = 0;
 }

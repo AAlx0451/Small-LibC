@@ -9,6 +9,7 @@ _Used char **environ;
 _Used char *__progname;
 
 extern int main(int argc, char **argv, char **envp, char **apple);
+void __stack_chk_guard_init(void);
 
 static char *get_basename(const char *path) {
     const char *p;
@@ -41,6 +42,7 @@ _Used void _c_startup(int argc, char **argv, char **envp) {
 
 #ifdef SMALL_LIBC
     __stdio_init();
+    __stack_chk_guard_init();
 #endif /* defined at S-LibC's stdio */
 
     exit(main(argc, argv, envp, apple));
