@@ -5,6 +5,7 @@
 
 typedef int sigset_t;
 typedef void (*sig_t)(int);
+typedef int sig_atomic_t;
 
 /* Signals */
 #define SIGHUP    1
@@ -57,6 +58,12 @@ typedef void (*sig_t)(int);
 /* Constants for sigreturn */
 #define UC_FLAVOR    30 /* 0x1E */
 
+/* Constants for sigprocmask */
+#define SIG_BLOCK   1
+#define SIG_UNBLOCK 2
+#define SIG_SETMASK 3
+
+/* Types */
 struct sigaction {
     union {
         void (*__sa_handler)(int);
@@ -84,15 +91,29 @@ typedef struct __siginfo {
     unsigned long   __pad[7];
 } siginfo_t;
 
+/* Type-like macros */
 #define sa_handler   __sigaction_u.__sa_handler
 #define sa_sigaction __sigaction_u.__sa_sigaction
 
+/* Function-like macros */
+#define sigemptyset(set)    (*(set) = 0, 0)
+#define sigfillset(set)     (*(set) = ~(sigset_t)0, 0)
+#define sigaddset(set, sig) (*(set) |= (1 << ((sig) - 1)), 0)
+#define sigdelset(set, sig) (*(set) &= ~(1 << ((sig) - 1)), 0)
+#define sigismember(set, sig) ((*(set) & (1 << ((sig) - 1))) ? 1 : 0)
+
 /* Prototypes */
+
+// ANSI
 sig_t signal(int sig, sig_t func);
+int raise(int sig);
+
+// POSIX
 int sigaction(int sig, const struct sigaction *act, struct sigaction *oact);
 int sigreturn(void *uctx, int infostyle);
-int raise(int sig);
 int kill(pid_t pid, int sig);
 int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
+int sigsuspend(const sigset_t *sigmask);
+int sigpending(sigset_t *set);
 
 #endif /* SIGNAL_H */

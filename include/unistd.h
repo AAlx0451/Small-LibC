@@ -61,8 +61,10 @@ int open(const char *pathname, int flags, ...); // 5
 int close(int fd); // 6
 int link(const char *oldpath, const char *newpath); // 9
 int unlink(const char *pathname); // 10
+int chdir(const char *path); // 12
 pid_t getpid(void); // 20
 int access(const char *pathname, int mode); // 33
+pid_t getppid(void); // 39
 int pipe(int pipefd[2]); // 42
 int execve(const char *pathname, char *const argv[], char *const envp[]); // 59
 int dup2(int oldfd, int newfd); // 90
