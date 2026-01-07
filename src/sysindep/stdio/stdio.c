@@ -119,6 +119,12 @@ int __stdio_flush_impl(FILE *f) {
 int __stdio_fill_impl(FILE *f) {
     ssize_t n;
 
+    if (f == stdin && isatty(f->_fd)) { // if writing from stdin AND from a tty...
+        if ((stdout->_flags & __S_LBF) && (stdout->_flags & __S_DIRTY) && isatty(stdout->_fd)) {
+            __stdio_flush_impl(stdout); // ...flush stdout
+        }
+    }
+
     if (f->_flags & (__S_EOF | __S_ERR)) return EOF;
 
     if ((f->_flags & __S_WR) && (f->_flags & __S_DIRTY)) {
