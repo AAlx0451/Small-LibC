@@ -45,6 +45,8 @@ _Used void _c_startup(int argc, char **argv, char **envp) {
     __stack_chk_guard_init();
 #endif /* defined at S-LibC's stdio */
 
+// actually,  #ifdef SMALL_LIBC isn't required, because with LC_MAIN lazy binding we don't need crt with libSystem (Argc/v stuff will be initialized using libdyld/libSystem symbols), but I just want to think that my code is compatible (but it's not, lol). and that's aside from SMALL_LIBC being always defined because this lib is incompatible with libSystem, so it's literally useless. but it's my lib, so y not
+
     exit(main(argc, argv, envp, apple));
 }
 
