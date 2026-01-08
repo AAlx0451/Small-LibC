@@ -6,12 +6,12 @@ If you're on iOS, just run `./make_all.sh`, then you'll be able to use it as lib
 
 <details>
     <summary>If you're cross-compiling</summary>
-If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile flags are `SDK`, `ARCHES` (armv7 default, 7s permitted, 2+ arches suppirted as `ARCHES=armv7,armv7s`), `CFLAGS`, `CPPFLAGS`. If you have cctools, use Makefile flag `LLVM-PREFIX=""` (default behavior is to call `$(LLVM-PREFIX)lipo`). To turn off PIC use `PIC=""` (default PIC is `-fPIC`)
+If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile flags are `SDK`, `ARCHES` (armv7 default, 4t,6,7s permitted, 2+ arches suppirted as `ARCHES=armv7,armv7s`), `CFLAGS`, `CPPFLAGS`. If you have cctools, use Makefile flag `LLVM-PREFIX=""` (default behavior is to call `$(LLVM-PREFIX)$(tool)`). To turn off PIC use `PIC=""` (default $(PIC) is `-fPIC`)
 </details>
 
 ## Status
 * Full ANSI C89
-* POSIX is partly implemented. POSIX-1.1990 is work-in-progress, but VERY incomplete.
+* POSIX is partly implemented. POSIX-1.1990 is work-in-progress.
 * Some Mach syscalls implemented with libMach. To compile it (required for stdio), use `./getlibmach.sh`. It's very small.
 * ANSI requires support for "C" locale only, which this library does. You can find Apple `LC_CTYPE` parser at `./src/sysindep/locale/unused`
 
@@ -31,8 +31,7 @@ This project is a Public Domain and licensed under The Unlicense. Note that 5701
 7. ./src/math – libM
 
 ## Notes
-
-### Why sysindep us "probably" system-independent?
+### Why sysindep is "probably" system-independent?
 
 TL;DL: I'm lazy
 
@@ -42,13 +41,17 @@ Actually, it should be named "c", not "sysindep", but I don't want to change it 
 
 TL;DR: no, it's not.
 
-The only thing that must be compatible is runtime and it is. Actually, this library can be used with libSystem if you'll remove `./src/sysindep/stdio` – it's uncompatible.
+The only thing must be compatible is runtime and it is - support for ANY arch is garanteed. 
+
+(Actually, this library can be used with libSystem if you'll remove `./src/sysindep/stdio` – it's incompatible)
 
 ### Is dynamic linking supported?
 
 TL;DR: no
 
-See previous pls. And of course it can't replace libSystem
+And never be - dyld is complicated as hell. Sorry! T-T
+
+And of course it can't replace libSystem
 
 ### Is it thread-safe? What about pthreads?
 
@@ -61,3 +64,11 @@ TL;DR: malloc and stdio are safe. libmach is required for pthreads and of course
 TL;DR: I think so
 
 Of course, it's not 100% tested. But it's tested :)
+
+About ABI stability – no, it's not at all: actually, this library is not stable at all, because POSIX is WIP
+
+### What about docs?
+
+TP;DR: coming soon
+
+I'll write docs after POSIX implementation...
