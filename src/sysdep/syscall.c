@@ -1,5 +1,6 @@
 /*
  * SAFE syscall() implementation
+ * target: iOS 6, ARMv7 (thumb-2 preferred, UAL ARM as well), clang
  */
 
 #include <stdarg.h>
@@ -18,7 +19,7 @@ __asm__ ( // static __attribute__("naked") void do_syscall(void)
     ".thumb_func _do_syscall\n\t"
     "_do_syscall:\n\t"
     ".cfi_startproc\n\t"
-    "push {r4, r5, r6, r8}\n\t"
+    "push {r4, r5, r6, r8}\n\t" // r7 is a frame pointer (actually, it will protect CFI if code will break :D)
     ".cfi_def_cfa_offset 16\n\t"
     ".cfi_offset r4, -16\n\t"
     ".cfi_offset r5, -12\n\t"
@@ -43,6 +44,7 @@ __asm__ ( // static __attribute__("naked") void do_syscall(void)
 
 // we don't add r4-r6,r8 to clobbers, because we bind
 // args to register and compiler follows ABI and will generate correct prologue 
+// r0-r3,r12 are caller-saved, so no clobbers too
 // "lr" in clobbers because we now use 'bl' instruction for >4 args
 #define DEFINE_SYSCALL(n, args, regs, asm_code, ...) \
 long syscall##n args \
@@ -57,7 +59,7 @@ long syscall##n args \
         "movcs %[err], #1\n\t" \
         : "+r" (r0), [err] "=r" (error_flag) \
         : __VA_ARGS__ \
-        : "memory", "cc", "lr", "sp" \
+        : "memory", "cc", "lr" \
     ); \
     \
     if (error_flag) { \
