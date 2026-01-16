@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <unistd.h> /* for write() */
+#include <wchar.h>  /* Needed for wchar_t */
 
 #define PAD_RIGHT 1
 #define PAD_ZERO  2
@@ -95,6 +96,34 @@ static int _itoa_base(uintmax_t val, int base, int flags, char *buf) {
         val /= base;
     }
     return buf - orig;
+}
+
+/* 
+ * Helper to encode a single wide char to UTF-8.
+ * Returns the number of bytes written to buf (0 on failure).
+ * Ensure buf has at least 4 bytes of space.
+ */
+static int _encode_utf8(uint32_t wc, char *buf) {
+    if (wc < 0x80) {
+        buf[0] = (char)wc;
+        return 1;
+    } else if (wc < 0x800) {
+        buf[0] = (char)(0xC0 | (wc >> 6));
+        buf[1] = (char)(0x80 | (wc & 0x3F));
+        return 2;
+    } else if (wc < 0x10000) {
+        buf[0] = (char)(0xE0 | (wc >> 12));
+        buf[1] = (char)(0x80 | ((wc >> 6) & 0x3F));
+        buf[2] = (char)(0x80 | (wc & 0x3F));
+        return 3;
+    } else if (wc < 0x110000) {
+        buf[0] = (char)(0xF0 | (wc >> 18));
+        buf[1] = (char)(0x80 | ((wc >> 12) & 0x3F));
+        buf[2] = (char)(0x80 | ((wc >> 6) & 0x3F));
+        buf[3] = (char)(0x80 | (wc & 0x3F));
+        return 4;
+    }
+    return 0;
 }
 
 static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
@@ -355,17 +384,76 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                     continue;
                 }
 
+            case 'C':
             case 'c':
-                temp_buf[0] = (char)va_arg(arg, int);
-                slen = 1;
-                str_val = temp_buf;
+                /* Handle %lc / %lC (Wide Char) */
+                if (type == 'C' || len_mod == 3) {
+                    /* wint_t is usually passed as int-sized arg */
+                    uint32_t wc = (uint32_t)va_arg(arg, unsigned int); 
+                    slen = _encode_utf8(wc, temp_buf);
+                    str_val = temp_buf;
+                } else {
+                    /* Standard Char */
+                    temp_buf[0] = (char)va_arg(arg, int);
+                    slen = 1;
+                    str_val = temp_buf;
+                }
                 break;
 
+            case 'S':
             case 's':
-                str_val = va_arg(arg, char*);
-                if (!str_val) str_val = "(null)";
-                slen = strlen(str_val);
-                if (prec >= 0 && slen > prec) slen = prec;
+                /* Handle %ls / %lS (Wide String to UTF-8) */
+                if (type == 'S' || len_mod == 3) {
+                    wchar_t *wstr = va_arg(arg, wchar_t*);
+                    if (!wstr) wstr = (wchar_t *)L"(null)";
+                    
+                    /* Calculate length in bytes for UTF-8 output, respecting precision */
+                    int total_bytes = 0;
+                    const wchar_t *ptr = wstr;
+                    char dummy[4];
+                    
+                    while (*ptr) {
+                        int char_len = _encode_utf8((uint32_t)*ptr, dummy);
+                        if (prec >= 0 && (total_bytes + char_len) > prec) break;
+                        total_bytes += char_len;
+                        ptr++;
+                    }
+
+                    /* Handle Left Padding */
+                    int padding = width - total_bytes;
+                    if (!(flags & PAD_RIGHT)) {
+                         while (padding-- > 0) total_written += _out_char(stream, ' ');
+                    }
+
+                    /* Output the encoded characters */
+                    int written_so_far = 0;
+                    ptr = wstr;
+                    while (*ptr) {
+                        char utf8_buf[4];
+                        int char_len = _encode_utf8((uint32_t)*ptr, utf8_buf);
+                        
+                        /* Stop if next char exceeds precision */
+                        if (prec >= 0 && (written_so_far + char_len) > prec) break;
+
+                        for(int i=0; i<char_len; i++) total_written += _out_char(stream, utf8_buf[i]);
+                        written_so_far += char_len;
+                        ptr++;
+                    }
+
+                    /* Handle Right Padding */
+                    if (flags & PAD_RIGHT) {
+                         while (padding-- > 0) total_written += _out_char(stream, ' ');
+                    }
+
+                    /* Skip the generic footer loop since we handled output here */
+                    continue; 
+                } else {
+                    /* Standard String */
+                    str_val = va_arg(arg, char*);
+                    if (!str_val) str_val = "(null)";
+                    slen = strlen(str_val);
+                    if (prec >= 0 && slen > prec) slen = prec;
+                }
                 break;
 
             case 'f':
