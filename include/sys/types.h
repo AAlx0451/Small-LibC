@@ -30,6 +30,9 @@ typedef uint8_t u_int8_t;
 typedef uint16_t u_int16_t;
 typedef uint32_t u_int32_t;
 typedef uint32_t ino_t;
+typedef uint16_t nlink_t;
+typedef int64_t blkcnt_t;
+typedef int32_t blksize_t;
 
 # endif /* SYS_TYPES_H */
 

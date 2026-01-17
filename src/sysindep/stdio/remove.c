@@ -1,16 +1,16 @@
-#include <stdio.h>
+#include <sys/stat.h>
 #include <unistd.h>
-#include <errno.h>
 
 int remove(const char *pathname)
 {
-    if (unlink(pathname) == 0) {
-        return 0;
+    struct stat sb;
+    if (lstat(pathname, &sb) < 0) {
+        return -1;
     }
 
-    if (errno == EPERM || errno == EISDIR) {
+    if (S_ISDIR(sb.st_mode)) {
         return rmdir(pathname);
     }
-    
-    return -1;
+
+    return unlink(pathname);
 }
