@@ -102,11 +102,10 @@ FILE *freopen(const char *pathname, const char *mode, FILE *stream);
 FILE *tmpfile(void);
 char *tmpnam(char *s);
 ssize_t getline(char **lineptr, size_t *n, FILE *stream);
-
-#define feof(p) ((p)->_flags & __S_EOF)
-#define ferror(p) ((p)->_flags & __S_ERR)
-#define fileno(p) ((p)->_fd)
-#define clearerr(p) ((void)((p)->_flags &= ~(__S_ERR | __S_EOF)))
+int feof(FILE *p);
+int ferror(FILE *p);
+int fileno(FILE *p);
+void clearerr(FILE *p);
 
 
 /* Internal API */

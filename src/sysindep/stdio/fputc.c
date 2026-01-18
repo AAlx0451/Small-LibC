@@ -9,7 +9,7 @@ int fputc(int c, FILE *f) {
 
     _spin_lock(&f->_lock);
 
-    /* Ensure stream is in write mode (same logic as before) */
+    /* Ensure stream is in write */
     if (f->_flags & __S_RD) {
         f->_flags &= ~__S_RD;
         f->_flags |= __S_WR;
