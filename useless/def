@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if ! command -v gcc &> /dev/null; then
-    echo "Ошибка: gcc не найден."
+    echo "def: error: gcc not found."
     exit 1
 fi
 
@@ -9,7 +9,6 @@ macros=()
 headers=()
 parse_headers=false
 
-# 1. Парсинг аргументов
 for arg in "$@"; do
     if [[ "$arg" == "--" ]]; then
         parse_headers=true
@@ -23,11 +22,10 @@ for arg in "$@"; do
 done
 
 if [[ ${#headers[@]} -eq 0 || ${#macros[@]} -eq 0 ]]; then
-    echo "Использование: $0 MACRO1 MACRO2 ... -- header.h"
+    echo "def: usage: $0 MACRO1 MACRO2 ... -- header.h"
     exit 1
 fi
 
-# 2. Формирование тела для препроцессора
 source_code=""
 for h in "${headers[@]}"; do
     if [[ -f "$h" ]]; then
@@ -37,18 +35,10 @@ for h in "${headers[@]}"; do
     fi
 done
 
-# 3. Получаем ВСЕ дефайны через -dM
-# gcc -E -dM -  <- выводит список всех #define, которые видны после инклюдов
 all_defines=$(echo "$source_code" | gcc -E -dM - 2>/dev/null)
 
-# 4. Фильтруем нужные
 for m in "${macros[@]}"; do
-    # Ищем строку, которая начинается с "#define ИМЯ " или "#define ИМЯ("
-    # grep -E нужен для регулярки.
-    # ^#define $m : начало строки + define + имя
-    # ( |\(|$)    : после имени должен быть пробел, скобка (если функция) или конец строки (пустой дефайн)
     match=$(echo "$all_defines" | grep -E "^#define $m( |\(|$)")
-
     if [[ -n "$match" ]]; then
         echo "$match"
     else

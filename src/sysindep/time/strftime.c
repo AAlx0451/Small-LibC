@@ -4,20 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef HAVE_NL_LANGINFO
-#include <langinfo.h>
-#endif
-
 static int weeknumber(const struct tm *timeptr, int firstweekday);
 static int iso8601wknum(const struct tm *timeptr);
-
-#ifndef inline
-#ifdef __GNUC__
-#define inline __inline__
-#else
-#define inline
-#endif
-#endif
 
 static inline int append_char(char **s, char *end, const char c) {
     if (*s < end) {
@@ -71,23 +59,13 @@ static inline int max(int a, int b) { return (a > b ? a : b); }
 #define range(low, item, hi) max(low, min(item, hi))
 
 static const char *days_a(int index) {
-#ifdef HAVE_NL_LANGINFO
-    static const nl_item data[] = { ABDAY_1, ABDAY_2, ABDAY_3, ABDAY_4, ABDAY_5, ABDAY_6, ABDAY_7 };
-    return nl_langinfo(data[index]);
-#else
     static const char *data[] = { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" };
     return data[index];
-#endif
 }
 
 static const char *days_l(int index) {
-#ifdef HAVE_NL_LANGINFO
-    static const nl_item data[] = { DAY_1, DAY_2, DAY_3, DAY_4, DAY_5, DAY_6, DAY_7 };
-    return nl_langinfo(data[index]);
-#else
     static const char *data[] = { "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" };
     return data[index];
-#endif
 }
 
 static const char *months_a(int index) {

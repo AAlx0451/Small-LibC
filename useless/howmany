@@ -1,0 +1,139 @@
+#!/usr/bin/env perl
+use strict;
+use warnings;
+use File::Find;
+use Getopt::Long;
+use Cwd 'abs_path';
+use Term::ANSIColor;
+
+my $show_static = 0;
+my $show_headers = 1;
+my @ignore_funcs = ();
+my @ignore_files = ();
+my $mode_two = 0;
+my $mode_count = 0;
+my $help = 0;
+my $total_count = 0;
+
+GetOptions(
+    "static"         => \$show_static,
+    "no-filename"    => sub { $show_headers = 0 },
+    "ignore-func=s"  => \@ignore_funcs,
+    "ignore-file=s"  => \@ignore_files,
+    "2"              => \$mode_two,
+    "c"              => \$mode_count,
+    "s"              => sub { },
+    "help"           => \$help,
+) or die("Error in command line arguments\n");
+
+if ($help) {
+    print "Usage: $0 [options] [directories...]\n";
+    print "  -s                 Standard mode (default)\n";
+    print "  -2                 List only files with >= 2 functions\n";
+    print "  -c                 Print only total global function count\n";
+    print "  --static           Include static functions\n";
+    print "  --no-filename      Output only function names\n";
+    print "  --ignore-func=STR  Ignore specific function name\n";
+    exit 0;
+}
+
+my %ignored_funcs_map = map { $_ => 1 } @ignore_funcs;
+my %ignored_files_map = map { abs_path($_) => 1 } @ignore_files;
+
+my %keywords = map { $_ => 1 } qw(
+    if while for switch return sizeof do else catch 
+    case default goto break continue typedef struct union enum 
+    __attribute__ __asm __extension__ asm
+);
+
+my @search_dirs = @ARGV ? @ARGV : ('.');
+
+find({ wanted => \&process_file, no_chdir => 1 }, @search_dirs);
+
+if ($mode_count) {
+    print colored(['bold green'], "Total functions: $total_count\n");
+}
+
+sub process_file {
+    my $filepath = $File::Find::name;
+    return unless -f $filepath && $filepath =~ /\.c$/;
+
+    if (%ignored_files_map) {
+        my $abs = abs_path($filepath);
+        return if $abs && $ignored_files_map{$abs};
+    }
+
+    open my $fh, '<', $filepath or return;
+    local $/ = undef;
+    my $code = <$fh>;
+    close $fh;
+
+    $code =~ s/\\[\r\n]+//g;
+
+    $code =~ s{
+        (
+            " (?: \\. | [^"\\] )* "
+            |
+            ' (?: \\. | [^'\\] )* '
+            |
+            /\* .*? \*/
+            |
+            // [^\n]*
+            |
+            ^\s* \# [^\n]* 
+        )
+    }{
+        if ($1 =~ m{^["']}) { '""' } else { ' ' }
+    }gsemx;
+
+    $code =~ s/\b__attribute__\s*\(\( (?: [^()]++ | (?0) )* \)\)//gx;
+    $code =~ s/\b__(?:asm|declspec|extension)\b(?: \s* \( (?: [^()]++ | (?0) )* \) )?//gx;
+    $code =~ s/\b(?:__restrict|__restrict__|restrict|__const|__inline|__inline__|inline)\b/ /gx;
+
+    my @funcs = ();
+
+    while ($code =~ /
+        (?:^|[;}]|:)\s*
+        ([^;{}=]+?)
+        \s*
+        \( ([^;]*?) \)
+        \s*
+        (?=\{)
+    /gx) {
+        my $decl_blob = $1;
+        my $args = $2;
+
+        if ($decl_blob =~ /([\w_]+)\s*$/) {
+            my $name = $1;
+            my $type = substr($decl_blob, 0, -length($name));
+            
+            next if $keywords{$name};
+            next if $ignored_funcs_map{$name};
+            next if $type !~ /\S/;
+            next if $type =~ /\b(typedef|extern)\b/;
+            next if $type =~ /#/;
+
+            my $is_static = ($type =~ /\bstatic\b/);
+            next if ($is_static && !$show_static);
+            next if $args =~ /=/;
+
+            push @funcs, $name;
+        }
+    }
+
+    $total_count += scalar(@funcs);
+
+    return if $mode_count;
+
+    if (@funcs) {
+        return if ($mode_two && scalar(@funcs) < 2);
+
+        if ($show_headers) {
+            print colored(['bold blue'], "$filepath: ");
+            print colored(['yellow'], scalar(@funcs) . " -> ");
+            print join(", ", @funcs) . "\n";
+        } else {
+            print join("\n", @funcs) . "\n";
+        }
+    }
+}
