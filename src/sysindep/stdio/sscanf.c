@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-int printf(const char *format, ...) {
-    va_list ap;
+int sscanf(const char *str, const char *format, ...) {
     int ret;
+    va_list ap;
     va_start(ap, format);
-    ret = vfprintf(stdout, format, ap);
+    ret = vsscanf(str, format, ap);
     va_end(ap);
     return ret;
 }

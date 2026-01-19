@@ -1,6 +1,12 @@
-#include<ctype.h>
+#include <ctype.h>
 
-const unsigned short _ctype[] = {
+#if defined(__GNUC__) || defined(__clang__)
+#define USED __attribute__((used))
+#else
+#define USED
+#endif
+
+const unsigned short USED _ctype[] = {
     0, /* EOF (-1) */
     _C, _C, _C, _C, _C, _C, _C, _C,                                // 0-7
     _C, _C | _S | _HT, _C | _S, _C | _S, _C | _S, _C | _S, _C, _C, // 8-15
@@ -31,19 +37,3 @@ const unsigned short _ctype[] = {
     _L, _L, _L, _L, _L, _L, _L, _L, _L, _L, _L, _L, _L, _L, _L,
     _L,                                                              // 224-239
     _L, _L, _L, _L, _L, _L, _L, _P, _L, _L, _L, _L, _L, _L, _L, _L}; // 240-255
-
-unsigned char __tolower(unsigned char c) {
-  if (isupper(c)) {
-    c -= 'A' - 'a';
-  }
-
-  return c;
-}
-
-unsigned char __toupper(unsigned char c) {
-  if (islower(c)) {
-    c -= 'a' - 'A';
-  }
-
-  return c;
-}

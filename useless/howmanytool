@@ -1,0 +1,30 @@
+find . -name "*.c" -print0 | xargs -0 perl -0777 -ne '
+    $filename = $ARGV;
+    s|/\*.*?\*/||gs; 
+    s|//.*||g;
+    s/"(\\.|[^"\\])*"//g;
+    s/'\''(\\.|[^'\''\\])*'\''//g;
+    s/^\s*#.*//gm;
+    my @funcs = ();
+    while (/
+        (?:^|[;}]|^)\s*
+        ((?:[a-zA-Z0-9_]+\s+|\*\s*)+)  
+        ([a-zA-Z0-9_]+)
+        \s*
+        \([^;]*?\)
+        \s*
+        \{
+    /gx) {
+        my $type = $1;
+        my $name = $2;
+        $type =~ s/^\s+|\s+$//g;
+        next if $name =~ /^(if|while|for|switch|return|sizeof|do|else|catch|__attribute__)$/;
+        next if $type eq "";
+        next if $type =~ /\bstatic\b/;
+        next if $type =~ /\b(typedef|extern)\b/;
+        push @funcs, $name;
+    }
+    if (@funcs > 1) {
+        print "$filename: " . scalar(@funcs) . " -> " . join(", ", @funcs) . "\n";
+    }
+'
