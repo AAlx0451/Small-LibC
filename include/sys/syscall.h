@@ -29,6 +29,7 @@
 #  define SYS_munmap 73
 #  define SYS_setitimer 83
 #  define SYS_dup2 90
+#  define SYS_fcntl 92
 #  define SYS_select 93
 #  define SYS_sigsuspend 111
 #  define SYS_gettimeofday 116

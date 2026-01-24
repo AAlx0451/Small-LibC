@@ -2,6 +2,7 @@
 #define UNISTD_H
 
 #include <stddef.h> /* size_t */
+#include <stdio.h> /* SEEK_SET, SEEK_END, SEEK_CUR */
 #include <sys/types.h> /* types, null ptr */
 
 /* INTERNAL */
@@ -29,10 +30,6 @@
 # define NULL ((void *)0)
 #endif /* NULL */
 
-#define SEEK_SET 0
-#define SEEK_CUR 1
-#define SEEK_END 2
-
 #define F_OK 0
 
 /* FUNCTIONS */
@@ -57,7 +54,6 @@ NORETURN void _exit(int status); // 1
 pid_t fork(void); // 2
 ssize_t read(int fd, void *buf, size_t count); // 3
 ssize_t write(int fd, const void *buf, size_t count); // 4
-int open(const char *pathname, int flags, ...); // 5
 int close(int fd); // 6
 int link(const char *oldpath, const char *newpath); // 9
 int unlink(const char *pathname); // 10
