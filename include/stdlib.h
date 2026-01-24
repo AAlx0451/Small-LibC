@@ -43,8 +43,8 @@ int abs(int num);
 long labs(long num);
 div_t div(int numer, int denom);
 ldiv_t ldiv(long numer, long denom);
-void srand(uint64_t seed);
-uint32_t rand(void);
+void srand(unsigned int seed);
+int rand(void);
 long long llabs(long long j);
 lldiv_t lldiv(long long numer, long long denom);
 

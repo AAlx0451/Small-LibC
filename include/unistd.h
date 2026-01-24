@@ -72,9 +72,9 @@ int rmdir(const char *path); // 137
 off_t lseek(int fd, off_t offset, int whence); // 199
 
 // POSIX functions - emulation
-unsigned int sleep(unsigned int seconds); // SYS_select
-unsigned int usleep(unsigned int microseconds); // SYS_select
-void *brk(void *x); // SYS_mmap
+int sleep(unsigned int seconds); // SYS_select
+int usleep(unsigned long); // SYS_select
+int brk(void *x); // SYS_mmap
 void *sbrk(intptr_t size); // SYS_mmap
 int isatty(int fd); // SYS_ioctl
 int execv(const char *path, char *const argv[]); // SYS_execve
