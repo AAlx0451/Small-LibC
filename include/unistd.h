@@ -31,6 +31,9 @@
 #endif /* NULL */
 
 #define F_OK 0
+#define X_OK 1
+#define W_OK 2
+#define R_OK 4
 
 /* FUNCTIONS */
 
@@ -91,5 +94,7 @@ int execvp(const char *file, char *const argv[]); // SYS_execve
 int execlp(const char *file, const char *arg, ...); // SYS_execve
 unsigned int alarm(unsigned int seconds); // SYS_setitimer
 char *getcwd(char *buf, size_t size); // userspace implementation
+char *ttyname(int fd); // userspace
+char *ctermid(char *s); // userspace
 
 #endif
