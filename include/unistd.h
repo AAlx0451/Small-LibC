@@ -59,12 +59,20 @@ int link(const char *oldpath, const char *newpath); // 9
 int unlink(const char *pathname); // 10
 int chdir(const char *path); // 12
 pid_t getpid(void); // 20
+int setuid(uid_t uid); // 23
+uid_t getuid(void); // 24
+uid_t geteuid(void); // 25
 int access(const char *pathname, int mode); // 33
 pid_t getppid(void); // 39
 int pipe(int pipefd[2]); // 42
+uid_t getegid(void); // 43
+gid_t getgid(void); // 47
+char *getlogin(void); // 49
 int execve(const char *pathname, char *const argv[], char *const envp[]); // 59
+int getgroups(int gidsetsize, gid_t grouplist[]); // 79
 int dup2(int oldfd, int newfd); // 90
 int rmdir(const char *path); // 137
+int setgid(gid_t gid); // 181
 off_t lseek(int fd, off_t offset, int whence); // 199
 
 // POSIX functions - emulation
@@ -76,5 +84,6 @@ int isatty(int fd); // SYS_ioctl
 int execv(const char *path, char *const argv[]); // SYS_execve
 int execl(const char *path, const char *arg, ...); // SYS_execve
 unsigned int alarm(unsigned int seconds); // SYS_setitimer
+char *getcwd(char *buf, size_t size); // userspace implementation
 
 #endif
