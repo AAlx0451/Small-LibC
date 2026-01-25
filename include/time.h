@@ -7,21 +7,26 @@
 #ifndef NULL
 #define NULL ((void*)0)
 #endif
-#define CLOCKS_PER_SEC 1000000
 
+#define CLOCKS_PER_SEC 1000000
+#define CLK_TCK 100
+
+extern char *tzname[2];
+extern long timezone;
+extern int daylight;
 
 struct tm {
-        int     tm_sec;         /* seconds after the minute [0-60] */
-        int     tm_min;         /* minutes after the hour [0-59] */
-        int     tm_hour;        /* hours since midnight [0-23] */
-        int     tm_mday;        /* day of the month [1-31] */
-        int     tm_mon;         /* months since January [0-11] */
-        int     tm_year;        /* years since 1900 */
-        int     tm_wday;        /* days since Sunday [0-6] */
-        int     tm_yday;        /* days since January 1 [0-365] */
-        int     tm_isdst;       /* Daylight Savings Time flag */
-        long    tm_gmtoff;      /* offset from CUT in seconds */
-        char    *tm_zone;       /* timezone abbreviation */
+        int     tm_sec;
+        int     tm_min;
+        int     tm_hour;
+        int     tm_mday;
+        int     tm_mon;
+        int     tm_year;
+        int     tm_wday;
+        int     tm_yday;
+        int     tm_isdst;
+        long    tm_gmtoff;
+        char    *tm_zone;
 };
 
 struct timespec {

@@ -1,10 +1,5 @@
-#include <setjmp.h>
-
-extern int _sigprocmask(int how, const void *set, void *oset);
-
-int sigsetjmp(jmp_buf env, int savemask);
-int setjmp(jmp_buf env);
-int __setjmp(jmp_buf env);
+// This assemly file defines
+// setjmp(), _setjmp() and sigsetjmp()
 
 __asm__(
     ".syntax unified\n\t"

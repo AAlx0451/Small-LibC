@@ -1,10 +1,5 @@
-#include <setjmp.h>
-
-extern int _sigprocmask(int how, const void *set, void *oset);
-
-void siglongjmp(jmp_buf env, int val);
-void longjmp(jmp_buf env, int val);
-void __longjmp(jmp_buf env, int val);
+// this assembly file defines
+// longjmp(), _longjmp() and siglongjmp()
 
 __asm__(
     ".syntax unified\n\t"

@@ -34,7 +34,7 @@
 /* fcntl() structs */
 struct flock {
   off_t l_start;
-  off_t	l_len;
+  off_t l_len;
   pid_t l_pid;
   short l_type;
   short l_whence;

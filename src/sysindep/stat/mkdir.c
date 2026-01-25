@@ -4,7 +4,7 @@
 
 int mkdir(const char *path, mode_t mode) 
 {
-    long ret = syscall(SYS_mkdir, path, mode);
+    long ret = syscall(SYS_mkdir, (long)path, mode);
 
     if (ret < 0) 
     {

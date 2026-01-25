@@ -25,6 +25,7 @@ struct  rusage {
 };
 
 # define RUSAGE_SELF 0
+# define RUSAGE_CHILDREN -1
 
 int getrusage(int who, struct rusage *usage);
 
