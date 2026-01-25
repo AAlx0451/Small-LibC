@@ -58,12 +58,14 @@ int close(int fd); // 6
 int link(const char *oldpath, const char *newpath); // 9
 int unlink(const char *pathname); // 10
 int chdir(const char *path); // 12
+int chown(const char *path, uid_t owner, gid_t group); // 16
 pid_t getpid(void); // 20
 int setuid(uid_t uid); // 23
 uid_t getuid(void); // 24
 uid_t geteuid(void); // 25
 int access(const char *pathname, int mode); // 33
 pid_t getppid(void); // 39
+int dup(int oldfd); // 41
 int pipe(int pipefd[2]); // 42
 uid_t getegid(void); // 43
 gid_t getgid(void); // 47
@@ -78,11 +80,15 @@ off_t lseek(int fd, off_t offset, int whence); // 199
 // POSIX functions - emulation
 int sleep(unsigned int seconds); // SYS_select
 int usleep(unsigned long); // SYS_select
+int pause(void); // SYS_select
 int brk(void *x); // SYS_mmap
 void *sbrk(intptr_t size); // SYS_mmap
 int isatty(int fd); // SYS_ioctl
 int execv(const char *path, char *const argv[]); // SYS_execve
 int execl(const char *path, const char *arg, ...); // SYS_execve
+int execle(const char *path, const char *arg, ...); // SYS_execve
+int execvp(const char *file, char *const argv[]); // SYS_execve
+int execlp(const char *file, const char *arg, ...); // SYS_execve
 unsigned int alarm(unsigned int seconds); // SYS_setitimer
 char *getcwd(char *buf, size_t size); // userspace implementation
 
