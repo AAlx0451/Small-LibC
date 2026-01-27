@@ -27,6 +27,7 @@
 #define FILENAME_MAX 1024
 
 #define L_ctermid 10
+#define L_cuserid 17
 
 typedef off_t fpos_t;
 
