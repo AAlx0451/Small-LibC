@@ -111,6 +111,7 @@ int fileno(FILE *p);
 void clearerr(FILE *p);
 char *ctermid(char *s);
 char *cuserid(char *s);
+FILE *fdopen(int fildes, const char *mode);
 
 /* Internal API */
 #define SMALL_LIBC

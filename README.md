@@ -11,7 +11,7 @@ If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile 
 
 ## Status
 * Full ANSI C89
-* POSIX is partly implemented. POSIX-1.1990 is work-in-progress.
+* Full POSIX.1-1990
 * Some Mach syscalls implemented with libMach. To compile it (required for stdio), use `./getlibmach.sh`. It's very small.
 * ANSI requires support for "C" locale only, which this library does. You can find Apple `LC_CTYPE` parser at `./src/sysindep/locale/unused`
 * Some C99 is implemented (very partly) – e.g. you can use `%ls` and `%lc` and `snprintf()`

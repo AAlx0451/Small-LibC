@@ -49,6 +49,7 @@
 #  define SYS_rename 128
 #  define SYS_mkfifo 132
 #  define SYS_mkdir 136
+#  define SYS_utimes 138
 #  define SYS_rmdir 137
 #  define SYS_setsid 147
 #  define SYS_waitid 173
