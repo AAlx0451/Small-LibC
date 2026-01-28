@@ -169,8 +169,6 @@ int tcsetpgrp(int fd, pid_t pgrp); // SYS_ioctl
 long sysconf(int name); // SYS___sysctl
 char *getcwd(char *buf, size_t size); // userspace implementation
 char *ttyname(int fd); // userspace
-char *ctermid(char *s); // userspace
 int getopt(int argc, char *const argv[], const char *optstring); // userspace
-char *cuserid(char *s); // userspace
 
 #endif

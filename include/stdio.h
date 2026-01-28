@@ -109,7 +109,8 @@ int feof(FILE *p);
 int ferror(FILE *p);
 int fileno(FILE *p);
 void clearerr(FILE *p);
-
+char *ctermid(char *s);
+char *cuserid(char *s);
 
 /* Internal API */
 #define SMALL_LIBC
