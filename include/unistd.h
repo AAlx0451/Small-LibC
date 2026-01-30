@@ -20,6 +20,14 @@
 
 /* CONSTANTS */
 
+// posix config <3
+#define _POSIX_VERSION 199009L
+#define _POSIX_JOB_CONTROL 1
+#define _POSIX_SAVED_IDS 1
+#define _POSIX_CHOWN_RESTRICTED 1
+#define _POSIX_NO_TRUNC 1
+#define _POSIX_VDISABLE ((unsigned char)'\377')
+
 // descriptors
 #define STDIN_FILENO 0
 #define STDOUT_FILENO 1
