@@ -30,6 +30,7 @@
 #  define SYS_getgid 47
 #  define SYS_sigprocmask 48
 #  define SYS_getlogin 49
+#  define SYS_acct 51
 #  define SYS_sigpending 52
 #  define SYS_ioctl 54
 #  define SYS_execve 59

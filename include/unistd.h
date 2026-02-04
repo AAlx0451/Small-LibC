@@ -179,4 +179,7 @@ char *getcwd(char *buf, size_t size); // userspace implementation
 char *ttyname(int fd); // userspace
 int getopt(int argc, char *const argv[], const char *optstring); // userspace
 
+// XPG functions based on syscalls
+int acct(const char *path); // 51
+
 #endif
