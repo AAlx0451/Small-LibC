@@ -182,11 +182,14 @@ char *ttyname(int fd); // userspace
 int getopt(int argc, char *const argv[], const char *optstring); // userspace
 
 #ifdef _XOPEN_SOURCE
+
 // XPG1 functions unavialible in POSIX
 int acct(const char *path);
 int chroot(const char *path);
 int brk(void *x);
 void *sbrk(intptr_t size);
+int nice(int incr);
+
 #endif
 
 #endif

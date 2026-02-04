@@ -68,8 +68,9 @@ Of course, it's not 100% tested. But it's tested :)
 
 About ABI stability – no, it's not at all: actually, this library is not stable at all, because POSIX is WIP
 
-### What about docs?
+### XPG-1 status
+It's coming soon, but note that some functions will not be implemented due to ABI
+Here's a list of functions which 100% won't be implemented
 
-TP;DR: coming soon
-
-I'll write docs after POSIX implementation...
+* `mount()`
+* `umount()`

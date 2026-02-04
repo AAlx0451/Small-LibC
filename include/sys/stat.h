@@ -2,6 +2,7 @@
 #define SYS_STAT_H
 
 #include <sys/types.h>
+#include <fcntl.h>
 
 /* macros */
 
