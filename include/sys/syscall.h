@@ -35,6 +35,7 @@
 #  define SYS_ioctl 54
 #  define SYS_execve 59
 #  define SYS_umask 60
+#  define SYS_chroot 61
 #  define SYS_munmap 73
 #  define SYS_getgroups 79
 #  define SYS_getpgrp 81

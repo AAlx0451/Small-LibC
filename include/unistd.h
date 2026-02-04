@@ -18,6 +18,10 @@
 #define _SYSCALL_CONCAT_IMPL(name, count) name##count
 #define _SYSCALL_CONCAT(name, count) _SYSCALL_CONCAT_IMPL(name, count)
 
+#if !defined(_POSIX_SOURCE) && !defined(_XOPEN_SOURCE)
+# define _XOPEN_SOURCE
+#endif
+
 /* CONSTANTS */
 
 // posix config <3
@@ -163,8 +167,6 @@ off_t lseek(int fd, off_t offset, int whence); // 199
 int sleep(unsigned int seconds); // SYS_select
 int usleep(unsigned long); // SYS_select
 int pause(void); // SYS_select
-int brk(void *x); // SYS_mmap
-void *sbrk(intptr_t size); // SYS_mmap
 int isatty(int fd); // SYS_ioctl
 int execv(const char *path, char *const argv[]); // SYS_execve
 int execl(const char *path, const char *arg, ...); // SYS_execve
@@ -179,7 +181,12 @@ char *getcwd(char *buf, size_t size); // userspace implementation
 char *ttyname(int fd); // userspace
 int getopt(int argc, char *const argv[], const char *optstring); // userspace
 
-// XPG functions based on syscalls
-int acct(const char *path); // 51
+#ifdef _XOPEN_SOURCE
+// XPG1 functions unavialible in POSIX
+int acct(const char *path);
+int chroot(const char *path);
+int brk(void *x);
+void *sbrk(intptr_t size);
+#endif
 
 #endif
