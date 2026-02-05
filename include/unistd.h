@@ -155,6 +155,7 @@ int getgroups(int gidsetsize, gid_t grouplist[]); // 79
 pid_t getpgrp(void); // 81
 int setpgid(pid_t pid, pid_t pgid); // 82
 int dup2(int oldfd, int newfd); // 90
+int fsync(int fd); // 95
 int fchown(int fd, uid_t owner, gid_t group); // 123
 int rmdir(const char *path); // 137
 pid_t setsid(void); // 147
@@ -189,6 +190,7 @@ int chroot(const char *path);
 int brk(void *x);
 void *sbrk(intptr_t size);
 int nice(int incr);
+void sync(void);
 
 #endif
 
