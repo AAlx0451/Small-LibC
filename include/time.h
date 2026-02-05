@@ -3,6 +3,7 @@
 
 #include <sys/types.h>
 #include <stddef.h>
+#include <unistd.h>
 
 #ifndef NULL
 #define NULL ((void*)0)
@@ -44,5 +45,9 @@ char *asctime(const struct tm *timeptr);
 char *ctime(const time_t *timer);
 time_t mktime(struct tm *tm);
 size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
+
+#ifdef _XOPEN_SOURCE
+int stime(const time_t *t);
+#endif
 
 #endif /* TIME_H */
