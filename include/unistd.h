@@ -201,18 +201,19 @@ int fsync(int fd); // 95
 int fchown(int fd, uid_t owner, gid_t group); // 123
 int usleep(unsigned long); // SYS_select
 int seteuid(uid_t euid);
+int setpgrp(void);
+int nice(int incr);
+void sync(void);
+
 #endif
 
 // X/Open Portability Guide Issue 1
 #ifdef _XOPEN_SOURCE
 
-// XPG1 functions unavialible in POSIX
 int acct(const char *path);
 int chroot(const char *path);
 int brk(void *x);
 void *sbrk(intptr_t size);
-int nice(int incr);
-void sync(void);
 
 #endif
 
