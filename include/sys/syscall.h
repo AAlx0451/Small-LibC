@@ -14,6 +14,7 @@
 #  define SYS_link 9
 #  define SYS_unlink 10
 #  define SYS_chdir 12
+#  define SYS_mknod 14
 #  define SYS_chmod 15
 #  define SYS_chown 16
 #  define SYS_getpid 20

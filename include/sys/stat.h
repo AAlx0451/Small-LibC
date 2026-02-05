@@ -3,6 +3,7 @@
 
 #include <sys/types.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 /* macros */
 
@@ -82,4 +83,8 @@ mode_t umask(mode_t mask);
 // ipc
 int mkfifo(const char *path, mode_t mode);
 
+#ifdef _XOPEN_SOURCE
+int mknod(const char *path, mode_t mode, dev_t dev);
 #endif
+
+#endif // SYS_STAT_H
