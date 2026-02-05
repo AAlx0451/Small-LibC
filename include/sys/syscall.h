@@ -61,6 +61,7 @@
 #  define SYS_setsid 147
 #  define SYS_waitid 173
 #  define SYS_setgid 181
+#  define SYS_seteuid 183
 #  define SYS_sigreturn 184
 #  define SYS_stat 188
 #  define SYS_fstat 189

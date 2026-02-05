@@ -200,6 +200,7 @@ int fsync(int fd); // 95
 #if _POSIX_C_SOURCE >= 200112L || defined(_XOPEN_SOURCE)
 int fchown(int fd, uid_t owner, gid_t group); // 123
 int usleep(unsigned long); // SYS_select
+int seteuid(uid_t euid);
 #endif
 
 // X/Open Portability Guide Issue 1
