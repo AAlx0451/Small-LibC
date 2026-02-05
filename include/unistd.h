@@ -5,7 +5,31 @@
 #include <stdio.h> /* SEEK_SET, SEEK_END, SEEK_CUR */
 #include <sys/types.h> /* types, null ptr */
 
-/* INTERNAL */
+/* feature test macros */
+#if !defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE) && !defined(_XOPEN_SOURCE)
+ /* enable X/Open extensions */
+# define _XOPEN_SOURCE 700
+#endif
+
+/* _POSIX_SOURCE means _POSIX_C_SOURCE=1 */
+#if defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE)
+# define _POSIX_C_SOURCE 1
+#endif
+
+/* _XOPEN_SOURCE sets POSIX version */
+#if defined(_XOPEN_SOURCE) && !defined(_POSIX_C_SOURCE)
+# if (_XOPEN_SOURCE >= 700)
+#  define _POSIX_C_SOURCE 200809L
+# elif (_XOPEN_SOURCE >= 600)
+#  define _POSIX_C_SOURCE 200112L
+# elif (_XOPEN_SOURCE >= 500)
+#  define _POSIX_C_SOURCE 199506L
+# else
+#  define _POSIX_C_SOURCE 2
+# endif
+#endif
+
+/* ATTRIBUTES */
 #if defined(__GNUC__) || defined(__clang__)
 # define NORETURN __attribute__((noreturn))
 #elif __STDC_VERSION__ >= 201112L
@@ -13,18 +37,10 @@
 #else
 # define NORETURN
 #endif
-#define _SYSCALL_GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
-#define _SYSCALL_COUNT_ARGS(...) _SYSCALL_GET_NTH_ARG(0, ##__VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1, 0)
-#define _SYSCALL_CONCAT_IMPL(name, count) name##count
-#define _SYSCALL_CONCAT(name, count) _SYSCALL_CONCAT_IMPL(name, count)
-
-#if !defined(_POSIX_SOURCE) && !defined(_XOPEN_SOURCE)
-# define _XOPEN_SOURCE
-#endif
 
 /* CONSTANTS */
 
-// posix config <3
+// posix config
 #define _POSIX_VERSION 199009L
 #define _POSIX_JOB_CONTROL 1
 #define _POSIX_SAVED_IDS 1
@@ -107,27 +123,17 @@
 #define _SC_PAGESIZE 29
 
 /* VARIABLES */
-
+#if _POSIX_C_SOURCE >= 2 || defined(_XOPEN_SOURCE)
 extern char *optarg;
 extern int optind, opterr, optopt;
+#endif
+
 extern char **environ;
 
 /* FUNCTIONS */
 
-// main syscall wrapper, up to 8 args
-#define syscall(number, ...) \
-    _SYSCALL_CONCAT(syscall, _SYSCALL_COUNT_ARGS(__VA_ARGS__))(number, ##__VA_ARGS__)
-
-// safer functions
-long syscall0(long number);
-long syscall1(long number, long arg1);
-long syscall2(long number, long arg1, long arg2);
-long syscall3(long number, long arg1, long arg2, long arg3);
-long syscall4(long number, long arg1, long arg2, long arg3, long arg4);
-long syscall5(long number, long arg1, long arg2, long arg3, long arg4, long arg5);
-long syscall6(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6);
-long syscall7(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7); /* unused! */
-long syscall8(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7, long arg8);
+// POSIX.1-1990
+#if _POSIX_C_SOURCE >= 1 || defined(_XOPEN_SOURCE)
 
 // POSIX function based on syscalls
 NORETURN void _exit(int status); // 1
@@ -155,8 +161,6 @@ int getgroups(int gidsetsize, gid_t grouplist[]); // 79
 pid_t getpgrp(void); // 81
 int setpgid(pid_t pid, pid_t pgid); // 82
 int dup2(int oldfd, int newfd); // 90
-int fsync(int fd); // 95
-int fchown(int fd, uid_t owner, gid_t group); // 123
 int rmdir(const char *path); // 137
 pid_t setsid(void); // 147
 int setgid(gid_t gid); // 181
@@ -164,9 +168,8 @@ long pathconf(const char *path, int name); // 191
 long fpathconf(int fd, int name); // 192
 off_t lseek(int fd, off_t offset, int whence); // 199
 
-// POSIX functions - emulation
+// POSIX functions - emulation (1990)
 int sleep(unsigned int seconds); // SYS_select
-int usleep(unsigned long); // SYS_select
 int pause(void); // SYS_select
 int isatty(int fd); // SYS_ioctl
 int execv(const char *path, char *const argv[]); // SYS_execve
@@ -180,8 +183,26 @@ int tcsetpgrp(int fd, pid_t pgrp); // SYS_ioctl
 long sysconf(int name); // SYS___sysctl
 char *getcwd(char *buf, size_t size); // userspace implementation
 char *ttyname(int fd); // userspace
-int getopt(int argc, char *const argv[], const char *optstring); // userspace
 
+#endif /* _POSIX_C_SOURCE >= 1 */
+
+// POSIX.2-1992
+#if _POSIX_C_SOURCE >= 2 || defined(_XOPEN_SOURCE)
+int getopt(int argc, char *const argv[], const char *optstring); // userspace
+#endif
+
+// POSIX.1b-1993
+#if _POSIX_C_SOURCE >= 199309L || defined(_XOPEN_SOURCE)
+int fsync(int fd); // 95
+#endif
+
+// POSIX.1-2001
+#if _POSIX_C_SOURCE >= 200112L || defined(_XOPEN_SOURCE)
+int fchown(int fd, uid_t owner, gid_t group); // 123
+int usleep(unsigned long); // SYS_select
+#endif
+
+// X/Open Portability Guide Issue 1
 #ifdef _XOPEN_SOURCE
 
 // XPG1 functions unavialible in POSIX
@@ -194,4 +215,26 @@ void sync(void);
 
 #endif
 
-#endif
+/* Internal (very useful) */
+#define _SYSCALL_GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
+#define _SYSCALL_COUNT_ARGS(...) _SYSCALL_GET_NTH_ARG(0, ##__VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define _SYSCALL_CONCAT_IMPL(name, count) name##count
+#define _SYSCALL_CONCAT(name, count) _SYSCALL_CONCAT_IMPL(name, count)
+
+// main syscall wrapper, up to 8 args
+#define syscall(number, ...) \
+    _SYSCALL_CONCAT(syscall, _SYSCALL_COUNT_ARGS(__VA_ARGS__))(number, ##__VA_ARGS__)
+
+// safer functions
+long syscall0(long number);
+long syscall1(long number, long arg1);
+long syscall2(long number, long arg1, long arg2);
+long syscall3(long number, long arg1, long arg2, long arg3);
+long syscall4(long number, long arg1, long arg2, long arg3, long arg4);
+long syscall5(long number, long arg1, long arg2, long arg3, long arg4, long arg5);
+long syscall6(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6);
+long syscall7(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7);
+long syscall8(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7, long arg8);
+
+#endif /* UNISTD_H */
+

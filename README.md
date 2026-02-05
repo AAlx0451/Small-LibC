@@ -74,3 +74,4 @@ Here's a list of functions which 100% won't be implemented
 
 * `mount()`
 * `umount()`
+* `ustat()`
