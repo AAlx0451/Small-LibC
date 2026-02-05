@@ -3,11 +3,15 @@
 
 #include <stddef.h> /* size_t, NULL */
 
+#ifndef MEMORY_H
+#define MEMORY_H
 void *memchr(const void *s, int c, size_t n);
 int memcmp(const void *s1, const void *s2, size_t n);
 void *memcpy(void *dest, const void *src, size_t n);
-void *memmove(void *dest, const void *src, size_t count);
 void *memset(void *s, int c, size_t n);
+#endif 
+
+void *memmove(void *dest, const void *src, size_t count);
 char *strcat(char *dest, const char *src);
 char *strchr(const char *s, int c);
 int strcmp(const char *s1, const char *s2);
