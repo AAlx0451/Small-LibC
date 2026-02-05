@@ -72,6 +72,8 @@
 #  define SYS_lseek 199
 #  define SYS___sysctl 202
 #  define SYS_getsid 310
+#  define SYS_mlockall 324
+#  define SYS_munlockall 325
 #  define SYS_getdirentries64 344
 
 # endif

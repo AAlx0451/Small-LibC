@@ -18,6 +18,9 @@
 
 #define MAP_FAILED  ((void *)-1)
 
+#define MCL_CURRENT 0x0001
+#define MCL_FUTURE 0x0002
+
 void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
 int munmap(void *addr, size_t length);
 
