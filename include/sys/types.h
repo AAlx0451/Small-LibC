@@ -1,14 +1,17 @@
-#if defined(__APPLE__) && defined(__arm__)
+#ifndef SYS_TYPES_H
+#define SYS_TYPES_H
 
-# ifndef SYS_TYPES_H
-# define SYS_TYPES_H
+#ifndef NULL
+# define NULL ((void *)0)
+#endif
 
-#  ifndef NULL
-#   define NULL ((void *)0)
-#  endif
+#include <stdint.h>
+#include <stddef.h>
+#include <unistd.h>
 
-# include<stdint.h>
-# include<stddef.h>
+#ifdef _XOPEN_SOURCE
+# include <utime.h>
+#endif
 
 typedef int pid_t;
 typedef unsigned short mode_t;
@@ -33,10 +36,6 @@ typedef uint32_t ino_t;
 typedef uint16_t nlink_t;
 typedef int64_t blkcnt_t;
 typedef int32_t blksize_t;
+typedef char* caddr_t;
 
-# endif /* SYS_TYPES_H */
-
-#else
-# error Unsupported OS
-#endif
-
+#endif /* SYS_TYPES */
