@@ -107,6 +107,7 @@ int feof(FILE *p);
 int ferror(FILE *p);
 void clearerr(FILE *p);
 
+#ifndef _ANSI
 #if !(!defined(_ANSI) && (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L))
 char *gets(char *s);
 #endif
@@ -142,6 +143,7 @@ int dprintf(int fd, const char *format, ...);
 #if defined(_DARWIN_C_SOURCE)
 int vasprintf(char **strp, const char *fmt, va_list ap);
 int asprintf(char **strp, const char *fmt, ...);
+#endif
 #endif
 
 #if defined(_DARWIN_C_SOURCE)

@@ -3,31 +3,8 @@
 
 #include <stddef.h> /* size_t */
 #include <stdio.h> /* SEEK_SET, SEEK_END, SEEK_CUR */
-#include <sys/types.h> /* types, null ptr */
-
-/* feature test macros */
-#if !defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE) && !defined(_XOPEN_SOURCE)
- /* enable X/Open extensions */
-# define _XOPEN_SOURCE 700
-#endif
-
-/* _POSIX_SOURCE means _POSIX_C_SOURCE=1 */
-#if defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE)
-# define _POSIX_C_SOURCE 1
-#endif
-
-/* _XOPEN_SOURCE sets POSIX version */
-#if defined(_XOPEN_SOURCE) && !defined(_POSIX_C_SOURCE)
-# if (_XOPEN_SOURCE >= 700)
-#  define _POSIX_C_SOURCE 200809L
-# elif (_XOPEN_SOURCE >= 600)
-#  define _POSIX_C_SOURCE 200112L
-# elif (_XOPEN_SOURCE >= 500)
-#  define _POSIX_C_SOURCE 199506L
-# else
-#  define _POSIX_C_SOURCE 2
-# endif
-#endif
+#include <sys/types.h> /* NULL, types */
+#include <feature.h>
 
 /* ATTRIBUTES */
 #if defined(__GNUC__) || defined(__clang__)
