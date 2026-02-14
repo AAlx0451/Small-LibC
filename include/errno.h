@@ -13,7 +13,6 @@ extern int errno;
 #endif
 
 #if !defined(_ANSI)
-
 #if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 1) || defined(_DARWIN_C_SOURCE)
 #define EPERM 1
 #define ENOENT 2
@@ -127,7 +126,6 @@ extern int errno;
 #define ENOPOLICY 103
 #define EQFULL 106
 #endif /* _DARWIN_C_SOURCE */
-
 #endif /* _ANSI */
 
 #endif /* ERRNO_H */

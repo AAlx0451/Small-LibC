@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <limits.h>
+#include <features.h>
 
 #define LC_ALL          0
 #define LC_COLLATE      1
@@ -10,7 +11,10 @@
 #define LC_MONETARY     3
 #define LC_NUMERIC      4
 #define LC_TIME         5
+
+#if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 1L) || defined(_DARWIN_C_SOURCE)
 #define LC_MESSAGES     6
+#endif
 
 struct lconv {
     /* LC_NUMERIC */
@@ -34,14 +38,6 @@ struct lconv {
     char n_sep_by_space;
     char p_sign_posn;
     char n_sign_posn;
-    
-    /* C99 extensions */
-    char int_p_cs_precedes;
-    char int_p_sep_by_space;
-    char int_n_cs_precedes;
-    char int_n_sep_by_space;
-    char int_p_sign_posn;
-    char int_n_sign_posn;
 };
 
 char* setlocale(int category, const char *locale);

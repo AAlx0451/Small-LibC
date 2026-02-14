@@ -1,3 +1,2 @@
 -std=gnu99
 -Iinclude
--D_XOPEN_SOURCE

@@ -1,53 +1,74 @@
+
 #ifndef TIME_H
 #define TIME_H
 
 #include <sys/types.h>
 #include <stddef.h>
-#include <unistd.h>
+#include <features.h>
 
 #ifndef NULL
 #define NULL ((void*)0)
 #endif
 
 #define CLOCKS_PER_SEC 1000000
-#define CLK_TCK 100
 
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
+#define CLK_TCK 100
+#endif
+
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
 extern char *tzname[2];
+#endif
+
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_XOPEN_SOURCE))
 extern long timezone;
 extern int daylight;
+#endif
 
 struct tm {
-        int     tm_sec;
-        int     tm_min;
-        int     tm_hour;
-        int     tm_mday;
-        int     tm_mon;
-        int     tm_year;
-        int     tm_wday;
-        int     tm_yday;
-        int     tm_isdst;
-        long    tm_gmtoff;
-        char    *tm_zone;
+    int tm_sec;
+    int tm_min;
+    int tm_hour;
+    int tm_mday;
+    int tm_mon;
+    int tm_year;
+    int tm_wday;
+    int tm_yday;
+    int tm_isdst;
+#if defined(_DARWIN_C_SOURCE)
+    long tm_gmtoff;
+    char *tm_zone;
+#else
+    char ___padding[sizeof(long)+sizeof(char*)];
+#endif
 };
 
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L) || \
+    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || \
+    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600))
 struct timespec {
-	time_t tv_sec; 
-	long   tv_nsec;
+    time_t tv_sec;
+    long tv_nsec;
 };
+#endif
 
 time_t time(time_t *tloc);
 clock_t clock(void);
 struct tm *gmtime(const time_t *timer);
 struct tm *localtime(const time_t *timer);
-void tzset(void);
 double difftime(time_t time1, time_t time0);
 char *asctime(const struct tm *timeptr);
 char *ctime(const time_t *timer);
 time_t mktime(struct tm *tm);
-size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *timeptr);
+size_t strftime(char *restrict s, size_t maxsize, const char *restrict format, const struct tm *restrict timeptr);
 
-#ifdef _XOPEN_SOURCE
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
+void tzset(void);
+#endif
+
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE < 700))
 int stime(const time_t *t);
 #endif
 
-#endif /* TIME_H */
+#endif

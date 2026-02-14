@@ -8,10 +8,6 @@
 #include <stdint.h>
 #include <stddef.h>
 
-#ifdef _XOPEN_SOURCE
-# include <utime.h>
-#endif
-
 typedef int pid_t;
 typedef unsigned short mode_t;
 typedef int64_t off_t;
@@ -36,5 +32,9 @@ typedef uint16_t nlink_t;
 typedef int64_t blkcnt_t;
 typedef int32_t blksize_t;
 typedef char* caddr_t;
+
+#ifdef _XOPEN_SOURCE
+# include <utime.h>
+#endif
 
 #endif /* SYS_TYPES */

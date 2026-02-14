@@ -1,0 +1,21 @@
+ANSI HEADERS:
+
+<assert.h>: ANSI C89
+
+<ctype.h>: X/Open Issue 1, ANSI C99
+
+<errno.h>: POSIX.1-2008, ANSI C17
+
+<locale.h>: POSIX.1-1990, ANSI C89
+
+<math.h>: ANSI C89
+
+<setjmp.h>: POSIX.1-1990, ANSI C89
+
+<stdio.h>: POSIX.1-1990, ANSI C89
+
+<stdlib.h>: POSIX.1-1990, ANSI C89
+
+<string.h>: ANSI C99
+
+<time.h>: ANSI C89, POSIX.1-1999
