@@ -1,8 +1,20 @@
 #ifndef ERRNO_H
 #define ERRNO_H
 
+#include <features.h>
+
 extern int errno;
 
+#define EDOM 33
+#define ERANGE 34
+
+#if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199409L) || defined(_POSIX_C_SOURCE) || defined(_DARWIN_C_SOURCE)
+#define EILSEQ 92
+#endif
+
+#if !defined(_ANSI)
+
+#if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 1) || defined(_DARWIN_C_SOURCE)
 #define EPERM 1
 #define ENOENT 2
 #define ESRCH 3
@@ -17,7 +29,6 @@ extern int errno;
 #define ENOMEM 12
 #define EACCES 13
 #define EFAULT 14
-#define ENOTBLK 15
 #define EBUSY 16
 #define EEXIST 17
 #define EXDEV 18
@@ -35,9 +46,15 @@ extern int errno;
 #define EROFS 30
 #define EMLINK 31
 #define EPIPE 32
-#define EDOM 33
-#define ERANGE 34
 #define EAGAIN 35
+#define ENAMETOOLONG 63
+#define ENOLCK 77
+#define ENOSYS 78
+#define ENOTEMPTY 66
+#endif /* _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 1 */
+
+#if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || defined(_DARWIN_C_SOURCE)
+#define ENOTBLK 15
 #define EWOULDBLOCK EAGAIN
 #define EINPROGRESS 36
 #define EALREADY 37
@@ -66,49 +83,51 @@ extern int errno;
 #define ETIMEDOUT 60
 #define ECONNREFUSED 61
 #define ELOOP 62
-#define ENAMETOOLONG 63
-#define EHOSTDOWN 64
-#define EHOSTUNREACH 65
-#define ENOTEMPTY 66
+#define ESTALE 70
+#define EREMOTE 71
+#define EOVERFLOW 84
+#define ECANCELED 89
+#define EIDRM 90
+#define ENOMSG 91
+#define EBADMSG 94
+#define EMULTIHOP 95
+#define ENOLINK 97
+#define ENOSR 98
+#define EOPNOTSUPP 102
+#define ENODATA 96
+#define ENOSTR 99
+#define EPROTO 100
+#define ETIME 101
+#endif /* (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112) || _DARWIN_C_SOURCE */
+
+#if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L) || defined(_DARWIN_C_SOURCE)
+#define ENOTRECOVERABLE 104
+#define EOWNERDEAD 105
+#endif /* _POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200809 */
+
+#if defined(_DARWIN_C_SOURCE)
 #define EPROCLIM 67
 #define EUSERS 68
 #define EDQUOT 69
-#define ESTALE 70
-#define EREMOTE 71
 #define EBADRPC 72
 #define ERPCMISMATCH 73
 #define EPROGUNAVAIL 74
 #define EPROGMISMATCH 75
 #define EPROCUNAVAIL 76
-#define ENOLCK 77
-#define ENOSYS 78
 #define EFTYPE 79
 #define EAUTH 80
 #define ENEEDAUTH 81
 #define EPWROFF 82
 #define EDEVERR 83
-#define EOVERFLOW 84
 #define EBADEXEC 85
 #define EBADARCH 86
 #define ESHLIBVERS 87
 #define EBADMACHO 88
-#define ECANCELED 89
-#define EIDRM 90
-#define ENOMSG 91
-#define EILSEQ 92
 #define ENOATTR 93
-#define EBADMSG 94
-#define EMULTIHOP 95
-#define ENODATA 96
-#define ENOLINK 97
-#define ENOSR 98
-#define ENOSTR 99
-#define EPROTO 100
-#define ETIME 101
-#define EOPNOTSUPP 102
 #define ENOPOLICY 103
-#define ENOTRECOVERABLE 104
-#define EOWNERDEAD 105
 #define EQFULL 106
+#endif /* _DARWIN_C_SOURCE */
+
+#endif /* _ANSI */
 
 #endif /* ERRNO_H */
