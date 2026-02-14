@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <unistd.h>
 
 #ifdef _XOPEN_SOURCE
 # include <utime.h>

@@ -50,7 +50,7 @@ int mkstemp(char *template)
             xx[i] = charset[rand() % (sizeof(charset) - 1)];
         }
         
-        fd = syscall(SYS_open, (long)template, O_RDWR | O_CREAT | O_EXCL, 0600);
+        fd = open(template, O_RDWR | O_CREAT | O_EXCL, 0600);
 
         if (fd >= 0) {
             return fd;

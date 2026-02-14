@@ -1,7 +1,7 @@
 #ifndef SYS_SYSCALL_H
 #define SYS_SYSCALL_H
 
-# if defined(__APPLE__) && defined(__arm__)
+# if defined(__APPLE__)
 
 #  define SYS_exit 1
 #  define SYS_fork 2
@@ -10,13 +10,16 @@
 #  define SYS_open 5
 #  define SYS_close 6
 #  define SYS_wait4 7
-/* no 8 on iOS */
+/* SYS_creat 8 (see SYS_open) */
 #  define SYS_link 9
 #  define SYS_unlink 10
+/* SYS_execv 11 (see SYS_execve) */
 #  define SYS_chdir 12
+#  define SYS_fchdir 13
 #  define SYS_mknod 14
 #  define SYS_chmod 15
 #  define SYS_chown 16
+/* SYS_break 17 (see SYS_mmap) */
 #  define SYS_getpid 20
 #  define SYS_setuid 23
 #  define SYS_getuid 24
