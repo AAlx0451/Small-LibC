@@ -1,30 +1,58 @@
-#ifndef _ASSERT_H
-#define _ASSERT_H
+#ifndef ASSERT_H
+#define ASSERT_H
 
 #undef assert
 
 #ifdef NDEBUG
-    #define assert(expression) ((void)0)
+    #define assert(expr) ((void)0)
 #else
 
-#include <stdlib.h>
 #include <unistd.h>
-#include <string.h>
+#include <stdlib.h>
 
-static inline void __assert_internal_int_to_str(unsigned int n, char *buf) {
-    char *p = buf; if (n == 0) { *p++ = '0'; } else { char t[11]; int i = 0; do { t[i++] = (n % 10) + '0'; } while (n /= 10); while (i > 0) { *p++ = t[--i]; } } *p = '\0';
+#if defined(__GNUC) || defined(__clang__)
+# define always __attribute__((always_inline))
+# define noreturn __attribute__((noreturn))
+# define cold __attribute__((cold))
+#else
+# define always
+# define noreturn
+# define cold
+#endif
+
+void static always inline write_str(const char* s) {
+    if(s) {
+        size_t len = 0;
+        while (s[len]) len++;
+        write(STDERR_FILENO, s, len);
+    }
 }
 
-__attribute__((noreturn))
-static inline void __assert_fail(const char *expression, const char *file, unsigned int line, const char *function) {
-    char line_buf[11]; write(2, "Assertion failed: ", 18); write(2, expression, strlen(expression)); write(2, ", function ", 12); write(2, function, strlen(function)); write(2, ", file ", 7); write(2, file, strlen(file)); write(2, ", line ", 7); __assert_internal_int_to_str(line, line_buf); write(2, line_buf, strlen(line_buf)); write(2, ".\n", 2); abort();
+static noreturn cold void __assert_fail_internal(const char *expr, const char *file, int line, const char *func) {
+    char buf[12];
+    char *p = buf + sizeof(buf) - 1;
+    *p = '\0';
+    if (line == 0) *--p = '0';
+    else {
+        for (; line > 0; line /= 10) *--p = (char)('0' + (line % 10));
+    }
+
+    write_str("Assertion failed: ");
+    write_str(expr);
+    write_str(" (file: ");
+    write_str(file);
+    write_str(", line: ");
+    write_str(p);
+    write_str(", function: ");
+    write_str(func);
+    write_str(")\n");
+    
+    abort();
 }
 
-#define assert(expression) \
-    ((expression) \
-        ? ((void)0) \
-        : __assert_fail(#expression, __FILE__, __LINE__, __func__))
+#define assert(expr) \
+    ((void)((expr) ? (void)0 : __assert_fail_internal(#expr, __FILE__, __LINE__, __func__)))
 
 #endif // NDEBUG
-
-#endif // _ASSERT_H
+ 
+#endif // ASSERT_H
