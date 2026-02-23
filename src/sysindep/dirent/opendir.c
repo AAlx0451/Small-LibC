@@ -1,21 +1,22 @@
+#include "dirent_private.h"
+#include <dirent.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <dirent.h>
-#include "dirent_private.h"
 
 DIR *opendir(const char *name) {
     int fd = open(name, O_RDONLY | O_DIRECTORY);
-    if (fd == -1) return NULL;
+    if(fd == -1)
+        return NULL;
 
     DIR *dir = malloc(sizeof(DIR));
-    if (!dir) {
+    if(!dir) {
         close(fd);
         return NULL;
     }
 
     dir->dd_buf = malloc(DIR_BUFFER_SIZE);
-    if (!dir->dd_buf) {
+    if(!dir->dd_buf) {
         free(dir);
         close(fd);
         return NULL;

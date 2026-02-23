@@ -1,13 +1,11 @@
-#include <sys/types.h>
 #include <sys/syscall.h>
+#include <sys/types.h>
 #include <unistd.h>
 
-int mkdir(const char *path, mode_t mode) 
-{
+int mkdir(const char *path, mode_t mode) {
     long ret = syscall(SYS_mkdir, (long)path, mode);
 
-    if (ret < 0) 
-    {
+    if(ret < 0) {
         return -1;
     }
 

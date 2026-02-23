@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
@@ -13,7 +13,7 @@ int dprintf(int fd, const char *format, ...) {
     len = vasprintf(&buffer, format, args);
     va_end(args);
 
-    if (len == -1) {
+    if(len == -1) {
         return -1;
     }
 

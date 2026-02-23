@@ -1,6 +1,6 @@
-#include <unistd.h>
-#include <sys/syscall.h>
 #include <stdarg.h>
+#include <sys/syscall.h>
+#include <unistd.h>
 
 int fcntl(int fd, int cmd, ...) {
     va_list args;

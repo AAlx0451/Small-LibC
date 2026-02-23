@@ -5,4 +5,3 @@ int isatty(int fd) {
     struct termios t;
     return (ioctl(fd, TIOCGETA, &t) != -1);
 }
-

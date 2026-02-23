@@ -2,7 +2,7 @@
 
 void bzero(void *s, size_t n) {
     unsigned char *p = s;
-    while (n--) {
+    while(n--) {
         *p++ = 0;
     }
 }

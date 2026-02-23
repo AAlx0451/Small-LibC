@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 
 int fscanf(FILE *stream, const char *format, ...) {
     int ret;

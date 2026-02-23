@@ -3,12 +3,11 @@
 meta_ptr heap_base = NULL;
 volatile int malloc_lock = 0;
 
-void *malloc(size_t size)
-{
+void *malloc(size_t size) {
     meta_ptr block, last;
     size_t aligned_size;
 
-    if (size == 0 || size > (SIZE_MAX - BLOCK_META_SIZE)) {
+    if(size == 0 || size > (SIZE_MAX - BLOCK_META_SIZE)) {
         return NULL;
     }
 
@@ -19,8 +18,8 @@ void *malloc(size_t size)
     block = heap_base;
     last = NULL;
 
-    while (block) {
-        if (block->magic == MAGIC_FREE && block->size >= aligned_size) {
+    while(block) {
+        if(block->magic == MAGIC_FREE && block->size >= aligned_size) {
             block->magic = MAGIC_USED;
             split_block(block, aligned_size);
             __malloc_spin_unlock(&malloc_lock);
@@ -31,12 +30,12 @@ void *malloc(size_t size)
     }
 
     block = request_space(last, aligned_size);
-    if (!block) {
+    if(!block) {
         __malloc_spin_unlock(&malloc_lock);
         return NULL;
     }
 
-    if (!heap_base) {
+    if(!heap_base) {
         heap_base = block;
     }
 

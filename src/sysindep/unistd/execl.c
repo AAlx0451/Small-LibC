@@ -1,6 +1,6 @@
-#include <unistd.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 extern char **environ;
 
@@ -14,24 +14,24 @@ int execl(const char *path, const char *arg, ...) {
 
     argc = 0;
     va_start(args, arg);
-    if (arg != NULL) {
+    if(arg != NULL) {
         argc++;
-        while (va_arg(args, const char *) != NULL) {
+        while(va_arg(args, const char *) != NULL) {
             argc++;
         }
     }
     va_end(args);
 
     argv = (char **)malloc(sizeof(char *) * (argc + 1));
-    if (argv == NULL) {
+    if(argv == NULL) {
         return -1;
     }
 
     va_start(args, arg);
     i = 0;
-    if (arg != NULL) {
+    if(arg != NULL) {
         argv[i++] = (char *)arg;
-        while ((tmp = va_arg(args, const char *)) != NULL) {
+        while((tmp = va_arg(args, const char *)) != NULL) {
             argv[i++] = (char *)tmp;
         }
     }

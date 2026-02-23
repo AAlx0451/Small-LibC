@@ -1,14 +1,13 @@
 #include "malloc.h"
 
-void free(void *ptr)
-{
+void free(void *ptr) {
     meta_ptr block;
 
-    if (!ptr) {
+    if(!ptr) {
         return;
     }
 
-    if (((uintptr_t)ptr & (ALIGNMENT - 1)) != 0) {
+    if(((uintptr_t)ptr & (ALIGNMENT - 1)) != 0) {
         return;
     }
 
@@ -16,7 +15,7 @@ void free(void *ptr)
 
     block = get_block_ptr(ptr);
 
-    if (!is_valid_block(block) || block->magic != MAGIC_USED) {
+    if(!is_valid_block(block) || block->magic != MAGIC_USED) {
         __malloc_spin_unlock(&malloc_lock);
         return;
     }

@@ -1,6 +1,7 @@
 CC = clang
 INCDIR = ../include
 OBJDIR = obj
+CFLAGS := -Os
 
 TARGET_LIBC = libc.a
 TARGET_LIBRT = librt.a
@@ -28,7 +29,7 @@ ifeq ($(CROSS), 1)
   ARCH_LIST = $(subst $(comma), ,$(ARCHES))
   ARCHES ?= armv7
 
-  BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -I$(INCDIR) -Os -fPIC -std=gnu99 -isysroot $(SDK)
+  BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -I$(INCDIR) -fPIC -std=gnu99 -isysroot $(SDK)
 
   define BUILD_ARCH
     OBJS_$(1) := $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(GENERIC_SRCS) $(SYSDEP_SRCS) $(RT_SRCS) $(MATH_SRCS))
@@ -68,9 +69,9 @@ ifeq ($(CROSS), 1)
 
 else
   AR = ar
-  BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -I$(INCDIR) -Os -fPIC -std=gnu99 -nostdinc \
-                -I/usr/share/llvm/lib/clang/7.1.0/include \
-                -I/usr/share/llvm/lib/clang/6.0.1/include
+  BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -I$(INCDIR) -fPIC -std=gnu99 -nostdinc \
+		-I/usr/share/llvm/lib/clang/7.1.0/include \
+		-I/usr/share/llvm/lib/clang/6.0.1/include
 
   OBJS_C  = $(patsubst %.c,$(OBJDIR)/%.o,$(GENERIC_SRCS) $(SYSDEP_SRCS))
   OBJS_RT = $(patsubst %.c,$(OBJDIR)/%.o,$(RT_SRCS))

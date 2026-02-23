@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 
 int asprintf(char **strp, const char *fmt, ...) {
     va_list ap;

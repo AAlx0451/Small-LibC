@@ -2,7 +2,7 @@
 #include <sys/time.h>
 
 int stime(const time_t *t) {
-    if (!t) {
+    if(!t) {
         errno = EFAULT;
         return -1;
     }

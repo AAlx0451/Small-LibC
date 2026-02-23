@@ -2,7 +2,7 @@
 #include <utime.h>
 
 int utime(const char *path, const struct utimbuf *times) {
-    if (times) {
+    if(times) {
         struct timeval tv[2];
 
         tv[0].tv_sec = times->actime;

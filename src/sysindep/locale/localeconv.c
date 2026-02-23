@@ -1,13 +1,11 @@
-#include <locale.h>
 #include <limits.h>
+#include <locale.h>
 
 static struct lconv c_locale_data;
 static int is_initialized = 0;
 
-struct lconv *localeconv(void)
-{
-    if (!is_initialized)
-    {
+struct lconv *localeconv(void) {
+    if(!is_initialized) {
         c_locale_data.decimal_point = ".";
         c_locale_data.thousands_sep = "";
         c_locale_data.grouping = "";

@@ -1,6 +1,6 @@
+#include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <stdio.h>
 
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
     size_t to_write, space;
@@ -8,31 +8,32 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
     size_t total_bytes;
     size_t bytes_written = 0;
 
-    if (!stream || !ptr || size == 0 || nmemb == 0) return 0;
+    if(!stream || !ptr || size == 0 || nmemb == 0)
+        return 0;
 
     _spin_lock(&stream->_lock);
-    
+
     total_bytes = size * nmemb;
     to_write = total_bytes;
 
     // Handle both Read->Write transition AND Neutral->Write transition
-    if (stream->_flags & __S_RD) {
+    if(stream->_flags & __S_RD) {
         stream->_flags &= ~__S_RD;
         stream->_flags |= __S_WR;
         stream->_cnt = stream->_bsize;
         stream->_ptr = stream->_base;
-    } else if (!(stream->_flags & __S_WR)) {
+    } else if(!(stream->_flags & __S_WR)) {
         // Stream was neutral, set to Write
         stream->_flags |= __S_WR;
         // If pointers weren't initialized (e.g. after fseek cleanup), init them
-        if (stream->_cnt == 0 && stream->_ptr == stream->_base) {
-             stream->_cnt = stream->_bsize;
+        if(stream->_cnt == 0 && stream->_ptr == stream->_base) {
+            stream->_cnt = stream->_bsize;
         }
     }
 
-    while (to_write > 0) {
+    while(to_write > 0) {
         space = stream->_cnt;
-        if (to_write <= space) {
+        if(to_write <= space) {
             memcpy(stream->_ptr, p, to_write);
             stream->_ptr += to_write;
             stream->_cnt -= to_write;
@@ -41,7 +42,7 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
             break;
         }
 
-        if (space > 0) {
+        if(space > 0) {
             memcpy(stream->_ptr, p, space);
             stream->_ptr += space;
             stream->_cnt = 0;
@@ -51,13 +52,13 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
             bytes_written += space;
         }
 
-        if (__stdio_flush_impl(stream) == EOF) {
+        if(__stdio_flush_impl(stream) == EOF) {
             break;
         }
 
-        if (to_write >= stream->_bsize) {
+        if(to_write >= stream->_bsize) {
             ssize_t w = write(stream->_fd, p, to_write);
-            if (w <= 0) {
+            if(w <= 0) {
                 stream->_flags |= __S_ERR;
                 break;
             }

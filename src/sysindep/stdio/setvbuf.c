@@ -2,10 +2,9 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int setvbuf(FILE *stream, char *buf, int mode, size_t size)
-{
+int setvbuf(FILE *stream, char *buf, int mode, size_t size) {
     _spin_lock(&stream->_lock);
-    if (stream->_flags & __S_WR) {
+    if(stream->_flags & __S_WR) {
         __stdio_flush_impl(stream);
     }
 
@@ -13,7 +12,7 @@ int setvbuf(FILE *stream, char *buf, int mode, size_t size)
 
     stream->_flags &= ~(__S_NBF | __S_LBF);
 
-    switch (mode) {
+    switch(mode) {
     case _IONBF:
         stream->_flags |= __S_NBF;
         stream->_base = NULL;
@@ -24,19 +23,19 @@ int setvbuf(FILE *stream, char *buf, int mode, size_t size)
         stream->_flags |= __S_LBF;
         /* Fallthrough */
     case _IOFBF:
-        if (size == 0) {
+        if(size == 0) {
             _spin_unlock(&stream->_lock);
             return -1;
         }
-        if (buf == NULL) {
+        if(buf == NULL) {
             buf = malloc(size);
-            if (buf == NULL) {
+            if(buf == NULL) {
                 _spin_unlock(&stream->_lock);
                 return -1;
             }
             stream->_flags |= __S_FREEBUF;
         }
-        stream->_base = (unsigned char*)buf;
+        stream->_base = (unsigned char *)buf;
         stream->_bsize = size;
         break;
 

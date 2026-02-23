@@ -1,8 +1,10 @@
 #include <limits.h>
 
 int __divsi3(int n, int d) {
-    if (d == 0) return 0;
-    if (n == INT_MIN && d == -1) return INT_MIN;
+    if(d == 0)
+        return 0;
+    if(n == INT_MIN && d == -1)
+        return INT_MIN;
 
     int sign = (n < 0) ^ (d < 0) ? -1 : 1;
     unsigned int un = (n < 0) ? -(unsigned int)n : (unsigned int)n;
@@ -11,9 +13,9 @@ int __divsi3(int n, int d) {
     unsigned int quotient = 0;
     unsigned int remainder = 0;
 
-    for (int i = 31; i >= 0; i--) {
+    for(int i = 31; i >= 0; i--) {
         remainder = (remainder << 1) | ((un >> i) & 1);
-        if (remainder >= ud) {
+        if(remainder >= ud) {
             remainder -= ud;
             quotient |= (1U << i);
         }

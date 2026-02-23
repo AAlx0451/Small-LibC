@@ -1,7 +1,8 @@
 #include <stdio.h>
 
 int ungetc(int c, FILE *f) {
-    if (c == EOF || !f) return EOF;
+    if(c == EOF || !f)
+        return EOF;
 
     _spin_lock(&f->_lock);
 
@@ -9,7 +10,7 @@ int ungetc(int c, FILE *f) {
     // If we have reserve, valid range is >= base - 1.
     int has_reserve = (f->_flags & __S_RESERVE) ? 1 : 0;
     unsigned char *min_ptr = f->_base - has_reserve;
-    if (f->_base && f->_ptr > min_ptr) {
+    if(f->_base && f->_ptr > min_ptr) {
         f->_ptr--;
         *f->_ptr = (unsigned char)c;
         f->_cnt++;

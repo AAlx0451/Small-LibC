@@ -1,9 +1,10 @@
-#include <stdlib.h>
 #include <signal.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 void abort(void) {
     raise(SIGABRT);
     _exit(127);
-    while (1) {}
+    while(1) {
+    }
 }

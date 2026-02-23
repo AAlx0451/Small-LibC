@@ -4,13 +4,13 @@
 int fgetpos(FILE *stream, fpos_t *pos) {
     off_t offset;
 
-    if (pos == NULL) {
+    if(pos == NULL) {
         return -1;
     }
 
     offset = ftello(stream);
 
-    if (offset == -1) {
+    if(offset == -1) {
         return -1;
     }
 

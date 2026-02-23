@@ -1,17 +1,17 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 
 ssize_t getline(char **lineptr, size_t *n, FILE *stream) {
-    if (lineptr == NULL || n == NULL || stream == NULL) {
+    if(lineptr == NULL || n == NULL || stream == NULL) {
         errno = EINVAL;
         return -1;
     }
 
-    if (*lineptr == NULL || *n == 0) {
+    if(*lineptr == NULL || *n == 0) {
         *n = 128;
         *lineptr = malloc(*n);
-        if (*lineptr == NULL) {
+        if(*lineptr == NULL) {
             return -1;
         }
     }
@@ -19,11 +19,11 @@ ssize_t getline(char **lineptr, size_t *n, FILE *stream) {
     size_t cur_len = 0;
     int c;
 
-    while ((c = getc(stream)) != EOF) {
-        if (cur_len + 1 >= *n) {
+    while((c = getc(stream)) != EOF) {
+        if(cur_len + 1 >= *n) {
             size_t new_size = *n * 2;
             char *new_ptr = realloc(*lineptr, new_size);
-            if (new_ptr == NULL) {
+            if(new_ptr == NULL) {
                 return -1;
             }
             *lineptr = new_ptr;
@@ -31,12 +31,12 @@ ssize_t getline(char **lineptr, size_t *n, FILE *stream) {
         }
 
         (*lineptr)[cur_len++] = (char)c;
-        if (c == '\n') {
+        if(c == '\n') {
             break;
         }
     }
 
-    if (c == EOF && cur_len == 0) {
+    if(c == EOF && cur_len == 0) {
         return -1;
     }
 

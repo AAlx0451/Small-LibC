@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 int vasprintf(char **strp, const char *fmt, va_list ap) {
@@ -8,12 +8,12 @@ int vasprintf(char **strp, const char *fmt, va_list ap) {
     int len = vsnprintf(NULL, 0, fmt, ap_copy);
     va_end(ap_copy);
 
-    if (len < 0) {
+    if(len < 0) {
         return -1;
     }
 
     char *buffer = malloc(len + 1);
-    if (!buffer) {
+    if(!buffer) {
         return -1;
     }
 

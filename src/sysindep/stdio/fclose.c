@@ -1,12 +1,12 @@
-#include <stdlib.h>
+#include <errno.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <errno.h>
-#include <stdio.h>
 
 int fclose(FILE *f) {
-    if (!f) {
+    if(!f) {
         errno = EINVAL;
         return EOF;
     }
@@ -17,9 +17,9 @@ int fclose(FILE *f) {
 
     int flush_res = 0;
     _spin_lock(&f->_lock);
-    
+
     // Ensure we check flag correctly inside locked region (though f is removed)
-    if (f->_flags & __S_WR) {
+    if(f->_flags & __S_WR) {
         flush_res = __stdio_flush_impl(f);
     }
     _spin_unlock(&f->_lock);
@@ -31,7 +31,7 @@ int fclose(FILE *f) {
 
     free(f);
 
-    if (flush_res == EOF || close_res < 0) {
+    if(flush_res == EOF || close_res < 0) {
         return EOF;
     }
 
