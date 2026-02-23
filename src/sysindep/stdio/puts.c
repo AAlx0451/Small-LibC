@@ -46,7 +46,7 @@ int puts(const char *s) {
             stdout->_cnt = stdout->_bsize;
             stdout->_ptr = stdout->_base;
         }
-        *stdout->_ptr++ = *s++;
+        *stdout->_ptr++ = (unsigned char)(uintptr_t)*s++;
         stdout->_cnt--;
     }
 

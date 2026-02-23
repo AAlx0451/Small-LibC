@@ -1,3 +1,4 @@
+#include "runtime.h"
 #include <string.h>
 
 // Portable Count Leading Zeros

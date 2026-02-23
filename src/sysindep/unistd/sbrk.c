@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 static int sbrk_needs_init = 1;                          /* TRUE */
 static const size_t sbrk_total_size = 128 * 1024 * 1024; /* 128MB Fixed Region */

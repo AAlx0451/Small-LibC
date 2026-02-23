@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <string.h>
+#include <sys/ioctl.h>
 #include <sys/syscall.h>
 #include <termio.h>
 #include <termios.h>
@@ -104,16 +105,16 @@ static inline __attribute__((always_inline)) void trans_termio_to_termios(const 
     dst->c_iflag = src->c_iflag;
     dst->c_lflag = src->c_lflag;
 
-    dst->c_cflag = (dst->c_cflag & ~0xFFFF) | (src->c_cflag & ~CBAUD);
+    dst->c_cflag = (dst->c_cflag & ~0xFFFFUL) | (src->c_cflag & ~CBAUD);
 
-    speed_t speed = termio_baud_to_speed(src->c_cflag);
+    speed_t speed = (speed_t)termio_baud_to_speed(src->c_cflag);
     dst->c_ispeed = speed;
     dst->c_ospeed = speed;
 
-    dst->c_oflag = (dst->c_oflag & ~0xFFFF) | src->c_oflag;
+    dst->c_oflag = (dst->c_oflag & ~0xFFFFUL) | src->c_oflag;
     if(src->c_oflag & TAB3) {
         dst->c_oflag |= OXTABS;
-        dst->c_oflag &= ~TAB3;
+        dst->c_oflag &= ~((unsigned long)TAB3);
     }
 
     memcpy(dst->c_cc, src->c_cc, NCC);

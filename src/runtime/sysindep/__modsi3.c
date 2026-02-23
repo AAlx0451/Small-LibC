@@ -1,3 +1,4 @@
+#include "runtime.h"
 #include <limits.h>
 
 int __modsi3(int n, int d) {

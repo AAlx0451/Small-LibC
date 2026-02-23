@@ -1,3 +1,6 @@
+#include <stdlib.h>
+void _call_atexit_handlers(void);
+
 #define ATEXIT_MAX 32
 
 typedef void (*handler_func_t)(void);

@@ -1,4 +1,5 @@
 #include <locale.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -31,7 +32,7 @@ char *setlocale(int category, const char *locale) {
     }
 
     if(locale == NULL) {
-        return (char *)c_locale_name;
+        return (char *)(uintptr_t)c_locale_name;
     }
 
     const char *target = locale;
@@ -53,7 +54,7 @@ char *setlocale(int category, const char *locale) {
     }
 
     if(strcmp(target, "C") == 0 || strcmp(target, "POSIX") == 0) {
-        return (char *)c_locale_name;
+        return (char *)(uintptr_t)c_locale_name;
     }
 
     return NULL;

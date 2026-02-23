@@ -52,17 +52,17 @@ typedef struct __sFILE {
     struct __sFILE *_next;
 } FILE;
 
-#define __S_RD      0x0001
-#define __S_WR      0x0002
-#define __S_RW      0x0004
-#define __S_ERR     0x0008
-#define __S_EOF     0x0010
-#define __S_DIRTY   0x0020
-#define __S_FREEBUF 0x0040
-#define __S_NBF     0x0080
-#define __S_STR     0x0100
-#define __S_LBF     0x0200
-#define __S_RESERVE 0x0400
+#define __S_RD      0x0001U
+#define __S_WR      0x0002U
+#define __S_RW      0x0004U
+#define __S_ERR     0x0008U
+#define __S_EOF     0x0010U
+#define __S_DIRTY   0x0020U
+#define __S_FREEBUF 0x0040U
+#define __S_NBF     0x0080U
+#define __S_STR     0x0100U
+#define __S_LBF     0x0200U
+#define __S_RESERVE 0x0400U
 
 extern FILE *stdin, *stdout, *stderr;
 
@@ -136,7 +136,7 @@ off_t ftello(FILE *stream);
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 700))
 ssize_t getline(char **lineptr, size_t *n, FILE *stream);
-int dprintf(int fd, const char *format, ...);
+int dprintf(int fd, const char *format, ...) __attribute__((__format__(__printf__, 2, 3)));
 #endif /* !_ANSI && (_DARWIN_C_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200809L) || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 700)) */
 
 #if (defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE)) && !defined(_ANSI)

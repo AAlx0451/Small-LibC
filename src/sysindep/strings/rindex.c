@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <strings.h>
 
 char *rindex(const char *s, int c) {
@@ -7,5 +8,5 @@ char *rindex(const char *s, int c) {
             last = s;
         }
     } while(*s++);
-    return (char *)last;
+    return (char *)(uintptr_t)last;
 }

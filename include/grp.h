@@ -19,9 +19,9 @@ struct group *getgrgid(gid_t id);
 struct group *getgrnam(const char *name);
 
 # if defined(_XOPEN_SOURCE) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L)
-struct group *getgrent();
-void setgrent();
-void endgrent();
+struct group *getgrent(void);
+void setgrent(void);
+void endgrent(void);
 # endif /* _XOPEN_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112) */
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */

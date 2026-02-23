@@ -1,3 +1,4 @@
+#include "runtime.h"
 #include <limits.h>
 
 unsigned long long __umoddi3(unsigned long long n, unsigned long long d) {

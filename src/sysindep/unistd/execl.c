@@ -1,8 +1,7 @@
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <unistd.h>
-
-extern char **environ;
 
 int execl(const char *path, const char *arg, ...) {
     va_list args;
@@ -22,7 +21,7 @@ int execl(const char *path, const char *arg, ...) {
     }
     va_end(args);
 
-    argv = (char **)malloc(sizeof(char *) * (argc + 1));
+    argv = (char **)malloc(sizeof(char *) * ((size_t)argc + 1U));
     if(argv == NULL) {
         return -1;
     }
@@ -30,9 +29,9 @@ int execl(const char *path, const char *arg, ...) {
     va_start(args, arg);
     i = 0;
     if(arg != NULL) {
-        argv[i++] = (char *)arg;
+        argv[i++] = (char *)(uintptr_t)arg;
         while((tmp = va_arg(args, const char *)) != NULL) {
-            argv[i++] = (char *)tmp;
+            argv[i++] = (char *)(uintptr_t)tmp;
         }
     }
     argv[i] = NULL;

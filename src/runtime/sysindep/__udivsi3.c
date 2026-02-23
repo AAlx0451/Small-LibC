@@ -1,3 +1,4 @@
+#include "runtime.h"
 #include <limits.h>
 
 unsigned int __udivsi3(unsigned int n, unsigned int d) {

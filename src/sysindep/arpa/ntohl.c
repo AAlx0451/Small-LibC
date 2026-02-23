@@ -1,5 +1,5 @@
-#include <stdint.h>
 #include <arpa/inet.h>
+#include <stdint.h>
 
 uint32_t ntohl(uint32_t netlong) {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__

@@ -1,13 +1,14 @@
 #include <ctype.h>
 #include <errno.h>
 #include <limits.h>
+#include <stdint.h>
 
 unsigned long long strtoull(const char *restrict nptr, char **restrict endptr, int base) {
     const char *s = nptr;
     unsigned long long acc;
     int c;
-    unsigned long long cutoff;
-    int neg = 0, any, cutlim;
+    unsigned long long cutoff, cutlim;
+    int neg = 0, any;
 
     do {
         c = *s++;
@@ -29,7 +30,7 @@ unsigned long long strtoull(const char *restrict nptr, char **restrict endptr, i
         base = c == '0' ? 8 : 10;
 
     cutoff = ULLONG_MAX / (unsigned long long)base;
-    cutlim = ULLONG_MAX % (unsigned long long)base;
+    cutlim = (ULLONG_MAX % (unsigned long long)base);
 
     for(acc = 0, any = 0;; c = *s++) {
         if(isdigit(c))
@@ -42,12 +43,12 @@ unsigned long long strtoull(const char *restrict nptr, char **restrict endptr, i
         if(c >= base)
             break;
 
-        if(any < 0 || acc > cutoff || (acc == cutoff && c > cutlim))
+        if(any < 0 || acc > cutoff || (acc == cutoff && (unsigned)c > cutlim))
             any = -1;
         else {
             any = 1;
-            acc *= base;
-            acc += c;
+            acc *= (unsigned long long)base;
+            acc += (unsigned long long)c;
         }
     }
 
@@ -59,7 +60,7 @@ unsigned long long strtoull(const char *restrict nptr, char **restrict endptr, i
     }
 
     if(endptr != 0)
-        *endptr = (char *)(any ? s - 1 : nptr);
+        *endptr = (char *)(uintptr_t)(any ? s - 1 : nptr);
 
     return acc;
 }

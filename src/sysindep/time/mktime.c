@@ -38,17 +38,17 @@ time_t mktime(struct tm *tm) {
     total_days = (year - EPOCH_YEAR) * 365 + (leaps_current - leaps_epoch);
 
     total_days += __days_before_month[mon];
-    if(mon > 1 && __is_leap(year)) {
+    if(mon > 1 && __is_leap((int)year)) {
         total_days++;
     }
 
     mday = tm->tm_mday;
     total_days += mday - 1;
 
-    local_t = total_days * SECS_PER_DAY +
-              (long long)tm->tm_hour * SECS_PER_HOUR +
-              (long long)tm->tm_min * SECS_PER_MIN +
-              tm->tm_sec;
+    local_t = (time_t)(total_days * SECS_PER_DAY +
+                       (long long)tm->tm_hour * SECS_PER_HOUR +
+                       (long long)tm->tm_min * SECS_PER_MIN +
+                       tm->tm_sec);
 
     if(!__libc_current_tz_db) {
         tzset();

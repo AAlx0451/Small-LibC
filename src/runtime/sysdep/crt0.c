@@ -1,7 +1,14 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 #define _Used __attribute__((used)) /* readability */
+#define _noreturn __attribute__((noreturn))
+extern int NXArgc;
+extern char **NXArgv;
+extern char *__progname;
+_Used _noreturn void _c_startup(int argc, char **argv, char **envp);
 
 _Used int NXArgc;
 _Used char **NXArgv;
@@ -20,10 +27,10 @@ static char *get_basename(const char *path) {
         if(*path++ == '/')
             p = path;
     }
-    return (char *)p;
+    return (char *)(uintptr_t)p;
 }
 
-_Used void _c_startup(int argc, char **argv, char **envp) {
+_Used _noreturn void _c_startup(int argc, char **argv, char **envp) {
     char **ptr;
     char **apple = NULL;
     NXArgc = argc;

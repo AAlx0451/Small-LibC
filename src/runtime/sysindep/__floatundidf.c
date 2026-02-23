@@ -1,3 +1,4 @@
+#include "runtime.h"
 #include <string.h>
 
 static int clz64(unsigned long long x) {

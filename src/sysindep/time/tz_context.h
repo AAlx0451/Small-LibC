@@ -22,6 +22,7 @@ typedef struct {
     int32_t     gmtoff;
     int         is_dst;
     uint8_t     abbr_idx;
+    uint8_t __padding[3];
 } __ttinfo_t_decl;
 
 typedef struct {

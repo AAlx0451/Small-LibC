@@ -20,15 +20,13 @@ size_t wcstombs(char *dest, const wchar_t *src, size_t n) {
         }
 
         if(dest) {
-            if(bytes_written + len > n) {
+            if(bytes_written + (size_t)len > n) {
                 return bytes_written;
             }
-            for(int i = 0; i < len; ++i) {
+            for(unsigned i = 0; i < (unsigned long)len; ++i) {
                 dest[bytes_written + i] = temp[i];
             }
         }
-        bytes_written += len;
+        bytes_written += (size_t)len;
     }
-
-    return bytes_written;
 }

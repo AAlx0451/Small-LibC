@@ -7,7 +7,7 @@
 
 FILE *fopen(const char *pathname, const char *mode) {
     int open_flags = 0;
-    int stdio_flags = 0;
+    unsigned int stdio_flags = 0;
 
     if(strchr(mode, '+')) {
         open_flags |= O_RDWR;

@@ -7,7 +7,7 @@
 
 FILE *freopen(const char *pathname, const char *mode, FILE *stream) {
     int open_flags = 0;
-    int stdio_flags = 0;
+    unsigned int stdio_flags = 0;
     int fd;
     unsigned int preserve_flags;
 

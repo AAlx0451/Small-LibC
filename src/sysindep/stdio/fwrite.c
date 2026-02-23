@@ -3,7 +3,7 @@
 #include <unistd.h>
 
 size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
-    size_t to_write, space;
+    size_t space, to_write;
     const unsigned char *p = (const unsigned char *)ptr;
     size_t total_bytes;
     size_t bytes_written = 0;
@@ -63,8 +63,8 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
                 break;
             }
             p += w;
-            to_write -= w;
-            bytes_written += w;
+            to_write -= (size_t)w;
+            bytes_written += (size_t)w;
         }
     }
 

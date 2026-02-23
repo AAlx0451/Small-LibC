@@ -5,12 +5,12 @@
 #include <sys/time.h>
 
 #if defined(__GNUC__) || defined(__clang__)
-#define unused __attribute__((unused))
+#define _unused __attribute__((unused))
 #else
-#define unused
-#endif /* __GNUC__ || __clang__ */ 
+#define _unused
+#endif /* __GNUC__ || __clang__ */
 
-int gettimeofday(struct timeval *tp, void* unused tzp) {
+int gettimeofday(struct timeval *tp, void *_unused tzp) {
     register long r12_syscall __asm__("r12") = SYS_gettimeofday;
     long sec, usec;
     long err;

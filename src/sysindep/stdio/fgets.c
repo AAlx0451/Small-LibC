@@ -24,7 +24,7 @@ char *fgets(char *s, int size, FILE *stream) {
 
         unsigned char c = *stream->_ptr++;
         stream->_cnt--;
-        *p++ = c;
+        *p++ = (char)c;
         chars_read++;
 
         if(c == '\n') {

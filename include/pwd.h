@@ -26,9 +26,9 @@ struct passwd *getpwuid(uid_t);
 struct passwd *getpwnam(const char *);
 
 #if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || defined(_XOPEN_SOURCE)
-struct passwd *getpwent();
-void setpwent();
-void endpwent();
+struct passwd *getpwent(void);
+void setpwent(void);
+void endpwent(void);
 #endif /* (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || (_XOPEN_SOURCE) */
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */

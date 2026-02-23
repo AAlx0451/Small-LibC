@@ -39,6 +39,7 @@ char *strstr(const char *haystack, const char *needle);
     (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || \
     (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L))
 char *strdup(const char *s);
+void *memccpy(void *restrict dest, const void *restrict src, int c, size_t n);
 #endif /* !_ANSI && (_DARWIN_C_SOURCE || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 500) || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200809L)) */
 
 #endif /* !STRING_H */

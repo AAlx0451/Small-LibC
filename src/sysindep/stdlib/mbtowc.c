@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdlib.h>
 
 int mbtowc(wchar_t *pwc, const char *s, size_t n) {
@@ -8,7 +9,7 @@ int mbtowc(wchar_t *pwc, const char *s, size_t n) {
         return -1;
     }
 
-    unsigned char c = *s;
+    unsigned char c = (unsigned char)(uintptr_t)*s;
     wchar_t res = 0;
     int len = 0;
 
@@ -39,7 +40,7 @@ int mbtowc(wchar_t *pwc, const char *s, size_t n) {
     }
 
     for(int i = 1; i < len; ++i) {
-        c = s[i];
+        c = (unsigned char)(uintptr_t)s[i];
         if((c & 0xC0) != 0x80) {
             return -1;
         }

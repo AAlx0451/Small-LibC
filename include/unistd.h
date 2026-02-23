@@ -157,6 +157,7 @@ int seteuid(uid_t euid);
 int setpgrp(void);
 int nice(int incr);
 void sync(void);
+int fchdir(int fd);
 #endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _XOPEN_SOURCE */
 
 #if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) || defined(_XOPEN_SOURCE)
@@ -170,12 +171,13 @@ void *sbrk(intptr_t size);
 
 /* Internal */
 #define _SYSCALL_GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
-#define _SYSCALL_COUNT_ARGS(...) _SYSCALL_GET_NTH_ARG(0, ##__VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define _SYSCALL_COUNT_ARGS(...) \
+	    _SYSCALL_GET_NTH_ARG(__VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0)
 #define _SYSCALL_CONCAT_IMPL(name, count) name##count
 #define _SYSCALL_CONCAT(name, count) _SYSCALL_CONCAT_IMPL(name, count)
 
-#define syscall(number, ...) \
-    _SYSCALL_CONCAT(syscall, _SYSCALL_COUNT_ARGS(__VA_ARGS__))(number, ##__VA_ARGS__)
+#define syscall(...) \
+	    _SYSCALL_CONCAT(syscall, _SYSCALL_COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
 
 long syscall0(long number);
 long syscall1(long number, long arg1);

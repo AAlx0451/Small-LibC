@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdlib.h>
 
 void *bsearch(const void *key, const void *base, size_t nmemb, size_t size, int (*compar)(const void *, const void *)) {
@@ -16,7 +17,7 @@ void *bsearch(const void *key, const void *base, size_t nmemb, size_t size, int 
         else if(comparison > 0)
             l = idx + 1;
         else
-            return (void *)p;
+            return (void *)(uintptr_t)p;
     }
     return NULL;
 }

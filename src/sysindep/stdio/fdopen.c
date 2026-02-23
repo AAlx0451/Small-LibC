@@ -6,7 +6,7 @@
 #include <unistd.h>
 
 FILE *fdopen(int fildes, const char *mode) {
-    int stdio_flags = 0;
+    unsigned int stdio_flags = 0;
     int fd_flags;
     fd_flags = fcntl(fildes, F_GETFL);
     if(fd_flags == -1) {

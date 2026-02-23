@@ -1,4 +1,5 @@
 #include "tz_context.h"
+#include <stdint.h>
 #include <stdlib.h>
 #include <time.h>
 
@@ -82,6 +83,6 @@ struct tm *localtime(const time_t *timer) {
     tm_result.tm_mday = (int)days + 1;
     tm_result.tm_isdst = tz_res.is_dst;
     tm_result.tm_gmtoff = (long)tz_res.gmtoff;
-    tm_result.tm_zone = (char *)tz_res.abbr; /* const char* -> char* cast */
+    tm_result.tm_zone = (char *)(uintptr_t)tz_res.abbr; /* const char* -> char* cast */
     return &tm_result;
 }

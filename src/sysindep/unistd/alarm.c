@@ -1,5 +1,6 @@
 #include <stddef.h> /* NULL */
 #include <sys/time.h>
+#include <unistd.h>
 
 unsigned int alarm(unsigned int seconds) {
     struct itimerval new_it, old_it;

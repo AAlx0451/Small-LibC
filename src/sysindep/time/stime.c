@@ -1,5 +1,6 @@
 #include <errno.h>
 #include <sys/time.h>
+#include <time.h>
 
 int stime(const time_t *t) {
     if(!t) {

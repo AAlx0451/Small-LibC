@@ -17,7 +17,7 @@ struct __kern_sigaction {
     int sa_flags;
 };
 
-void __attribute__((naked)) __sigtramp(void) {
+static void __attribute__((naked)) __sigtramp(void) {
     __asm__ volatile(
         "push {r4, r5, lr}\n\t" /* Save callee-saved regs and LR */
 

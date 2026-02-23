@@ -1,3 +1,4 @@
+#include "runtime.h"
 #include <limits.h>
 
 long long __moddi3(long long n, long long d) {

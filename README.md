@@ -6,7 +6,7 @@ If you're on iOS, just run `./make_all.sh`, then you'll be able to use it as lib
 
 <details>
     <summary>If you're cross-compiling</summary>
-If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile flags are `SDK`, `ARCHES` (armv7 default, 4t,6,7s permitted, 2+ arches suppirted as `ARCHES=armv7,armv7s`), `CFLAGS`, `CPPFLAGS`. If you have cctools, use Makefile flag `LLVM-PREFIX=""` (default behavior is to call `$(LLVM-PREFIX)$(tool)`). To turn off PIC use `PIC=""` (default $(PIC) is `-fPIC`)
+If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile flags are `SDK`, `ARCHES` (armv7 default, 4t,6,7s permitted, 2+ arches suppirted as `ARCHES=armv7,armv7s`), `CFLAGS`, `CPPFLAGS`. If you have cctools, use Makefile flag `LLVM-PREFIX=""` (default behavior is to call `$(LLVM-PREFIX)$(tool)`)
 </details>
 
 ## Status
@@ -64,14 +64,9 @@ TL;DR: malloc and stdio are safe. libmach is required for pthreads and of course
 
 TL;DR: I think so
 
-Of course, it's not 100% tested. But it's tested :)
+Of course, it's not 100% tested, but this project passes `-Weverything -Werror` with clang-7!
 
-About ABI stability – no, it's not at all: actually, this library is not stable at all, because POSIX is WIP
+About ABI stability – no, it's not: actually, this library is not stable at all, because it's WIP
 
-### XPG-1 status
-It's coming soon, but note that some functions will not be implemented due to ABI
-Here's a list of functions which 100% won't be implemented
-
-* `mount()`
-* `umount()`
-* `ustat()`
+### Other standarts status & Feature test macros
+We support some feature test macros, such aa `_ANSI_SOURCE`, `_XOPEN_SOURCE`, `_POSIX_C_SOURCE`, `_DARWIN_C_SOURCE`, `_GNU_SOURCE`, but only `_POSIX_C_SOURCE=1` is explicitly supported.

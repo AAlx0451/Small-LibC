@@ -1,5 +1,6 @@
 #include <sys/select.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 int usleep(unsigned long usec) {
     struct timeval tv;

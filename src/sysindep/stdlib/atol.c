@@ -1,4 +1,5 @@
 #include <ctype.h>
+#include <stdlib.h>
 
 long atol(const char *nptr) {
     long result = 0;

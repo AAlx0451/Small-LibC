@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <time.h>
+#include <stdlib.h>
 
 static unsigned long int next_seed = 1;
 

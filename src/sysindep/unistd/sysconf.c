@@ -10,7 +10,6 @@
 #define KERN_ARGMAX 8
 #define KERN_CLOCKRATE 12
 #define KERN_NGROUPS 18
-#define KERN_MAXPROC 6
 
 #define HW_PAGESIZE 7
 

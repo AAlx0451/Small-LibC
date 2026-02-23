@@ -1,3 +1,5 @@
+#include <sched.h>
+
 int _sched_yield(void);
 
 int sched_yield(void) {

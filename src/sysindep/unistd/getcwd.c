@@ -86,7 +86,7 @@ char *getcwd(char *buf, size_t size) {
         }
     }
 
-    size_t res_len = (temp_buf + sizeof(temp_buf) - 1) - ptr;
+    size_t res_len = ((size_t)temp_buf + sizeof(temp_buf) - 1U) - (size_t)ptr;
     if(res_len >= size) {
         errno = ERANGE;
         chdir(ptr);

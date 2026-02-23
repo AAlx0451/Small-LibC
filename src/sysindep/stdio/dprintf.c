@@ -17,7 +17,7 @@ int dprintf(int fd, const char *format, ...) {
         return -1;
     }
 
-    bytes_written = write(fd, buffer, len);
+    bytes_written = write(fd, buffer, (size_t)len);
     free(buffer);
 
     return bytes_written;

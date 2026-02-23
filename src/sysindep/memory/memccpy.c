@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <string.h>
 
 void *memccpy(void *restrict dest, const void *restrict src, int c, size_t n) {
     unsigned char *d = (unsigned char *)dest;

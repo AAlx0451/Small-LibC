@@ -1,3 +1,4 @@
+#include <fcntl.h>
 #include <stdarg.h>
 #include <sys/syscall.h>
 #include <unistd.h>

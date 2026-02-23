@@ -1,4 +1,5 @@
 #include <errno.h>
+#include <stdint.h>
 #include <sys/ioctl.h>
 #include <termios.h>
 
@@ -18,5 +19,5 @@ int tcsetattr(int fd, int opt, const struct termios *t) {
         errno = EINVAL;
         return -1;
     }
-    return ioctl(fd, request, (void *)t);
+    return ioctl(fd, request, (void *)(uintptr_t)t);
 }

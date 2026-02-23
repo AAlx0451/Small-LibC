@@ -5,6 +5,4 @@
 void abort(void) {
     raise(SIGABRT);
     _exit(127);
-    while(1) {
-    }
 }

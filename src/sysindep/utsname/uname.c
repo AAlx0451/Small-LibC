@@ -9,7 +9,6 @@
 
 #define KERN_OSTYPE 1    /* sysname */
 #define KERN_OSRELEASE 2 /* release */
-#define KERN_OSREV 3
 #define KERN_VERSION 4
 #define KERN_HOSTNAME 10 /* nodename */
 

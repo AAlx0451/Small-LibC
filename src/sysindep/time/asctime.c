@@ -10,8 +10,8 @@ static const char *mon_name[12] = {
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
 static void format_2d(char *dest, int value) {
-    dest[0] = (value / 10) + '0';
-    dest[1] = (value % 10) + '0';
+    dest[0] = ((char)(value / 10)) + '0';
+    dest[1] = ((char)(value % 10)) + '0';
 }
 
 char *asctime(const struct tm *timeptr) {
@@ -27,7 +27,7 @@ char *asctime(const struct tm *timeptr) {
 
     if(timeptr->tm_mday < 10) {
         asctime_buf[8] = ' ';
-        asctime_buf[9] = timeptr->tm_mday + '0';
+        asctime_buf[9] = ((char)(timeptr->tm_mday)) + '0';
     } else {
         format_2d(&asctime_buf[8], timeptr->tm_mday);
     }
@@ -41,7 +41,7 @@ char *asctime(const struct tm *timeptr) {
     asctime_buf[19] = ' ';
 
     int year = timeptr->tm_year + 1900;
-    asctime_buf[20] = (year / 1000) + '0';
+    asctime_buf[20] = ((char)(year / 1000)) + '0';
     asctime_buf[21] = ((year / 100) % 10) + '0';
     asctime_buf[22] = ((year / 10) % 10) + '0';
     asctime_buf[23] = (year % 10) + '0';

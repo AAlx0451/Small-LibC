@@ -1,8 +1,10 @@
+#include <math.h>
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-#include <unistd.h> /* write() */
+#include <unistd.h>
 
 #define PAD_RIGHT 1
 #define PAD_ZERO 2
@@ -90,8 +92,8 @@ static int _itoa_base(uintmax_t val, int base, int flags, char *buf) {
     }
 
     while(val) {
-        *buf++ = digits[val % base];
-        val /= base;
+        *buf++ = digits[val % (uintmax_t)base];
+        val /= (uintmax_t)base;
     }
     return buf - orig;
 }
@@ -157,7 +159,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
 
         double v = val;
         int e = 0;
-        if(v != 0) {
+        if(fabs(v) >= 1e-15) {
             while(v >= 10.0) {
                 v /= 10.0;
                 e++;
@@ -181,7 +183,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
         prec = 6;
 
     if(fmt_type == 'e' || fmt_type == 'E') {
-        if(val != 0) {
+        if(fabs(val) >= 1e-15) {
             while(val >= 10.0) {
                 val /= 10.0;
                 exp++;
@@ -248,7 +250,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
             exp = -exp;
 
         char *exp_start = buf;
-        int elen = _itoa_base(exp, 10, 0, buf);
+        int elen = _itoa_base((uintmax_t)exp, 10, 0, buf);
         if(elen < 2)
             *buf++ = '0';
         _reverse(exp_start, buf - exp_start);
@@ -408,11 +410,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
             else
                 sval = va_arg(arg, int);
 
-            if(sval < 0) {
-                uval = -sval;
-            } else {
-                uval = sval;
-            }
+            uval = (uintmax_t)llabs(sval);
             break;
 
         case 'u':
@@ -538,7 +536,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                 str_val = va_arg(arg, char *);
                 if(!str_val)
                     str_val = "(null)";
-                slen = strlen(str_val);
+                slen = (int)strlen(str_val);
                 if(prec >= 0 && slen > prec)
                     slen = prec;
             }

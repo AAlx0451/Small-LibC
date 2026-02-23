@@ -467,7 +467,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                 goto input_failure;
 
             if(c == '-' || c == '+') {
-                buf[i++] = c;
+                buf[i++] = (char)c;
                 c = _in_char(stream);
                 if(c != EOF)
                     chars_consumed++;

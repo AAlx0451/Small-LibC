@@ -1,5 +1,5 @@
-#ifndef _GRP_H
-#define _GRP_H
+#ifndef SYSINDEP_GRP__GRP_H
+#define SYSINDEP_GRP__GRP_H
 
 #include <stdio.h>
 #include <grp.h>

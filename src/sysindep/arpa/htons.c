@@ -1,5 +1,5 @@
-#include <stdint.h>
 #include <arpa/inet.h>
+#include <stdint.h>
 
 uint16_t htons(uint16_t hostshort) {
 #if __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__

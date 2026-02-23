@@ -5,6 +5,8 @@
 
 #include <ctype.h>
 #include <errno.h>
+#include <math.h>
+#include <stdint.h>
 
 double strtod(const char *str, char **end) {
     double d = 0.0;
@@ -77,13 +79,13 @@ double strtod(const char *str, char **end) {
         } else if(*p == 0)
             goto done;
 
-        if(d == 2.2250738585072011 && e * e_sign == -308) {
+        if(fabs(d - 2.2250738585072011) < 1e-15 && e * e_sign == -308) {
             d = 0.0;
             a = p;
             errno = ERANGE;
             goto done;
         }
-        if(d == 2.2250738585072012 && e * e_sign <= -308) {
+        if(fabs(d - 2.2250738585072012) < 1e-15 && e * e_sign <= -308) {
             d = 0.0;
             a = p;
             goto done;
@@ -104,6 +106,6 @@ double strtod(const char *str, char **end) {
 
 done:
     if(end)
-        *end = (char *)a;
+        *end = (char *)(uintptr_t)a;
     return d;
 }

@@ -438,7 +438,6 @@ size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *ti
 #else
             goto the_time;
 #endif
-        break;
 
         case 'y':
             if(!format_num(&s, endp, timeptr->tm_year % 100, 2))
@@ -487,7 +486,7 @@ size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *ti
 out:
     if(s < endp && *format == '\0') {
         *s = '\0';
-        return (s - start);
+        return ((size_t)(s - start));
     }
 
     return 0;

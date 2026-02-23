@@ -8,15 +8,15 @@ char *cuserid(char *s) {
     static char buf[L_cuserid];
 
     pw = getpwuid(geteuid());
+    char *target = s ? s : buf;
+
     if(!pw) {
-        if(s)
-            s[0] = '\0';
-        return s ? s : "";
+        target[0] = '\0';
+        return s ? s : NULL;
     }
 
-    if(s) {
-        return strncpy(s, pw->pw_name, L_cuserid - 1)[L_cuserid - 1] = '\0', s;
-    }
+    strncpy(target, pw->pw_name, L_cuserid - 1);
+    target[L_cuserid - 1] = '\0';
 
-    return strncpy(buf, pw->pw_name, L_cuserid - 1)[L_cuserid - 1] = '\0', buf;
+    return target;
 }

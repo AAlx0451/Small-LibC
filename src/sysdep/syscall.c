@@ -5,6 +5,7 @@
 
 #include <errno.h>
 #include <stdarg.h>
+#include <unistd.h>
 
 #ifdef __arm__
 #ifdef __APPLE__
@@ -32,15 +33,6 @@ __asm__( // static __attribute__("naked") void do_syscall(void)
     ".cfi_endproc\n");
 
 #define REG(name, val) register long name __asm__(#name) = (long)(val)
-
-#define _SYSCALL_GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
-#define _SYSCALL_COUNT_ARGS(...) _SYSCALL_GET_NTH_ARG(0, ##__VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1, 0)
-#define _SYSCALL_CONCAT_IMPL(name, count) name##count
-#define _SYSCALL_CONCAT(name, count) _SYSCALL_CONCAT_IMPL(name, count)
-
-#define syscall(number, ...)                                   \
-    _SYSCALL_CONCAT(syscall, _SYSCALL_COUNT_ARGS(__VA_ARGS__)) \
-    (number, ##__VA_ARGS__)
 
 // we don't add r4-r6,r8 to clobbers, because we bind
 // args to register and compiler follows ABI and will generate correct prologue

@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <stdio.h>
 
+char *gets(char *s);
+
 char *gets(char *s) {
     if(s == NULL) {
         return NULL;
@@ -27,7 +29,7 @@ char *gets(char *s) {
             break;
         }
 
-        *p++ = c;
+        *p++ = (char)c;
         chars_read++;
     }
 

@@ -90,7 +90,7 @@ int __stdio_flush_impl(FILE *f) {
         return 0;
 
     if((f->_flags & __S_DIRTY) && (f->_flags & __S_WR)) {
-        size_t size = f->_ptr - f->_base;
+        size_t size = (size_t)(f->_ptr - f->_base);
         unsigned char *p = f->_base;
 
         while(size > 0) {
@@ -108,7 +108,7 @@ int __stdio_flush_impl(FILE *f) {
             }
 
             p += written;
-            size -= written;
+            size -= (size_t)written;
         }
 
         f->_ptr = f->_base;

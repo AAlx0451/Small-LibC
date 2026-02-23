@@ -8,10 +8,10 @@
 #include <sched.h>
 #include <errno.h>
 
-#define ALIGNMENT 16
+#define ALIGNMENT 16U
 #define ALIGN(size) (((size) + (ALIGNMENT - 1)) & ~(ALIGNMENT - 1))
 #define BLOCK_META_SIZE ALIGN(sizeof(struct block_meta))
-#define PAGE_SIZE 4096
+#define PAGE_SIZE 4096U
 
 #define MAGIC_FREE 0xDEADBEEF
 #define MAGIC_USED 0xBA5EBA11
@@ -44,7 +44,7 @@ static inline void __malloc_spin_unlock(volatile int *lock) {
 }
 
 static inline meta_ptr get_block_ptr(void *ptr) {
-    return (meta_ptr)((char *)ptr - BLOCK_META_SIZE);
+    return (meta_ptr)((uintptr_t)ptr - BLOCK_META_SIZE);
 }
 
 static inline int is_valid_block(meta_ptr block) {
@@ -54,7 +54,7 @@ static inline int is_valid_block(meta_ptr block) {
 
 static inline void split_block(meta_ptr block, size_t size) {
     if (block->size >= size + BLOCK_META_SIZE + ALIGNMENT) {
-        meta_ptr new_block = (meta_ptr)((char *)block + BLOCK_META_SIZE + size);
+        meta_ptr new_block = (meta_ptr)((uintptr_t)block + BLOCK_META_SIZE + size);
         
         new_block->size = block->size - size - BLOCK_META_SIZE;
         new_block->next = block->next;

@@ -2,6 +2,7 @@
 #include <errno.h>
 #include <float.h>
 #include <limits.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 long double strtold(const char *restrict nptr, char **restrict endptr) {
@@ -32,14 +33,14 @@ long double strtold(const char *restrict nptr, char **restrict endptr) {
             p += 5;
         }
         if(endptr)
-            *endptr = (char *)p;
+            *endptr = (char *)(uintptr_t)p;
         return sign * (1.0L / 0.0L);
     }
 
     if((tolower((unsigned char)p[0]) == 'n') && (tolower((unsigned char)p[1]) == 'a') && (tolower((unsigned char)p[2]) == 'n')) {
         p += 3;
         if(endptr)
-            *endptr = (char *)p;
+            *endptr = (char *)(uintptr_t)p;
         return 0.0L / 0.0L;
     }
 
@@ -51,7 +52,7 @@ long double strtold(const char *restrict nptr, char **restrict endptr) {
 
     if(*p == '.') {
         p++;
-        while(isdigit((unsigned char)*p)) {
+        while(isdigit((unsigned char)(uintptr_t)*p)) {
             has_digits = 1;
             value = value * 10.0L + (*p - '0');
             decimal_exp--;
@@ -61,7 +62,7 @@ long double strtold(const char *restrict nptr, char **restrict endptr) {
 
     if(!has_digits) {
         if(endptr)
-            *endptr = (char *)nptr;
+            *endptr = (char *)(uintptr_t)nptr;
         return 0.0L;
     }
 
@@ -133,7 +134,7 @@ long double strtold(const char *restrict nptr, char **restrict endptr) {
     }
 
     if(endptr) {
-        *endptr = (char *)p;
+        *endptr = (char *)(uintptr_t)p;
     }
 
     return value;

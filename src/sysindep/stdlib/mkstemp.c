@@ -21,7 +21,7 @@ int mkstemp(char *template) {
     int try_count;
 
     if(!seeded) {
-        srand(time(NULL));
+        srand((unsigned)time(NULL));
         seeded = 1;
     }
 
@@ -46,7 +46,7 @@ int mkstemp(char *template) {
 
     for(try_count = 0; try_count < NUM_RETRIES; ++try_count) {
         for(i = 0; i < XX_LEN; ++i) {
-            xx[i] = charset[rand() % (sizeof(charset) - 1)];
+            xx[i] = charset[(unsigned)rand() % (sizeof(charset) - 1)];
         }
 
         fd = open(template, O_RDWR | O_CREAT | O_EXCL, 0600);

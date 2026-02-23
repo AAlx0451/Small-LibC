@@ -70,6 +70,7 @@ typedef struct
     int32_t gmtoff;
     int is_dst;
     uint8_t abbr_idx;
+    uint8_t __padding[3];
 } __ttinfo_t;
 
 typedef struct
@@ -87,6 +88,11 @@ typedef struct
     int is_dst;
     const char *abbr;
 } tz_result_t;
+
+/* declarations */
+int tz_lookup(const tz_db_t *db, int64_t timestamp, tz_result_t *result);
+tz_db_t *tz_load(const char *filepath);
+void tz_destroy(tz_db_t *db);
 
 /* --- PRIVATE IMPLEMENTATION --- */
 
@@ -138,7 +144,7 @@ static int __tz_parse_body(int fd, tz_db_t *db, int is_v2) {
             int32_t t32;
             if(read(fd, &t32, 4) != 4)
                 return -1;
-            db->transitions[i] = (int64_t)((int32_t)__be32_to_cpu(t32));
+            db->transitions[i] = (int64_t)((int32_t)__be32_to_cpu((uint32_t)(t32)));
         }
     }
 
@@ -238,7 +244,7 @@ int tz_lookup(const tz_db_t *db, int64_t timestamp, tz_result_t *result) {
             while(low <= high) {
                 uint32_t mid = low + (high - low) / 2;
                 if(db->transitions[mid] <= timestamp) {
-                    idx = mid;
+                    idx = (int32_t)mid;
                     low = mid + 1;
                 } else {
                     if(mid == 0)
@@ -257,7 +263,7 @@ int tz_lookup(const tz_db_t *db, int64_t timestamp, tz_result_t *result) {
         type_idx = 0;
         for(uint32_t i = 0; i < db->header.tzh_typecnt; i++) {
             if(!db->types[i].is_dst) {
-                type_idx = i;
+                type_idx = (int32_t)i;
                 break;
             }
         }

@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdlib.h>
 
 static inline void swap(void *a, void *b, size_t size) {
     char *p = a;
