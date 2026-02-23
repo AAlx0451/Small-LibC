@@ -1,6 +1,9 @@
 #ifndef SYS_ACCT_H
 #define SYS_ACCT_H
 
+#include <features.h>
+
+#if !defined(_ANSI) && defined(_XOPEN_SOURCE)
 #include <sys/types.h>
 
 typedef uint16_t comp_t;
@@ -25,6 +28,6 @@ struct acct {
     dev_t ac_tty;
     uint8_t ac_flag;
 };
+#endif /* !_ANSI && _XOPEN_SOURCE */
 
-#endif /* SYS_ACCT_H */
-
+#endif /* !SYS_ACCT_H */

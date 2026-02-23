@@ -1,17 +1,16 @@
 #ifndef STDIO_H
 #define STDIO_H
 
-#include <stddef.h>
-#include <sys/types.h>
-#include <stdarg.h>
 #include <features.h>
+#include <stddef.h>
+#include <stdarg.h>
 
 #define BUFSIZ 1024
 #define EOF (-1)
 
 #ifndef NULL
 #define NULL ((void*)0)
-#endif
+#endif /* !NULL */
 
 #define SEEK_SET 0
 #define SEEK_CUR 1
@@ -29,17 +28,18 @@
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
 #  define L_ctermid 10
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_XOPEN_SOURCE))
 #  define L_cuserid 17
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _XOPEN_SOURCE) */
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
+#include <sys/types.h>
 typedef off_t fpos_t;
 #else
 typedef long long fpos_t;
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
 typedef struct __sFILE {
     int _fd;
@@ -107,10 +107,9 @@ int feof(FILE *p);
 int ferror(FILE *p);
 void clearerr(FILE *p);
 
-#ifndef _ANSI
 #if !(!defined(_ANSI) && (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L))
 char *gets(char *s);
-#endif
+#endif /* !(!_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200809L)) */
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600))
 int snprintf(char *str, size_t size, const char *format, ...);
@@ -118,33 +117,32 @@ int vsnprintf(char *str, size_t size, const char *format, va_list ap);
 int vfscanf(FILE *stream, const char *format, va_list arg);
 int vscanf(const char *format, va_list arg);
 int vsscanf(const char *str, const char *format, va_list arg);
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || (__STDC_VERSION__ && __STDC_VERSION__ >= 199901L) || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 600)) */
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
 int fileno(FILE *p);
 FILE *fdopen(int fildes, const char *mode);
 char *ctermid(char *s);
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_XOPEN_SOURCE))
 char *cuserid(char *s);
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _XOPEN_SOURCE) */
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600))
 int fseeko(FILE *stream, off_t offset, int whence);
 off_t ftello(FILE *stream);
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 600)) */ 
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 700))
 ssize_t getline(char **lineptr, size_t *n, FILE *stream);
 int dprintf(int fd, const char *format, ...);
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200809L) || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 700)) */
 
-#if defined(_DARWIN_C_SOURCE)
+#if (defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE)) && !defined(_ANSI)
 int vasprintf(char **strp, const char *fmt, va_list ap);
 int asprintf(char **strp, const char *fmt, ...);
-#endif
-#endif
+#endif /* (_DARWIN_C_SOURCE || _GNU_SOURCE) && !_ANSI */
 
 #if defined(_DARWIN_C_SOURCE)
 #define SMALL_LIBC
@@ -157,7 +155,6 @@ void __stdio_flush_all(void);
 void __stdio_free_buffer(FILE *f);
 void _spin_lock(volatile int *lock);
 void _spin_unlock(volatile int *lock);
-#endif
+#endif /* _DARWIN_C_SOURCE */
 
-#endif
-
+#endif /* !STDIO_H */

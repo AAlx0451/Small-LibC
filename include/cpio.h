@@ -1,6 +1,10 @@
 #ifndef CPIO_H
 #define CPIO_H
 
+#include <features.h>
+
+#if !defined(_ANSI) && defined(_POSIX_C_SOURCE)
+
 #define MAGIC "070707"
 
 #define C_IRUSR 0000400
@@ -24,4 +28,6 @@
 #define C_ISLNK 0120000
 #define C_ISSOCK 0140000
 
-#endif // CPIO_H
+#endif /* !_ANSI && _POSIX_C_SOURCE */
+
+#endif /* !CPIO_H */

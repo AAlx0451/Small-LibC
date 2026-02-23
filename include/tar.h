@@ -1,6 +1,10 @@
 #ifndef TAR_H
 #define TAR_H
 
+#include <features.h>
+
+#if !defined(_ANSI) && defined(_POSIX_C_SOURCE)
+
 #define TMAGIC   "ustar"
 #define TMAGLEN  6
 #define TVERSION "00"
@@ -29,4 +33,6 @@
 #define TOWRITE  00002
 #define TOEXEC   00001
 
-#endif // TAR_H
+#endif /* !_ANSI && _POSIX_C_SOURCE */
+
+#endif /* !TAR_H */

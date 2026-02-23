@@ -7,7 +7,7 @@
  * ANSI C
  */
  
-// Small-LibC's
+/* Small-LibC's */
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
@@ -20,10 +20,10 @@
 #include <time.h>
 #include <locale.h>
 
-// Compiler-dependent
+/* Compiler-dependent */
 #include <float.h>
 #include <limits.h>
 #include <stdarg.h>
 #include <stddef.h>
 
-#endif
+#endif /* !LIBC_H */

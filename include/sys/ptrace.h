@@ -1,6 +1,9 @@
 #ifndef	SYS_PTRACE_H
 #define	SYS_PTRACE_H
 
+#include <features.h>
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_XOPEN_SOURCE))
+
 #include <sys/types.h>
 
 #define	PT_TRACE_ME 0
@@ -24,4 +27,6 @@
 
 int ptrace(int request, pid_t pid, caddr_t addr, int data);
 
-#endif	// SYS_PTRACE_H
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _XOPEN_SOURCE) */
+
+#endif /* !SYS_PTRACE_H */

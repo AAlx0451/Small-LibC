@@ -1,16 +1,18 @@
 #ifndef ASSERT_H
 #define ASSERT_H
 
-#undef assert
+#ifdef assert
+# undef assert
+#endif /* assert */
 
 #ifdef NDEBUG
-    #define assert(expr) ((void)0)
+# define assert(expr) ((void)0)
 #else
 
 #include <unistd.h>
 #include <stdlib.h>
 
-#if defined(__GNUC) || defined(__clang__)
+#if defined(__GNUC__) || defined(__clang__)
 # define always __attribute__((always_inline))
 # define noreturn __attribute__((noreturn))
 # define cold __attribute__((cold))
@@ -18,7 +20,7 @@
 # define always
 # define noreturn
 # define cold
-#endif
+#endif /* __GNUC__ || __clang__ */
 
 void static always inline write_str(const char* s) {
     if(s) {
@@ -53,6 +55,6 @@ static noreturn cold void __assert_fail_internal(const char *expr, const char *f
 #define assert(expr) \
     ((void)((expr) ? (void)0 : __assert_fail_internal(#expr, __FILE__, __LINE__, __func__)))
 
-#endif // NDEBUG
+#endif /* NDEBUG */
  
-#endif // ASSERT_H
+#endif /* ASSERT_H */

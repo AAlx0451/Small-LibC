@@ -3,4 +3,4 @@
 
 int sched_yield(void);
 
-#endif /* SCHED_H */
+#endif /* !SCHED_H */

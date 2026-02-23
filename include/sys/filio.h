@@ -1,6 +1,9 @@
 #ifndef	SYS_FILIO_H
 #define	SYS_FILIO_H
 
+#include <features.h>
+
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_XOPEN_SOURCE))
 #include <sys/ioccom.h>
 
 #define	FIOCLEX	_IO('f', 1)
@@ -12,4 +15,6 @@
 #define	FIOGETOWN _IOR('f', 123, int)
 #define	FIODTYPE _IOR('f', 122, int)
 
-#endif // SYS_FILIO_H
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _XOPEN_SOURCE) */
+
+#endif /* !SYS_FILIO_H */

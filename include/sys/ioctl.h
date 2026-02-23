@@ -1,13 +1,17 @@
 #ifndef	SYS_IOCTL_H
 #define	SYS_IOCTL_H
 
+#include <features.h>
+
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_XOPEN_SOURCE))
+
 #include <sys/ttycom.h>
 
 struct ttysize {
-	unsigned short	ts_lines;
-	unsigned short	ts_cols;
-	unsigned short	ts_xxx;
-	unsigned short	ts_yyy;
+    unsigned short ts_lines;
+    unsigned short ts_cols;
+    unsigned short ts_xxx;
+    unsigned short ts_yyy;
 };
 
 #define TIOCGSIZE TIOCGWINSZ
@@ -18,4 +22,6 @@ struct ttysize {
 
 int ioctl(int, unsigned long, ...);
 
-#endif // SYS_IOCTL_H
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _XOPEN_SOURCE) */
+
+#endif /* !SYS_IOCTL_H */

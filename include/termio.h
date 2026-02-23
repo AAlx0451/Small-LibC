@@ -1,6 +1,10 @@
 #ifndef TERMIO_H
 #define TERMIO_H
 
+#include <features.h>
+
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) || defined(_XOPEN_SOURCE))
+
 #include <termios.h>
 
 #define NCC 8
@@ -60,4 +64,6 @@ struct termio {
 #define TCXONC    (IOCTLSORT|6)
 #define TCFLSH    (IOCTLSORT|7)
 
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _GNU_SOURCE || _XOPEN_SOURCE) */
+
+#endif /* !TERMIO_H */

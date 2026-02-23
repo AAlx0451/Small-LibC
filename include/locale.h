@@ -14,7 +14,7 @@
 
 #if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 1L) || defined(_DARWIN_C_SOURCE)
 #define LC_MESSAGES     6
-#endif
+#endif /* (_POSIX_C_SOURCE &&  _POSIX_C_SOURCE >= 1) || _DARWIN_C_SOURCE */
 
 struct lconv {
     /* LC_NUMERIC */
@@ -43,4 +43,4 @@ struct lconv {
 char* setlocale(int category, const char *locale);
 struct lconv* localeconv(void);
 
-#endif // LOCALE_H
+#endif /* !LOCALE_H */

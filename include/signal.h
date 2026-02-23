@@ -1,18 +1,18 @@
 #ifndef SIGNAL_H
 #define SIGNAL_H
 
-#include <sys/types.h>
 #include <features.h>
 
 typedef int sig_atomic_t;
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
+#include <sys/types.h>
 typedef int sigset_t;
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
 #if defined(_DARWIN_C_SOURCE)
 typedef void (*sig_t)(int);
-#endif
+#endif /* _DARWIN_C_SOURCE */
 
 #define SIG_DFL ((void (*)(int))0)
 #define SIG_IGN ((void (*)(int))1)
@@ -39,7 +39,7 @@ typedef void (*sig_t)(int);
 #define SIGTTOU   22
 #define SIGUSR1   30
 #define SIGUSR2   31
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L))
 #define SIGTRAP   5
@@ -50,20 +50,20 @@ typedef void (*sig_t)(int);
 #define SIGXFSZ   25
 #define SIGVTALRM 26
 #define SIGPROF   27
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 500) || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L)) */
 
 #if defined(_DARWIN_C_SOURCE)
 #define SIGIO     23
 #define SIGWINCH  28
 #define SIGINFO   29
-#endif
+#endif /* _DARWIN_C_SOURCE */
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
 #define NSIG      32
-#endif
+#define SA_NOCLDSTOP 0x0008
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
-#define SA_NOCLDSTOP 0x0008
 
 #if defined(_DARWIN_C_SOURCE) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L)
 #define SA_ONSTACK   0x0001
@@ -72,12 +72,12 @@ typedef void (*sig_t)(int);
 #define SA_NODEFER   0x0010
 #define SA_NOCLDWAIT 0x0020
 #define SA_SIGINFO   0x0040
-#endif
+#endif /* _DARWIN_C_SOURCE || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 500) || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) */
 
 #if defined(_DARWIN_C_SOURCE)
 #define SA_USERTRAMP 0x0100
 #define UC_FLAVOR    30
-#endif
+#endif /* _DARWIN_C_SOURCE */
 
 #define SIG_BLOCK   1
 #define SIG_UNBLOCK 2
@@ -94,7 +94,7 @@ struct sigaction {
 
 #define sa_handler   __sigaction_u.__sa_handler
 #define sa_sigaction __sigaction_u.__sa_sigaction
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE)  */
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L))
 union sigval {
@@ -102,7 +102,7 @@ union sigval {
     void    *sival_ptr;
 };
 
-typedef struct __siginfo {
+typedef struct siginfo {
     int     si_signo;
     int     si_errno;
     int     si_code;
@@ -114,7 +114,7 @@ typedef struct __siginfo {
     long    si_band;
     unsigned long   __pad[7];
 } siginfo_t;
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 500) || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 199309L)) */
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
 #define sigemptyset(set)    (*(set) = 0, 0)
@@ -122,7 +122,7 @@ typedef struct __siginfo {
 #define sigaddset(set, sig) (*(set) |= (1 << ((sig) - 1)), 0)
 #define sigdelset(set, sig) (*(set) &= ~(1 << ((sig) - 1)), 0)
 #define sigismember(set, sig) ((*(set) & (1 << ((sig) - 1))) ? 1 : 0)
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
 void (*signal(int sig, void (*func)(int)))(int);
 int raise(int sig);
@@ -133,10 +133,10 @@ int kill(pid_t pid, int sig);
 int sigprocmask(int how, const sigset_t *set, sigset_t *oldset);
 int sigsuspend(const sigset_t *sigmask);
 int sigpending(sigset_t *set);
-#endif
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
 #if defined(_DARWIN_C_SOURCE)
 int sigreturn(void *uctx, int infostyle);
-#endif
+#endif /* _DARWIN_C_SOURCE */
 
-#endif
+#endif /* !SIGNAL_H */

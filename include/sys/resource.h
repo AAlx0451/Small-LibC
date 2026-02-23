@@ -1,27 +1,28 @@
 #ifndef SYS_RESOURCE_H
-# define SYS_RESOURCE_H
+#define SYS_RESOURCE_H
 
-# include<sys/time.h>
+#include <features.h>
 
-struct  rusage {
-        struct timeval ru_utime;        /* user time used (PL) */
-        struct timeval ru_stime;        /* system time used (PL) */                                 
-        long    ru_maxrss;              /* max resident set size (PL) */
-#define ru_first        ru_ixrss        /* internal: ruadd() range start */
-        long    ru_ixrss;               /* integral shared memory size (NU) */
-        long    ru_idrss;               /* integral unshared data (NU)  */
-        long    ru_isrss;               /* integral unshared stack (NU) */
-        long    ru_minflt;              /* page reclaims (NU) */
-        long    ru_majflt;              /* page faults (NU) */
-        long    ru_nswap;               /* swaps (NU) */
-        long    ru_inblock;             /* block input operations (atomic) */
-        long    ru_oublock;             /* block output operations (atomic) */
-        long    ru_msgsnd;              /* messages sent (atomic) */
-        long    ru_msgrcv;              /* messages received (atomic) */
-        long    ru_nsignals;            /* signals received (atomic) */
-        long    ru_nvcsw;               /* voluntary context switches (atomic) */
-        long    ru_nivcsw;              /* involuntary " */
-#define ru_last         ru_nivcsw       /* internal: ruadd() range end */
+#if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L )
+#include <sys/time.h>
+
+struct rusage {
+    struct timeval ru_utime;
+    struct timeval ru_stime;
+    long ru_maxrss;
+    long ru_ixrss;
+    long ru_idrss;
+    long ru_isrss;
+    long ru_minflt;
+    long ru_majflt;
+    long ru_nswap;
+    long ru_inblock;
+    long ru_oublock;
+    long ru_msgsnd;
+    long ru_msgrcv;
+    long ru_nsignals;
+    long ru_nvcsw;
+    long ru_nivcsw;
 };
 
 # define RUSAGE_SELF 0
@@ -29,4 +30,6 @@ struct  rusage {
 
 int getrusage(int who, struct rusage *usage);
 
-#endif
+#endif /* !_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) */
+
+#endif /* !SYS_RESOURCE_H */

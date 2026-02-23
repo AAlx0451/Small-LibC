@@ -1,7 +1,9 @@
-#if defined(__arm__) && defined(__APPLE__)
-
 #ifndef STDINT_H
 #define STDINT_H
+
+#include <features.h>
+
+#if !defined(_ANSI) && ((defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || defined(_DARWIN_C_SOURCE))
 
 #define __WORDSIZE 32
 
@@ -188,14 +190,6 @@ typedef unsigned long long      uintmax_t;
 #define INTMAX_C(v)  (v ## LL)
 #define UINTMAX_C(v) (v ## ULL)
 
-#endif /* STDINT_H */
+#endif /* !_ANSI && ((__STDC_VERSION__ && __STDC_VERSION__ >= 199901L) || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _DARWIN_C_SOURCE) */
 
-#elif defined(__GNUC__) || defined(__clang__)
-
-# include_next <stdint.h>
-
-#else
-
-# error Unsupported architecture
-
-#endif
+#endif /* !STDINT_H */

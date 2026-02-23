@@ -8,7 +8,7 @@
 #  define HUGE_VAL  __builtin_huge_val()
 #else
 #  define HUGE_VAL  (1.0/0.0)
-#endif
+#endif /* __GNUC__ || __clang__ */
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || \
     (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || \
@@ -18,33 +18,22 @@
 #include <stdint.h>
 
 #if defined(__GNUC__) || defined(__clang__)
-#  define NAN       (double)(__builtin_nanf(""))
-#  define INFINITY  __builtin_inf()
-#  define isfinite(x) __builtin_isfinite(x)
-#  define isnan(x)    __builtin_isnan(x)
-#  define isinf(x)    __builtin_isinf(x)
-#  define signbit(x)  __builtin_signbit(x)
+# define NAN (double)(__builtin_nanf(""))
+# define INFINITY __builtin_inf()
+# define isfinite(x) __builtin_isfinite(x)
+# define isnan(x) __builtin_isnan(x)
+# define isinf(x) __builtin_isinf(x)
+# define signbit(x) __builtin_signbit(x)
 #else
-#  define NAN       (0.0f/0.0f)
-#  define INFINITY  (1.0f/0.0f) 
-#  define isfinite(x) \
-        ((((union { double d; uint64_t u; }){.d = (x)}.u >> 52) & 0x7FF) != 0x7FF)
-#  define isnan(x) \
-        (((((union { double d; uint64_t u; }){.d = (x)}.u >> 52) & 0x7FF) == 0x7FF) && \
-        ((((union { double d; uint64_t u; }){.d = (x)}.u & 0xFFFFFFFFFFFFFULL) != 0)))
-#  define isinf(x) \
-        (((((union { double d; uint64_t u; }){.d = (x)}.u >> 52) & 0x7FF) == 0x7FF) && \
-         ((((union { double d; uint64_t u; }){.d = (x)}.u & 0xFFFFFFFFFFFFFULL) == 0)))
-#  define signbit(x) \
-        (((union { double d; uint64_t u; }){.d = (x)}.u) >> 63)
-#endif
+#warning C99 macros not supported.
+#endif /* __GNUC__ || __clang__ */
 
 double log2(double x);
 double trunc(double x);
 double round(double x);
 double copysign(double x, double y);
 
-#endif
+#endif /* #if !_ANSI && (_DARWIN_C_SOURCE || (__STDC_VERSION__ && __STDC_VERSION__ >= 199901L) || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 600)) */
 
 double acos(double x);
 double asin(double x);
@@ -69,4 +58,4 @@ double sinh(double x);
 double cosh(double x);
 double tanh(double x);
 
-#endif
+#endif /* !MATH_H */

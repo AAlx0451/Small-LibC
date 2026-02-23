@@ -1,6 +1,10 @@
 #ifndef SYS_IOCCOM_H
 #define SYS_IOCCOM_H
 
+#include <features.h>
+
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_XOPEN_SOURCE))
+
 #define _IOC_NRBITS     8
 #define _IOC_TYPEBITS   8
 #define _IOC_SIZEBITS   13
@@ -41,4 +45,6 @@
 #define IOC_INOUT       (IOC_IN | IOC_OUT)
 #define IOC_DIRMASK     0xe0000000
 
-#endif // SYS_IOCCOM_H
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _XOPEN_SOURCE) */
+
+#endif /* !SYS_IOCCOM_H */

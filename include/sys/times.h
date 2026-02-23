@@ -1,6 +1,10 @@
 #ifndef SYS_TIMES_H
 #define SYS_TIMES_H
 
+#include <features.h>
+
+#if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
+
 #include <sys/types.h>
 
 struct tms {
@@ -12,4 +16,6 @@ struct tms {
 
 clock_t times(struct tms *buffer);
 
-#endif /* SYS_TIMES_H */
+#endif /* !_ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */
+
+#endif /* !SYS_TIMES_H */

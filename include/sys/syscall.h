@@ -1,7 +1,9 @@
 #ifndef SYS_SYSCALL_H
 #define SYS_SYSCALL_H
 
-# if defined(__APPLE__)
+#include <features.h>
+
+#if defined(_DARWIN_C_SOURCE)
 
 #  define SYS_exit 1
 #  define SYS_fork 2
@@ -81,7 +83,7 @@
 #  define SYS_munlockall 325
 #  define SYS_getdirentries64 344
 
-# endif
+# endif /* _DARWIN_C_SOURCE */
 
 #endif /* SYS_SYSCALL_H */
 

@@ -1,6 +1,10 @@
 #ifndef TERMIOS_H
 #define TERMIOS_H
 
+#include <features.h>
+
+#if !defined(_ANSI) && defined(_POSIX_C_SOURCE)
+
 #include <sys/types.h>
 
 typedef unsigned long tcflag_t;
@@ -15,8 +19,12 @@ struct termios {
     tcflag_t c_cflag;
     tcflag_t c_lflag;
     cc_t c_cc[NCCS];
+#if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || defined(_GNU_SOURCE) || defined(_DARWIN_C_SOURCE)
     speed_t c_ispeed;
     speed_t c_ospeed;
+#else
+    speed_t __p[2];
+#endif /* (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 500) || _GNU_SOURCE || _DARWIN_C_SOURCE */
 };
 
 #define VINTR    0
@@ -26,16 +34,19 @@ struct termios {
 #define VEOF     4
 #define VTIME    5
 #define VMIN     6
-#define VSWTC    7
 #define VSTART   8
 #define VSTOP    9
 #define VSUSP    10
 #define VEOL     11
+
+#if defined(_GNU_SOURCE) || defined(_DARWIN_C_SOURCE)
+#define VSWTC    7
 #define VREPRINT 12
 #define VDISCARD 13
 #define VWERASE  14
 #define VLNEXT   15
 #define VEOL2    16
+#endif /* _GNU_SOURCE || _DARWIN_C_SOURCE */
 
 #define IGNBRK  0x00000001
 #define BRKINT  0x00000002
@@ -48,13 +59,22 @@ struct termios {
 #define ICRNL   0x00000100
 #define IXON    0x00000200
 #define IXOFF   0x00000400
+
+#if (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || defined(_GNU_SOURCE) || defined(_DARWIN_C_SOURCE)
 #define IXANY   0x00000800
+#endif /* (_XOPEN_SOURCE && _XOPEN_SOURCE >= 500) || _GNU_SOURCE || _DARWIN_C_SOURCE */
+
+#if defined(_GNU_SOURCE) || defined(_DARWIN_C_SOURCE)
 #define IMAXBEL 0x00002000
+#endif /* _GNU_SOURCE || _DARWIN_C_SOURCE */
 
 #define OPOST   0x00000001
 #define ONLCR   0x00000002
+
+#if defined(_GNU_SOURCE) || defined(_DARWIN_C_SOURCE)
 #define OXTABS  0x00000004
 #define ONOEOT  0x00000008
+#endif /* _GNU_SOURCE || _DARWIN_C_SOURCE */
 
 #define CSIZE   0x00000300
 #define CS5     0x00000000
@@ -68,13 +88,20 @@ struct termios {
 #define HUPCL   0x00004000
 #define CLOCAL  0x00008000
 
+#if defined(_GNU_SOURCE) || defined(_DARWIN_C_SOURCE)
 #define ECHOKE  0x00000001
+#endif /* _GNU_SOURCE || _DARWIN_C_SOURCE */
+
 #define ECHOE   0x00000002
 #define ECHOK   0x00000004
 #define ECHO    0x00000008
 #define ECHONL  0x00000010
+
+#if defined(_GNU_SOURCE) || defined(_DARWIN_C_SOURCE)
 #define ECHOPRT 0x00000020
 #define ECHOCTL 0x00000040
+#endif /* _GNU_SOURCE || _DARWIN_C_SOURCE */
+
 #define ISIG    0x00000080
 #define ICANON  0x00000100
 #define IEXTEN  0x00000400
@@ -122,4 +149,6 @@ int tcgetattr(int fd, struct termios *t);
 int tcsendbreak(int fd, int duration);
 int tcsetattr(int fd, int optional_actions, const struct termios *t);
 
-#endif
+#endif /* !_ANSI && _POSIX_C_SOURCE */
+
+#endif /* !TERMIOS_H */

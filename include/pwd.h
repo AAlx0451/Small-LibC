@@ -1,7 +1,12 @@
 #ifndef PWD_H
 #define	PWD_H
 
+#include <features.h>
+
+#if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
+
 #include <sys/types.h>
+#include <time.h>
 #include <stddef.h>
 
 struct passwd {
@@ -19,8 +24,13 @@ struct passwd {
 
 struct passwd *getpwuid(uid_t);
 struct passwd *getpwnam(const char *);
+
+#if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || defined(_XOPEN_SOURCE)
 struct passwd *getpwent();
 void setpwent();
 void endpwent();
+#endif /* (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || (_XOPEN_SOURCE) */
 
-#endif // PWD_H
+#endif /* !_ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */
+
+#endif /* !PWD_H */

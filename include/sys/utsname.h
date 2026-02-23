@@ -1,6 +1,10 @@
 #ifndef SYS_UTSNAME_H
 #define SYS_UTSNAME_H
 
+#include <features.h>
+
+#if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
+
 struct utsname {
     char sysname[256];
     char nodename[256];
@@ -11,4 +15,6 @@ struct utsname {
 
 int uname(struct utsname *name);
 
-#endif // SYS_UTSNAME_H
+#endif /* !_ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */
+
+#endif /* !SYS_UTSNAME_H */

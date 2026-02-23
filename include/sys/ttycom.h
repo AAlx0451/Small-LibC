@@ -1,6 +1,10 @@
 #ifndef SYS_TTYCOM_H
 #define SYS_TTYCOM_H
 
+#include <features.h>
+
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_XOPEN_SOURCE))
+
 #include <sys/ioccom.h>
 
 struct winsize {
@@ -86,4 +90,6 @@ struct winsize {
 #define SLIPDISC 4
 #define PPPDISC 5
 
-#endif // SYS_TTYCOM_H
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || _XOPEN_SOURCE) */
+
+#endif /* !SYS_TTYCOM_H */

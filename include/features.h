@@ -1,6 +1,18 @@
 #ifndef FEATURES_H
 # define FEATURES_H
 
+#if defined(__GNUC__) || defined(__clang__)
+#pragma GCC diagnostic ignored "-Wreserved-id-macro"
+#endif /* __GNUC__ || __clang__ */
+
+#if defined(__GNUC__) || defined(__clang__)
+# define NORETURN __attribute__((noreturn))
+#elif __STDC_VERSION__ >= 201112L
+# define NORETURN _Noreturn
+#else 
+# define NORETURN 
+#endif /* __GNUC__ || __clang__ */
+
 #if defined(_ANSI_SOURCE) || defined(__STRICT_ANSI__)
 # undef _POSIX_C_SOURCE
 # undef _POSIX_SOURCE
