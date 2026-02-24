@@ -107,6 +107,12 @@ int feof(FILE *p);
 int ferror(FILE *p);
 void clearerr(FILE *p);
 
+#if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 2L)
+FILE *popen(const char *command, const char *mode);
+int pclose(FILE *stream);
+#endif /* !_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2) */
+
+
 #if !(!defined(_ANSI) && (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L))
 char *gets(char *s);
 #endif /* !(!_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200809L)) */
@@ -144,8 +150,7 @@ int vasprintf(char **strp, const char *fmt, va_list ap);
 int asprintf(char **strp, const char *fmt, ...);
 #endif /* (_DARWIN_C_SOURCE || _GNU_SOURCE) && !_ANSI */
 
-#if defined(_DARWIN_C_SOURCE)
-#define SMALL_LIBC
+#if !defined(_ANSI) && defined(SMALL_LIBC)
 void __stdio_init(void);
 int __stdio_flush_impl(FILE *stream);
 int __stdio_fill_impl(FILE *stream);
@@ -155,6 +160,6 @@ void __stdio_flush_all(void);
 void __stdio_free_buffer(FILE *f);
 void _spin_lock(volatile int *lock);
 void _spin_unlock(volatile int *lock);
-#endif /* _DARWIN_C_SOURCE */
+#endif /* !_ANSI && SMALL_LIBC */
 
 #endif /* !STDIO_H */
