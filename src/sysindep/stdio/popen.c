@@ -1,8 +1,8 @@
+#include <errno.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <errno.h>
-#include <fcntl.h>
 
 struct pid_node {
     int fd;
@@ -22,16 +22,16 @@ FILE *popen(const char *command, const char *mode) {
     int parent_side, child_side, target_fd;
     struct pid_node *new_node, *cur;
 
-    if ((mode[0] != 'r' && mode[0] != 'w') || mode[1] != 0) {
+    if((mode[0] != 'r' && mode[0] != 'w') || mode[1] != 0) {
         errno = EINVAL;
         return NULL;
     }
 
-    if (pipe(p_h) == -1) {
+    if(pipe(p_h) == -1) {
         return NULL;
     }
 
-    if (mode[0] == 'r') {
+    if(mode[0] == 'r') {
         parent_side = p_h[0];
         child_side = p_h[1];
         target_fd = STDOUT_FILENO;
@@ -43,23 +43,23 @@ FILE *popen(const char *command, const char *mode) {
 
     _spin_lock(&__popen_lock);
 
-    if ((pid = fork()) == -1) {
+    if((pid = fork()) == -1) {
         _spin_unlock(&__popen_lock);
         close(p_h[0]);
         close(p_h[1]);
         return NULL;
     }
 
-    if (pid == 0) {
+    if(pid == 0) {
         cur = __popen_pid_list;
-        while (cur) {
+        while(cur) {
             close(cur->fd);
             cur = cur->next;
         }
 
         close(parent_side);
 
-        if (child_side != target_fd) {
+        if(child_side != target_fd) {
             dup2(child_side, target_fd);
             close(child_side);
         }
@@ -70,7 +70,7 @@ FILE *popen(const char *command, const char *mode) {
 
     close(child_side);
 
-    if ((fp = fdopen(parent_side, mode)) == NULL) {
+    if((fp = fdopen(parent_side, mode)) == NULL) {
         close(parent_side);
         return NULL;
     }
@@ -78,7 +78,7 @@ FILE *popen(const char *command, const char *mode) {
     fcntl(parent_side, F_SETFD, FD_CLOEXEC);
 
     new_node = malloc(sizeof(struct pid_node));
-    if (!new_node) {
+    if(!new_node) {
         fclose(fp);
         _spin_unlock(&__popen_lock);
         return NULL;

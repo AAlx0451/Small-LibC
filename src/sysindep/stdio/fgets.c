@@ -30,7 +30,8 @@ char *fgets(char *s, int size, FILE *stream) {
     }
 
 done:
-    if(p) *p = '\0';
+    if(p)
+        *p = '\0';
     _spin_unlock(&stream->_lock);
     return (chars_read > 0) ? s : NULL;
 }

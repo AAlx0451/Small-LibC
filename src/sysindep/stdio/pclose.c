@@ -1,8 +1,8 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
-#include <errno.h>
 #include <sys/wait.h>
+#include <unistd.h>
 
 struct pid_node {
     int fd;
@@ -19,7 +19,7 @@ int pclose(FILE *stream) {
     struct pid_node **pp, *entry;
     pid_t wpid;
 
-    if (stream == NULL) {
+    if(stream == NULL) {
         errno = EINVAL;
         return -1;
     }
@@ -29,8 +29,8 @@ int pclose(FILE *stream) {
     _spin_lock(&__popen_lock);
 
     pp = &__popen_pid_list;
-    while (*pp) {
-        if ((*pp)->fd == fd) {
+    while(*pp) {
+        if((*pp)->fd == fd) {
             entry = *pp;
             *pp = entry->next;
             pid = entry->pid;
@@ -42,7 +42,7 @@ int pclose(FILE *stream) {
 
     _spin_unlock(&__popen_lock);
 
-    if (pid == 0) {
+    if(pid == 0) {
         errno = EBADF;
         return -1;
     }
@@ -51,7 +51,7 @@ int pclose(FILE *stream) {
 
     do {
         wpid = waitpid(pid, &status, 0);
-    } while (wpid == -1 && errno == EINTR);
+    } while(wpid == -1 && errno == EINTR);
 
     return (wpid == -1) ? -1 : status;
 }
