@@ -15,9 +15,6 @@ char *fgets(char *s, int size, FILE *stream) {
     while(--size > 0) {
         if(stream->_cnt <= 0) {
             if(__stdio_fill_impl(stream) == EOF) {
-                if(chars_read == 0) {
-                    p = NULL; // Error or EOF before anything was read.
-                }
                 goto done;
             }
         }
@@ -33,7 +30,7 @@ char *fgets(char *s, int size, FILE *stream) {
     }
 
 done:
-    *p = '\0';
+    if(p) *p = '\0';
     _spin_unlock(&stream->_lock);
     return (chars_read > 0) ? s : NULL;
 }
