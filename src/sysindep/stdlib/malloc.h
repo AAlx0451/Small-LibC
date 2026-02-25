@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <sys/mman.h>
 #include <sched.h>
+
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 
 #define ALIGNMENT 16U

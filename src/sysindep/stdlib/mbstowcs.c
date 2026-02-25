@@ -1,4 +1,6 @@
 #include <stdlib.h>
+
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wc++-keyword"
 
 size_t mbstowcs(wchar_t *dest, const char *src, size_t n) {

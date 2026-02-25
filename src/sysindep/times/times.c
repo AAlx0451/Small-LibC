@@ -3,6 +3,8 @@
 #include <sys/times.h>
 #include <time.h>
 #include <unistd.h>
+
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 
 static inline clock_t _timeval_to_clock_t(const struct timeval *tv) {

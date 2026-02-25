@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
-#include <wchar.h>
+
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wc++-keyword"
 
 int mbtowc(wchar_t *pwc, const char *s, size_t n) {

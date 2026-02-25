@@ -1,5 +1,7 @@
 #include <limits.h>
 #include <time.h>
+
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 #include "tz_context.h"
 

@@ -6,10 +6,11 @@
 
 #if defined(__GNUC__) || defined(__clang__)
 #define UNREACHABLE __builtin_unreachable();
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 #else
 #define UNREACHABLE
 #endif /* defined(__GNUC__) || defined(__clang__) */
-#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 void _call_atexit_handlers(void);
 

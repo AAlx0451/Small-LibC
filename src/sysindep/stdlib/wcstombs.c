@@ -1,4 +1,6 @@
 #include <stdlib.h>
+
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wc++-keyword"
 
 size_t wcstombs(char *dest, const wchar_t *src, size_t n) {

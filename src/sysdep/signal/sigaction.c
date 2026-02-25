@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 
 /*

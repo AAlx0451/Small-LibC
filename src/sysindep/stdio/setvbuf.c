@@ -21,7 +21,7 @@ int setvbuf(FILE *stream, char *buf, int mode, size_t size) {
 
     case _IOLBF:
         stream->_flags |= __S_LBF;
-        __attribute__((fallthrough));
+        __has_attribute(fallthrough);
         /* Fallthrough */
     case _IOFBF:
         if(size == 0) {

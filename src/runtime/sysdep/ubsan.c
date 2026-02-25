@@ -1,4 +1,5 @@
 #include <stdint.h>
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 
 #define NO_UBSAN __attribute__((no_sanitize("undefined")))

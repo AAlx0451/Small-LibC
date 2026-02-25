@@ -1,4 +1,6 @@
 #include <stdlib.h>
+
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wc++-keyword"
 
 int wctomb(char *s, wchar_t wc) {
