@@ -1,4 +1,3 @@
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -526,6 +525,8 @@ static int iso8601wknum(const struct tm *timeptr) {
             dec31ly.tm_yday = 364 + isleap(dec31ly.tm_year + 1900L);
             weeknum = iso8601wknum(&dec31ly);
         }
+        break;
+    default:
         break;
     }
 

@@ -11,11 +11,11 @@
 #endif
 
 char *ttyname(int fd) {
-    struct stat fs;
-    struct stat ts;
+    struct stat fs, ts;
     struct dirent *de;
     DIR *d;
     static char buf[PATH_MAX];
+    size_t name_len;
 
     if(!isatty(fd)) {
         return NULL;
@@ -41,7 +41,7 @@ char *ttyname(int fd) {
             continue;
         }
 
-        size_t name_len = strlen(de->d_name);
+        name_len = strlen(de->d_name);
         if(5 + name_len + 1 > PATH_MAX) {
             continue;
         }

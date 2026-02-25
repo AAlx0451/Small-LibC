@@ -40,7 +40,7 @@ static int check_range(char c, char start, char end) {
 static int fnmatch_internal(const char *pattern, const char *string, int flags, int is_start) {
     const char *p = pattern;
     const char *s = string;
-    char c;
+    char c, start_char, end_char;
 
     while((c = *p++) != '\0') {
         if(!(flags & FNM_NOESCAPE) && c == '\\') {
@@ -124,10 +124,10 @@ static int fnmatch_internal(const char *pattern, const char *string, int flags, 
                     }
                 }
 
-                char start_char = *scan++;
+                start_char = *scan++;
                 if(scan < scan_end && *scan == '-' && (scan + 1) < scan_end) {
                     scan++;
-                    char end_char = *scan++;
+                    end_char = *scan++;
                     if(check_range(*s, start_char, end_char))
                         found = 1;
                 } else {

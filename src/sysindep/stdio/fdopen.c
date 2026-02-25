@@ -7,7 +7,9 @@
 
 FILE *fdopen(int fildes, const char *mode) {
     unsigned int stdio_flags = 0;
-    int fd_flags;
+    int fd_flags, access_mode;
+    unsigned char *alloc_buf;
+    FILE *f;
     fd_flags = fcntl(fildes, F_GETFL);
     if(fd_flags == -1) {
         return NULL;
@@ -24,7 +26,7 @@ FILE *fdopen(int fildes, const char *mode) {
         return NULL;
     }
 
-    int access_mode = fd_flags & O_ACCMODE;
+    access_mode = fd_flags & O_ACCMODE;
 
     if((stdio_flags & __S_RD) && (access_mode != O_RDONLY && access_mode != O_RDWR)) {
         errno = EINVAL;
@@ -35,14 +37,14 @@ FILE *fdopen(int fildes, const char *mode) {
         return NULL;
     }
 
-    FILE *f = malloc(sizeof(FILE));
+    f = (FILE *)malloc(sizeof(FILE));
     if(!f) {
         errno = ENOMEM;
         return NULL;
     }
 
     // Allocate +1 byte for ungetc reserve
-    unsigned char *alloc_buf = malloc(BUFSIZ + 1);
+    alloc_buf = (unsigned char *)malloc(BUFSIZ + 1);
     if(!alloc_buf) {
         free(f);
         errno = ENOMEM;

@@ -1,8 +1,10 @@
 #include <stdlib.h>
+#pragma clang diagnostic ignored "-Wc++-keyword"
 
 size_t wcstombs(char *dest, const wchar_t *src, size_t n) {
     size_t bytes_written = 0;
     char temp[MB_CUR_MAX];
+    int len;
 
     while(1) {
         wchar_t wc = *src++;
@@ -14,7 +16,7 @@ size_t wcstombs(char *dest, const wchar_t *src, size_t n) {
             return bytes_written;
         }
 
-        int len = wctomb(temp, wc);
+        len = wctomb(temp, wc);
         if(len == -1) {
             return (size_t)-1;
         }

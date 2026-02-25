@@ -10,7 +10,7 @@
 #define NUM_RETRIES 100
 #define XX_LEN 6
 
-int mkstemp(char *template) {
+int mkstemp(char *templat) {
     static int seeded = 0;
     static const char charset[] = "abcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -25,18 +25,18 @@ int mkstemp(char *template) {
         seeded = 1;
     }
 
-    if(template == NULL) {
+    if(templat == NULL) {
         errno = EINVAL;
         return -1;
     }
 
-    len = strlen(template);
+    len = strlen(templat);
     if(len < XX_LEN) {
         errno = EINVAL;
         return -1;
     }
 
-    xx = template + len - XX_LEN;
+    xx = templat + len - XX_LEN;
     for(i = 0; i < XX_LEN; ++i) {
         if(xx[i] != 'X') {
             errno = EINVAL;
@@ -49,7 +49,7 @@ int mkstemp(char *template) {
             xx[i] = charset[(unsigned)rand() % (sizeof(charset) - 1)];
         }
 
-        fd = open(template, O_RDWR | O_CREAT | O_EXCL, 0600);
+        fd = open(templat, O_RDWR | O_CREAT | O_EXCL, 0600);
 
         if(fd >= 0) {
             return fd;

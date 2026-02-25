@@ -6,8 +6,10 @@
 #include <unistd.h>
 
 FILE *fopen(const char *pathname, const char *mode) {
-    int open_flags = 0;
+    int open_flags = 0, fd;
     unsigned int stdio_flags = 0;
+    unsigned char *alloc_buf;
+    FILE *f;
 
     if(strchr(mode, '+')) {
         open_flags |= O_RDWR;
@@ -35,12 +37,12 @@ FILE *fopen(const char *pathname, const char *mode) {
         return NULL;
     }
 
-    int fd = open(pathname, open_flags, 0666);
+    fd = open(pathname, open_flags, 0666);
     if(fd < 0) {
         return NULL;
     }
 
-    FILE *f = malloc(sizeof(FILE));
+    f = (FILE *)malloc(sizeof(FILE));
     if(!f) {
         close(fd);
         errno = ENOMEM;
@@ -48,7 +50,7 @@ FILE *fopen(const char *pathname, const char *mode) {
     }
 
     // Allocate +1 byte for ungetc reserve.
-    unsigned char *alloc_buf = malloc(BUFSIZ + 1);
+    alloc_buf = (unsigned char *)malloc(BUFSIZ + 1);
     if(!alloc_buf) {
         close(fd);
         free(f);

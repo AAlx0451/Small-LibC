@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 struct pid_node {
     int fd;

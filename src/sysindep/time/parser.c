@@ -2,8 +2,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include <unistd.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 /* --- INTERNAL HELPERS --- */
 
@@ -80,6 +80,7 @@ typedef struct
     uint8_t *type_idxs;
     __ttinfo_t *types;
     char *abbrevs;
+    uint8_t _padding[4];
 } tz_db_t;
 
 typedef struct
@@ -123,10 +124,10 @@ static int __tz_skip_data(int fd, struct __tz_header *h) {
 static int __tz_parse_body(int fd, tz_db_t *db, int is_v2) {
     uint32_t i;
 
-    db->transitions = malloc(db->header.tzh_timecnt * sizeof(int64_t));
-    db->type_idxs = malloc(db->header.tzh_timecnt * sizeof(uint8_t));
-    db->types = malloc(db->header.tzh_typecnt * sizeof(__ttinfo_t));
-    db->abbrevs = malloc(db->header.tzh_charcnt * sizeof(char));
+    db->transitions = (int64_t *)malloc(db->header.tzh_timecnt * sizeof(int64_t));
+    db->type_idxs = (uint8_t *)malloc(db->header.tzh_timecnt * sizeof(uint8_t));
+    db->types = (__ttinfo_t *)malloc(db->header.tzh_typecnt * sizeof(__ttinfo_t));
+    db->abbrevs = (char *)malloc(db->header.tzh_charcnt * sizeof(char));
 
     if(!db->transitions || !db->type_idxs || !db->types || !db->abbrevs) {
         return -1;
@@ -182,11 +183,12 @@ void tz_destroy(tz_db_t *db) {
 }
 
 tz_db_t *tz_load(const char *filepath) {
-    int fd = open(filepath, O_RDONLY);
+    int fd = open(filepath, O_RDONLY), version;
+    tz_db_t *db;
     if(fd < 0)
         return NULL;
 
-    tz_db_t *db = calloc(1, sizeof(tz_db_t));
+    db = (tz_db_t *)calloc(1, sizeof(tz_db_t));
     if(!db) {
         close(fd);
         return NULL;
@@ -200,7 +202,7 @@ tz_db_t *tz_load(const char *filepath) {
         goto error;
     }
 
-    int version = (db->header.version >= '2') ? 2 : 1;
+    version = (db->header.version >= '2') ? 2 : 1;
     __tz_host_header(&db->header);
 
     if(version == 2) {
@@ -229,10 +231,12 @@ error:
 }
 
 int tz_lookup(const tz_db_t *db, int64_t timestamp, tz_result_t *result) {
+    int idx, type_idx;
+    const __ttinfo_t *info;
     if(!db || !result)
         return 0;
 
-    int idx = -1;
+    idx = -1;
 
     if(db->header.tzh_timecnt > 0) {
         if(timestamp < db->transitions[0]) {
@@ -255,8 +259,6 @@ int tz_lookup(const tz_db_t *db, int64_t timestamp, tz_result_t *result) {
         }
     }
 
-    int type_idx;
-
     if(idx != -1) {
         type_idx = db->type_idxs[idx];
     } else {
@@ -272,7 +274,7 @@ int tz_lookup(const tz_db_t *db, int64_t timestamp, tz_result_t *result) {
     if((uint32_t)type_idx >= db->header.tzh_typecnt)
         return 0;
 
-    const __ttinfo_t *info = &db->types[type_idx];
+    info = &db->types[type_idx];
     result->gmtoff = info->gmtoff;
     result->is_dst = info->is_dst;
     result->abbr = &db->abbrevs[info->abbr_idx];

@@ -3,8 +3,9 @@
 #include <unistd.h> // for write()
 
 int fputs(const char *s, FILE *stream) {
-    size_t len;
+    size_t len, chunk_len, remaining_in_string, space_in_buffer, to_copy;
     int ret = 0;
+    const unsigned char *p;
 
     if(s == NULL || stream == NULL) {
         return EOF;
@@ -39,7 +40,7 @@ int fputs(const char *s, FILE *stream) {
     }
 
     /* Logic for buffered streams */
-    const unsigned char *p = (const unsigned char *)s;
+    p = (const unsigned char *)s;
     while(*p) {
         if(stream->_cnt == 0) {
             if(__stdio_flush_impl(stream) != 0) {
@@ -49,11 +50,10 @@ int fputs(const char *s, FILE *stream) {
         }
 
         /* Optimized write: copy as much as possible into the buffer */
-        size_t chunk_len = (size_t)(p - (const unsigned char *)s);
-        size_t remaining_in_string = len - chunk_len;
-        size_t space_in_buffer = stream->_cnt;
-
-        size_t to_copy = (remaining_in_string < space_in_buffer) ? remaining_in_string : space_in_buffer;
+        chunk_len = (size_t)(p - (const unsigned char *)s);
+        remaining_in_string = len - chunk_len;
+        space_in_buffer = stream->_cnt;
+        to_copy = (remaining_in_string < space_in_buffer) ? remaining_in_string : space_in_buffer;
 
         memcpy(stream->_ptr, p, to_copy);
         stream->_ptr += to_copy;

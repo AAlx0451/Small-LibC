@@ -3,28 +3,28 @@
 #include <string.h>
 
 long long __fixdfdi(double a) {
+    unsigned long long bits, mantissa_raw, result;
+    int sign, exponent_raw, exponent;
     if(a != a)
         return 0; // NaN
 
-    unsigned long long bits;
     memcpy(&bits, &a, sizeof(bits));
 
-    int sign = (bits >> 63) ? -1 : 1;
-    int exponent_raw = (bits >> 52) & 0x7FF;
-    unsigned long long mantissa_raw = bits & 0xFFFFFFFFFFFFFULL;
+    sign = (bits >> 63) ? -1 : 1;
+    exponent_raw = (bits >> 52) & 0x7FF;
+    mantissa_raw = bits & 0xFFFFFFFFFFFFFULL;
 
     if(exponent_raw == 0x7FF) { // Infinity
         return sign > 0 ? LLONG_MAX : LLONG_MIN;
     }
 
-    int exponent = exponent_raw - 1023;
+    exponent = exponent_raw - 1023;
     if(exponent < 0)
         return 0;
     if(exponent >= 63) { // Out of range for long long
         return sign > 0 ? LLONG_MAX : LLONG_MIN;
     }
 
-    unsigned long long result;
     if(exponent_raw == 0) { // Subnormal number
         result = mantissa_raw;
     } else { // Normal number

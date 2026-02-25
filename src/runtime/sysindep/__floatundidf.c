@@ -32,22 +32,22 @@ static int clz64(unsigned long long x) {
 }
 
 double __floatundidf(unsigned long long a) {
+    int shift, exponent, shift_diff;
+    double result;
+    unsigned long long mantissa, round_mask, sticky_mask, guard, sticky, lsb, result_bits;
     if(a == 0)
         return 0.0;
 
-    int shift = clz64(a);
-    int exponent = 1023 + (63 - shift);
-
-    unsigned long long mantissa;
-    int shift_diff = 63 - shift - 52;
+    shift = clz64(a);
+    exponent = 1023 + (63 - shift);
+    shift_diff = 63 - shift - 52;
 
     if(shift_diff > 0) {
-        unsigned long long round_mask = (1ULL << (shift_diff - 1));
-        unsigned long long sticky_mask = round_mask - 1;
-
-        unsigned long long guard = (a >> (shift_diff - 1)) & 1;
-        unsigned long long sticky = (a & sticky_mask) ? 1 : 0;
-        unsigned long long lsb = (a >> shift_diff) & 1;
+        round_mask = (1ULL << (shift_diff - 1));
+        sticky_mask = round_mask - 1;
+        guard = (a >> (shift_diff - 1)) & 1;
+        sticky = (a & sticky_mask) ? 1 : 0;
+        lsb = (a >> shift_diff) & 1;
 
         mantissa = a >> shift_diff;
         if(guard && (sticky || lsb)) {
@@ -62,9 +62,8 @@ double __floatundidf(unsigned long long a) {
     }
 
     mantissa &= 0x000FFFFFFFFFFFFFULL;
-    unsigned long long result_bits = ((unsigned long long)exponent << 52) | mantissa;
+    result_bits = ((unsigned long long)exponent << 52) | mantissa;
 
-    double result;
     memcpy(&result, &result_bits, sizeof(result));
     return result;
 }

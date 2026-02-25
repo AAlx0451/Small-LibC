@@ -1,4 +1,5 @@
 #include <stdint.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 double __floatdidf(long long a);
 double __floatundidf(unsigned long long a);

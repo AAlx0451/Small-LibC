@@ -1,15 +1,17 @@
 #include <stdlib.h>
+#pragma clang diagnostic ignored "-Wc++-keyword"
 
 size_t mbstowcs(wchar_t *dest, const char *src, size_t n) {
     size_t count = 0;
     wchar_t wc;
+    int len;
 
     while(1) {
         if(dest && count >= n) {
             break;
         }
 
-        int len = mbtowc(&wc, src, (size_t)-1);
+        len = mbtowc(&wc, src, (size_t)-1);
 
         if(len == -1) {
             return (size_t)-1;

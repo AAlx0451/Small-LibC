@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 struct pid_node {
     int fd;
@@ -77,7 +78,7 @@ FILE *popen(const char *command, const char *mode) {
 
     fcntl(parent_side, F_SETFD, FD_CLOEXEC);
 
-    new_node = malloc(sizeof(struct pid_node));
+    new_node = (struct pid_node *)malloc(sizeof(struct pid_node));
     if(!new_node) {
         fclose(fp);
         _spin_unlock(&__popen_lock);

@@ -1,7 +1,12 @@
 #include <stdint.h>
 #include <stdlib.h>
+#include <wchar.h>
+#pragma clang diagnostic ignored "-Wc++-keyword"
 
 int mbtowc(wchar_t *pwc, const char *s, size_t n) {
+    unsigned char c;
+    int len = 0;
+    wchar_t res = 0;
     if(s == NULL) {
         return 0;
     }
@@ -9,9 +14,7 @@ int mbtowc(wchar_t *pwc, const char *s, size_t n) {
         return -1;
     }
 
-    unsigned char c = (unsigned char)(uintptr_t)*s;
-    wchar_t res = 0;
-    int len = 0;
+    c = (unsigned char)(uintptr_t)*s;
 
     if(c == '\0') {
         if(pwc)

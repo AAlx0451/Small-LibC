@@ -1,4 +1,5 @@
 #include <sched.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 int _sched_yield(void);
 

@@ -18,7 +18,7 @@ int execvp(const char *file, char *const argv[]) {
         path = "/bin:/usr/bin";
 
     flen = strlen(file);
-    buf = malloc(strlen(path) + flen + 2);
+    buf = (char *)malloc(strlen(path) + flen + 2);
     if(!buf)
         return -1;
 

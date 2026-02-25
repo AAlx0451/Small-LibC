@@ -1,5 +1,5 @@
-#include "tz_context.h"
 #include <time.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 #define SECS_PER_MIN 60
 #define SECS_PER_HOUR 3600

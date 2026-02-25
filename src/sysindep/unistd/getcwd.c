@@ -14,12 +14,11 @@
 char *getcwd(char *buf, size_t size) {
     char temp_buf[PATH_MAX];
     char *ptr;
-    struct stat st_cur;
-    struct stat st_root;
-    struct stat st_parent;
+    struct stat st_cur, st_root, st_parent, st_child;
     DIR *dir;
     struct dirent *entry;
     int found;
+    size_t res_len;
 
     if(!buf || !size) {
         errno = EINVAL;
@@ -56,7 +55,6 @@ char *getcwd(char *buf, size_t size) {
                     continue;
                 }
 
-                struct stat st_child;
                 if(lstat(entry->d_name, &st_child) == -1) {
                     continue;
                 }
@@ -86,7 +84,7 @@ char *getcwd(char *buf, size_t size) {
         }
     }
 
-    size_t res_len = ((size_t)temp_buf + sizeof(temp_buf) - 1U) - (size_t)ptr;
+    res_len = ((size_t)temp_buf + sizeof(temp_buf) - 1U) - (size_t)ptr;
     if(res_len >= size) {
         errno = ERANGE;
         chdir(ptr);

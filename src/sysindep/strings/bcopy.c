@@ -1,8 +1,8 @@
 #include <strings.h>
 
 void bcopy(const void *src, void *dest, size_t n) {
-    const char *s = src;
-    char *d = dest;
+    const char *s = (const char *)src;
+    char *d = (char *)dest;
     if(d < s) {
         while(n--) {
             *d++ = *s++;

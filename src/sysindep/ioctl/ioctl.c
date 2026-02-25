@@ -102,12 +102,13 @@ static inline __attribute__((always_inline)) void trans_termios_to_termio(const 
 }
 
 static inline __attribute__((always_inline)) void trans_termio_to_termios(const struct termio *src, struct termios *dst) {
+    speed_t speed;
     dst->c_iflag = src->c_iflag;
     dst->c_lflag = src->c_lflag;
 
     dst->c_cflag = (dst->c_cflag & ~0xFFFFUL) | (src->c_cflag & ~CBAUD);
 
-    speed_t speed = (speed_t)termio_baud_to_speed(src->c_cflag);
+    speed = (speed_t)termio_baud_to_speed(src->c_cflag);
     dst->c_ispeed = speed;
     dst->c_ospeed = speed;
 

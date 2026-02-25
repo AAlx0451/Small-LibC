@@ -1,5 +1,6 @@
 #include <string.h>
 #include <unistd.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 char *optarg = NULL;
 int optind = 1;
@@ -19,7 +20,7 @@ static void _err_write(const char *s) {
 }
 
 int getopt(int argc, char *const argv[], const char *optstring) {
-    char c;
+    char c, ch[2];
     char *place;
 
     optarg = NULL;
@@ -51,7 +52,8 @@ int getopt(int argc, char *const argv[], const char *optstring) {
         if(opterr && *optstring != ':') {
             _err_write(argv[0]);
             _err_write(": illegal option -- ");
-            char ch[2] = {c, '\0'};
+            ch[0] = c;
+            ch[1] = '\0';
             _err_write(ch);
             _err_write("\n");
         }
@@ -70,7 +72,8 @@ int getopt(int argc, char *const argv[], const char *optstring) {
             if(opterr && *optstring != ':') {
                 _err_write(argv[0]);
                 _err_write(": option requires an argument -- ");
-                char ch[2] = {c, '\0'};
+                ch[0] = c;
+                ch[1] = '\0';
                 _err_write(ch);
                 _err_write("\n");
             }

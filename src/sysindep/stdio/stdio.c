@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 static FILE *__s_file_list_head = NULL;
 static volatile int __stdio_list_lock = 0;
@@ -20,16 +21,15 @@ FILE *stdout;
 FILE *stderr;
 
 void _spin_lock(volatile int *lock) {
-    while(__sync_lock_test_and_set(lock, 1)) {
+    while(__atomic_test_and_set(lock, __ATOMIC_ACQUIRE)) {
         while(*lock) {
-            // Prevent Livelock by yielding CPU
             sched_yield();
         }
     }
 }
 
 void _spin_unlock(volatile int *lock) {
-    __sync_lock_release(lock);
+    __atomic_clear(lock, __ATOMIC_RELEASE);
 }
 
 void __stdio_add_file(FILE *f) {

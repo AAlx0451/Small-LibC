@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 typedef int wint_t;
 #define MAX_SCAN_WIDTH 256
@@ -93,13 +94,14 @@ static int _skip_whitespace(FILE *f, int *consumed) {
     return EOF;
 }
 
-/* 
+/*
  * Helper to read a single UTF-8 character from the stream.
  * Returns the decoded wide character (wint_t), or EOF on error/EOF.
  * Updates consumed counter.
  */
 static wint_t _in_char_utf8(FILE *f, int *consumed) {
-    int c1 = _in_char(f);
+    int c1 = _in_char(f), num_bytes;
+    uint32_t val;
     if(c1 == EOF)
         return EOF;
     (*consumed)++;
@@ -109,8 +111,8 @@ static wint_t _in_char_utf8(FILE *f, int *consumed) {
         return (wint_t)c1;
     }
 
-    int num_bytes = 0;
-    uint32_t val = 0;
+    num_bytes = 0;
+    val = 0;
 
     if((c1 & 0xE0) == 0xC0) {
         val = c1 & 0x1F;
@@ -157,14 +159,9 @@ static wint_t _in_char_utf8(FILE *f, int *consumed) {
 
 int vfscanf(FILE *stream, const char *format, va_list arg) {
     const char *p = format;
-    int c;
-    int nmatch = 0;
-    int width;
-    int flags;
-    int conversion_char;
+    int c, m, val, nmatch = 0, width, flags, conversion_char, i, chars_consumed = 0, digits, read_count, matched;
     char buf[MAX_SCAN_WIDTH + 1];
-    int i;
-    int chars_consumed = 0;
+    wint_t wc;
 
     if(!stream || !format)
         return EOF;
@@ -392,7 +389,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                         chars_consumed--;
                     break;
                 }
-                int val = -1;
+                val = -1;
                 if(isdigit(c))
                     val = c - '0';
                 else if(isalpha(c))
@@ -475,7 +472,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                     width--;
             }
 
-            int digits = 0;
+            digits = 0;
             while(c != EOF && i < MAX_SCAN_WIDTH) {
                 if(width == 0) {
                     _unget_char(stream, c);
@@ -505,13 +502,13 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                 goto match_failure;
 
             if(!(flags & FL_SPLAT)) {
-                double val = strtod(buf, NULL);
+                double val2 = strtod(buf, NULL);
                 if(flags & FL_LONG)
-                    *va_arg(arg, double *) = val;
+                    *va_arg(arg, double *) = val2;
                 else if(flags & FL_DOUBLE)
-                    *va_arg(arg, double *) = val;
+                    *va_arg(arg, double *) = val2;
                 else
-                    *va_arg(arg, float *) = (float)val;
+                    *va_arg(arg, float *) = (float)val2;
                 nmatch++;
             }
             break;
@@ -519,9 +516,9 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
 
         case 'S':
         case 's': {
-            /* Handle %ls or %lS (Wide String, UTF-8 to wchar_t) */
+            /* Handle %ls or %lS (Wide String, UTF-8 to uint32_t) */
             if(conversion_char == 'S' || (flags & FL_LONG)) {
-                wchar_t *wstr = (flags & FL_SPLAT) ? NULL : va_arg(arg, wchar_t *);
+                uint32_t *wstr = (flags & FL_SPLAT) ? NULL : va_arg(arg, uint32_t *);
 
                 /* %s/%ls skips whitespace first */
                 c = _skip_whitespace(stream, &chars_consumed);
@@ -533,7 +530,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                 if(width == -1)
                     width = INT_MAX; /* Default unlimited */
 
-                int read_count = 0;
+                read_count = 0;
                 while(width > 0) {
                     int peek = _in_char(stream);
                     if(peek == EOF)
@@ -548,12 +545,12 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                     /* It's not space. Put back and read as UTF-8 char. */
                     _unget_char(stream, peek);
 
-                    wint_t wc = _in_char_utf8(stream, &chars_consumed);
+                    wc = _in_char_utf8(stream, &chars_consumed);
                     if(wc == EOF)
                         break;
 
                     if(wstr)
-                        *wstr++ = (wchar_t)wc;
+                        *wstr++ = (uint32_t)wc;
                     width--;
                     read_count++;
                 }
@@ -607,23 +604,23 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
 
         case 'C':
         case 'c': {
-            /* Handle %lc or %lC (Wide Char, UTF-8 to wchar_t) */
+            /* Handle %lc or %lC (Wide Char, UTF-8 to uint32_t) */
             if(conversion_char == 'C' || (flags & FL_LONG)) {
-                wchar_t *wstr = (flags & FL_SPLAT) ? NULL : va_arg(arg, wchar_t *);
+                uint32_t *wstr = (flags & FL_SPLAT) ? NULL : va_arg(arg, uint32_t *);
                 if(width == -1)
                     width = 1;
 
-                int read_count = 0;
+                read_count = 0;
                 while(width-- > 0) {
                     /* %c / %lc does NOT skip whitespace automatically */
-                    wint_t wc = _in_char_utf8(stream, &chars_consumed);
+                    wc = _in_char_utf8(stream, &chars_consumed);
                     if(wc == EOF) {
                         if(read_count == 0)
                             goto input_failure;
                         break;
                     }
                     if(wstr)
-                        *wstr++ = (wchar_t)wc;
+                        *wstr++ = (uint32_t)wc;
                     read_count++;
                 }
                 if(!(flags & FL_SPLAT) && read_count > 0)
@@ -687,7 +684,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
             if(c == EOF)
                 goto input_failure;
 
-            int matched = 0;
+            matched = 0;
             while(c != EOF) {
                 if(width == 0) {
                     _unget_char(stream, c);
@@ -695,7 +692,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                         chars_consumed--;
                     break;
                 }
-                int m = scanset[(unsigned char)c];
+                m = scanset[(unsigned char)c];
                 if(invert)
                     m = !m;
                 if(!m) {
@@ -722,6 +719,8 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
             }
             break;
         }
+        default:
+            break;
         }
     }
 

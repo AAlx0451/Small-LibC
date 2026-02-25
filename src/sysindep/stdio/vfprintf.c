@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 #define PAD_RIGHT 1
 #define PAD_ZERO 2
 #define PRINT_SGN 4
@@ -95,10 +95,10 @@ static int _itoa_base(uintmax_t val, int base, int flags, char *buf) {
         *buf++ = digits[val % (uintmax_t)base];
         val /= (uintmax_t)base;
     }
-    return buf - orig;
+    return ((int)(buf - orig));
 }
 
-/* 
+/*
  * Helper to encode a single wide char to UTF-8.
  * Returns the number of bytes written to buf (0 on failure).
  * Ensure buf has at least 4 bytes of space.
@@ -127,8 +127,11 @@ static int _encode_utf8(uint32_t wc, char *buf) {
 }
 
 static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
-    char *orig = buf;
-    int exp = 0;
+    double tmp, v, rounding, fpart;
+    char *orig = buf, *num_start, *exp_start;
+    int exp = 0, e, digit, elen;
+    char fmt_type;
+    uintmax_t ipart;
 
     if(val != val) {
         if(type >= 'a' && type <= 'z')
@@ -138,7 +141,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
         return 3;
     }
 
-    double tmp = (val < 0) ? -val : val;
+    tmp = (val < 0) ? -val : val;
     if(tmp > 1.7976931348623157E+308) {
         if(type >= 'a' && type <= 'z')
             strcpy(buf, "inf");
@@ -150,15 +153,15 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
     if(val < 0)
         val = -val;
 
-    char fmt_type = type;
+    fmt_type = type;
     if(type == 'g' || type == 'G') {
         if(prec < 0)
             prec = 6;
         else if(prec == 0)
             prec = 1;
 
-        double v = val;
-        int e = 0;
+        v = val;
+        e = 0;
         if(fabs(v) >= 1e-15) {
             while(v >= 10.0) {
                 v /= 10.0;
@@ -195,7 +198,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
         }
     }
 
-    double rounding = 0.5;
+    rounding = 0.5;
     for(int i = 0; i < prec; i++)
         rounding /= 10.0;
     val += rounding;
@@ -207,14 +210,14 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
         }
     }
 
-    uintmax_t ipart = (uintmax_t)val;
-    double fpart = val - (double)ipart;
+    ipart = (uintmax_t)val;
+    fpart = val - (double)ipart;
 
-    char *num_start = buf;
+    num_start = buf;
     buf += _itoa_base(ipart, 10, 0, buf);
 
     /* Fixed incorrect mirroring: reverse integer part immediately so it is forward-oriented, matching the fractional part. */
-    _reverse(num_start, buf - num_start);
+    _reverse(num_start, ((int)(buf - num_start)));
 
     if(prec > 0 || (flags & PRINT_ALT)) {
         *buf++ = '.';
@@ -223,8 +226,8 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
     if(prec > 0) {
         for(int i = 0; i < prec; i++) {
             fpart *= 10.0;
-            int digit = (int)fpart;
-            *buf++ = '0' + (digit % 10);
+            digit = (int)fpart;
+            *buf++ = '0' + ((char)(digit % 10));
             fpart -= digit;
         }
     }
@@ -249,22 +252,26 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
         if(exp < 0)
             exp = -exp;
 
-        char *exp_start = buf;
-        int elen = _itoa_base((uintmax_t)exp, 10, 0, buf);
+        exp_start = buf;
+        elen = _itoa_base((uintmax_t)exp, 10, 0, buf);
         if(elen < 2)
             *buf++ = '0';
-        _reverse(exp_start, buf - exp_start);
+        _reverse(exp_start, ((int)(buf - exp_start)));
     } else {
         /* No global reverse needed here anymore */
     }
 
-    return buf - orig;
+    return ((int)(buf - orig));
 }
 
 int vfprintf(FILE *stream, const char *format, va_list arg) {
-    const char *p = format;
-    int total_written = 0;
-    char temp_buf[512];
+    const char *p = format, *prefix;
+    int total_written = 0, flags, width, prec, len_mod, slen, base, is_signed, is_integer, is_float, total_bytes, padding, written_so_far, prec_zeros, pad_len, prefix_len, sgn_len, actual_len;
+    char temp_buf[512], type, *str_val, dummy[4], sgn_char;
+    uintmax_t uval;
+    intmax_t sval;
+    double fval;
+    uint32_t *ptr;
 
     if(!stream)
         return -1;
@@ -297,10 +304,10 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
 
         p++;
 
-        int flags = 0;
-        int width = 0;
-        int prec = -1;
-        int len_mod = 0;
+        flags = 0;
+        width = 0;
+        prec = -1;
+        len_mod = 0;
 
         while(1) {
             if(*p == '-')
@@ -379,18 +386,18 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
             p++;
         }
 
-        char type = *p++;
-        char *str_val = NULL;
-        int slen = 0;
+        type = *p++;
+        str_val = NULL;
+        slen = 0;
 
-        uintmax_t uval = 0;
-        intmax_t sval = 0;
-        double fval = 0.0;
+        uval = 0;
+        sval = 0;
+        fval = 0.0;
 
-        int base = 10;
-        int is_signed = 0;
-        int is_integer = 0;
-        int is_float = 0;
+        base = 10;
+        is_signed = 0;
+        is_integer = 0;
+        is_float = 0;
 
         switch(type) {
         case 'd':
@@ -456,9 +463,9 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
             break;
 
         case 'n': {
-            int *ptr = va_arg(arg, int *);
+            ptr = va_arg(arg, uint32_t *);
             if(ptr)
-                *ptr = total_written;
+                *ptr = (unsigned)total_written;
             continue;
         }
 
@@ -482,14 +489,13 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
         case 's':
             /* Handle %ls / %lS (Wide String to UTF-8) */
             if(type == 'S' || len_mod == 3) {
-                wchar_t *wstr = va_arg(arg, wchar_t *);
+                uint32_t *wstr = va_arg(arg, uint32_t *);
                 if(!wstr)
-                    wstr = (wchar_t *)L"(null)";
+                    wstr = (uint32_t *)L"(null)";
 
                 /* Calculate length in bytes for UTF-8 output, respecting precision */
-                int total_bytes = 0;
-                const wchar_t *ptr = wstr;
-                char dummy[4];
+                total_bytes = 0;
+                ptr = wstr;
 
                 while(*ptr) {
                     int char_len = _encode_utf8((uint32_t)*ptr, dummy);
@@ -500,14 +506,14 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                 }
 
                 /* Handle Left Padding */
-                int padding = width - total_bytes;
+                padding = width - total_bytes;
                 if(!(flags & PAD_RIGHT)) {
                     while(padding-- > 0)
                         total_written += _out_char(stream, ' ');
                 }
 
                 /* Output the encoded characters */
-                int written_so_far = 0;
+                written_so_far = 0;
                 ptr = wstr;
                 while(*ptr) {
                     char utf8_buf[4];
@@ -578,7 +584,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
             str_val = temp_buf;
         }
 
-        int prec_zeros = 0;
+        prec_zeros = 0;
         if(is_integer && prec >= 0) {
             if(prec > slen)
                 prec_zeros = prec - slen;
@@ -587,8 +593,8 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
             }
         }
 
-        int pad_len = 0;
-        char sgn_char = 0;
+        pad_len = 0;
+        sgn_char = 0;
         if(is_signed || is_float) {
             if((is_signed && sval < 0) || (is_float && fval < 0))
                 sgn_char = '-';
@@ -598,8 +604,8 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                 sgn_char = ' ';
         }
 
-        const char *prefix = "";
-        int prefix_len = 0;
+        prefix = "";
+        prefix_len = 0;
         if((flags & PRINT_ALT) && (uval != 0 || type == 'p')) {
             if(base == 8) {
                 prefix = "0";
@@ -614,8 +620,8 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
             prefix_len = 0;
         }
 
-        int sgn_len = (sgn_char != 0);
-        int actual_len = sgn_len + prefix_len + prec_zeros + slen;
+        sgn_len = (sgn_char != 0);
+        actual_len = sgn_len + prefix_len + prec_zeros + slen;
         pad_len = width - actual_len;
 
         if(!(flags & PAD_RIGHT) && !(flags & PAD_ZERO)) {

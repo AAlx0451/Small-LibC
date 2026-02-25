@@ -1,9 +1,9 @@
-#include <errno.h>
 #include <sys/resource.h>
 #include <sys/time.h>
 #include <sys/times.h>
 #include <time.h>
 #include <unistd.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 static inline clock_t _timeval_to_clock_t(const struct timeval *tv) {
     long ticks_per_sec = CLK_TCK;

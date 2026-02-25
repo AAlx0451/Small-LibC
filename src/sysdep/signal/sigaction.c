@@ -2,8 +2,9 @@
 #include <stddef.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
-/* 
+/*
  * Kernel ABI struct (16 bytes).
  * Includes explicit trampoline pointer.
  */

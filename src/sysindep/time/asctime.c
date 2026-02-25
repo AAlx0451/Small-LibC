@@ -15,6 +15,7 @@ static void format_2d(char *dest, int value) {
 }
 
 char *asctime(const struct tm *timeptr) {
+    int year;
     asctime_buf[0] = wday_name[timeptr->tm_wday][0];
     asctime_buf[1] = wday_name[timeptr->tm_wday][1];
     asctime_buf[2] = wday_name[timeptr->tm_wday][2];
@@ -40,11 +41,11 @@ char *asctime(const struct tm *timeptr) {
     format_2d(&asctime_buf[17], timeptr->tm_sec);
     asctime_buf[19] = ' ';
 
-    int year = timeptr->tm_year + 1900;
+    year = timeptr->tm_year + 1900;
     asctime_buf[20] = ((char)(year / 1000)) + '0';
-    asctime_buf[21] = ((year / 100) % 10) + '0';
-    asctime_buf[22] = ((year / 10) % 10) + '0';
-    asctime_buf[23] = (year % 10) + '0';
+    asctime_buf[21] = ((char)((year / 100) % 10)) + '0';
+    asctime_buf[22] = ((char)((year / 10) % 10)) + '0';
+    asctime_buf[23] = ((char)((year) % 10)) + '0';
 
     asctime_buf[24] = '\n';
     asctime_buf[25] = '\0';

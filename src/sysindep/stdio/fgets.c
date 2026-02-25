@@ -2,13 +2,14 @@
 #include <stdio.h>
 
 char *fgets(char *s, int size, FILE *stream) {
+    char *p;
+    int chars_read = 0;
+    unsigned char c;
     if(s == NULL || size <= 0) {
         return NULL;
     }
 
-    char *p = s;
-    int chars_read = 0;
-
+    p = s;
     _spin_lock(&stream->_lock);
 
     // Leave space for the null terminator.
@@ -19,7 +20,7 @@ char *fgets(char *s, int size, FILE *stream) {
             }
         }
 
-        unsigned char c = *stream->_ptr++;
+        c = *stream->_ptr++;
         stream->_cnt--;
         *p++ = (char)c;
         chars_read++;

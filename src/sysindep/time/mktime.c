@@ -1,7 +1,7 @@
-#include "tz_context.h"
 #include <limits.h>
-#include <stdlib.h>
 #include <time.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
+#include "tz_context.h"
 
 #define SECS_PER_MIN 60
 #define SECS_PER_HOUR 3600
@@ -16,10 +16,12 @@ static const int __days_before_month[13] = {
     0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334, 365};
 
 time_t mktime(struct tm *tm) {
-    long long year;
+    long long year, leaps_current, leaps_epoch;
     int mon, mday;
     long long total_days;
     time_t local_t, t;
+    tz_result_t tz_res;
+    struct tm *final_tm;
 
     mon = tm->tm_mon;
     year = tm->tm_year + 1900;
@@ -32,8 +34,8 @@ time_t mktime(struct tm *tm) {
         mon %= 12;
     }
 
-    long long leaps_current = (year - 1) / 4 - (year - 1) / 100 + (year - 1) / 400;
-    long long leaps_epoch = (EPOCH_YEAR - 1) / 4 - (EPOCH_YEAR - 1) / 100 + (EPOCH_YEAR - 1) / 400;
+    leaps_current = (year - 1) / 4 - (year - 1) / 100 + (year - 1) / 400;
+    leaps_epoch = (EPOCH_YEAR - 1) / 4 - (EPOCH_YEAR - 1) / 100 + (EPOCH_YEAR - 1) / 400;
 
     total_days = (year - EPOCH_YEAR) * 365 + (leaps_current - leaps_epoch);
 
@@ -54,7 +56,6 @@ time_t mktime(struct tm *tm) {
         tzset();
     }
 
-    tz_result_t tz_res;
     tz_res.gmtoff = 0;
     if(__libc_current_tz_db) {
         tz_lookup(__libc_current_tz_db, local_t, &tz_res);
@@ -71,7 +72,7 @@ time_t mktime(struct tm *tm) {
         }
     }
 
-    struct tm *final_tm = localtime(&t);
+    final_tm = localtime(&t);
     if(final_tm) {
         *tm = *final_tm;
     } else {

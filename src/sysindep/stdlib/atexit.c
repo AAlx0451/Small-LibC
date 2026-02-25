@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
+
 void _call_atexit_handlers(void);
 
 #define ATEXIT_MAX 32

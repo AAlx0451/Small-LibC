@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <sys/mman.h>
 #include <sched.h>
-#include <errno.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 #define ALIGNMENT 16U
 #define ALIGN(size) (((size) + (ALIGNMENT - 1)) & ~(ALIGNMENT - 1))
@@ -21,6 +21,7 @@ struct block_meta {
     struct block_meta *next;
     struct block_meta *prev;
     uint32_t magic;
+    uint32_t __padding;
 };
 
 typedef struct block_meta *meta_ptr;
@@ -34,13 +35,13 @@ void *calloc(size_t number, size_t size);
 void *realloc(void *ptr, size_t size);
 
 static inline void __malloc_spin_lock(volatile int *lock) {
-    while (__sync_lock_test_and_set(lock, 1)) {
+    while (__atomic_test_and_set(lock, __ATOMIC_ACQUIRE)) {
         sched_yield();
     }
 }
 
 static inline void __malloc_spin_unlock(volatile int *lock) {
-    __sync_lock_release(lock);
+    __atomic_clear(lock, __ATOMIC_RELEASE);
 }
 
 static inline meta_ptr get_block_ptr(void *ptr) {

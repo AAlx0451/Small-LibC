@@ -1,8 +1,13 @@
 #include <errno.h>
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 ssize_t getline(char **lineptr, size_t *n, FILE *stream) {
+    size_t cur_len = 0;
+    int c;
+    char *new_ptr;
+
     if(lineptr == NULL || n == NULL || stream == NULL) {
         errno = EINVAL;
         return -1;
@@ -10,19 +15,16 @@ ssize_t getline(char **lineptr, size_t *n, FILE *stream) {
 
     if(*lineptr == NULL || *n == 0) {
         *n = 128;
-        *lineptr = malloc(*n);
+        *lineptr = (char *)malloc(*n);
         if(*lineptr == NULL) {
             return -1;
         }
     }
 
-    size_t cur_len = 0;
-    int c;
-
     while((c = getc(stream)) != EOF) {
         if(cur_len + 1 >= *n) {
             size_t new_size = *n * 2;
-            char *new_ptr = realloc(*lineptr, new_size);
+            new_ptr = (char *)realloc(*lineptr, new_size);
             if(new_ptr == NULL) {
                 return -1;
             }

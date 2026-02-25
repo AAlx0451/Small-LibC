@@ -15,12 +15,13 @@ __attribute__((noreturn)) void __stack_chk_fail(void) {
 
 void __stack_chk_guard_init(void) {
     int fd = open("/dev/urandom", O_RDONLY);
+    ssize_t bytes_read;
     if(fd == -1) {
         perror("Could not open /dev/urandom");
         abort();
     }
 
-    ssize_t bytes_read = read(fd, &__stack_chk_guard, sizeof(__stack_chk_guard));
+    bytes_read = read(fd, &__stack_chk_guard, sizeof(__stack_chk_guard));
     close(fd);
 
     if(bytes_read != sizeof(__stack_chk_guard)) {

@@ -29,7 +29,7 @@ ifeq ($(CROSS), 1)
   ARCH_LIST = $(subst $(comma), ,$(ARCHES))
   ARCHES ?= armv7
 
-  BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -I$(INCDIR) -fPIC -std=gnu11 -isysroot $(SDK)
+  BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -isystem $(INCDIR) -fPIC -std=gnu11
 
   define BUILD_ARCH
     OBJS_$(1) := $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(GENERIC_SRCS) $(SYSDEP_SRCS) $(RT_SRCS) $(MATH_SRCS))

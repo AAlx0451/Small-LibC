@@ -21,6 +21,7 @@ int setvbuf(FILE *stream, char *buf, int mode, size_t size) {
 
     case _IOLBF:
         stream->_flags |= __S_LBF;
+        __attribute__((fallthrough));
         /* Fallthrough */
     case _IOFBF:
         if(size == 0) {
@@ -28,7 +29,7 @@ int setvbuf(FILE *stream, char *buf, int mode, size_t size) {
             return -1;
         }
         if(buf == NULL) {
-            buf = malloc(size);
+            buf = (char *)malloc(size);
             if(buf == NULL) {
                 _spin_unlock(&stream->_lock);
                 return -1;

@@ -2,11 +2,13 @@
 #include <string.h>
 
 size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream) {
+    size_t total_to_read, bytes_read = 0, chunk;
+    unsigned char *cptr = (unsigned char *)ptr;
     if(size == 0 || nmemb == 0) {
         return 0;
     }
 
-    size_t total_to_read = size * nmemb;
+    total_to_read = size * nmemb;
     if(nmemb > 0 && total_to_read / nmemb != size) {
         // Overflow check, usually setting errno is better but flag works
         // Note: Locking needed before setting flags if accessed concurrently,
@@ -14,8 +16,6 @@ size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream) {
         return 0;
     }
 
-    size_t bytes_read = 0;
-    unsigned char *cptr = (unsigned char *)ptr;
     _spin_lock(&stream->_lock);
 
     // Check for wrong mode first
@@ -41,7 +41,7 @@ size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream) {
             }
         }
 
-        size_t chunk = (total_to_read - bytes_read) < stream->_cnt ? (total_to_read - bytes_read) : stream->_cnt;
+        chunk = (total_to_read - bytes_read) < stream->_cnt ? (total_to_read - bytes_read) : stream->_cnt;
         memcpy(cptr + bytes_read, stream->_ptr, chunk);
 
         stream->_ptr += chunk;

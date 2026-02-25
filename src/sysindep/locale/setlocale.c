@@ -27,6 +27,7 @@ static const char *get_env_name(int category) {
 }
 
 char *setlocale(int category, const char *locale) {
+    const char *target;
     if(category < 0 || category > 6) {
         return NULL;
     }
@@ -35,7 +36,7 @@ char *setlocale(int category, const char *locale) {
         return (char *)(uintptr_t)c_locale_name;
     }
 
-    const char *target = locale;
+    target = locale;
 
     if(locale[0] == '\0') {
         target = getenv("LC_ALL");

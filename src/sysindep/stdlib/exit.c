@@ -9,6 +9,7 @@
 #else
 #define UNREACHABLE
 #endif /* defined(__GNUC__) || defined(__clang__) */
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 void _call_atexit_handlers(void);
 

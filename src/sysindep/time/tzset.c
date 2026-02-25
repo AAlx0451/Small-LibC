@@ -1,7 +1,9 @@
-#include "tz_context.h"
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
+#pragma clang diagnostic ignored "-Wreserved-identifier"
+#include "tz_context.h"
 
 static char __tzname_std[16] = "GMT";
 static char __tzname_dst[16] = "GMT";

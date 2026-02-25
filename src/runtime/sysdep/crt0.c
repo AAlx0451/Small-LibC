@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 #define _Used __attribute__((used)) /* readability */
 #define _noreturn __attribute__((noreturn))

@@ -1,4 +1,5 @@
 #include <stdint.h>
+#pragma clang diagnostic ignored "-Wreserved-identifier"
 
 #define NO_UBSAN __attribute__((no_sanitize("undefined")))
 #define NORETURN __attribute__((noreturn))
@@ -44,9 +45,10 @@ NO_UBSAN static void raw_write_stderr(const char *buf, unsigned int len) {
 }
 
 NO_UBSAN static void print_str(const char *str) {
+    unsigned int len;
     if(!str)
         str = "<unknown>";
-    unsigned int len = 0;
+    len = 0;
     while(str[len])
         len++;
     raw_write_stderr(str, len);
@@ -117,7 +119,7 @@ NO_UBSAN static void print_loc(struct SourceLocation *loc) {
     print_str(COLOR_BOLD_RED "runtime error: " COLOR_RESET);
 }
 
-/* 
+/*
  * Fixes for macros:
  * 1. Added function prototypes before definitions to satisfy -Wmissing-prototypes
  * 2. Added (void)casts to satisfy -Wunused-parameter

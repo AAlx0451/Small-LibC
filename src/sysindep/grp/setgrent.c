@@ -2,7 +2,7 @@
 
 FILE *g_group_fp = NULL;
 
-void setgrent() {
+void setgrent(void) {
     if(g_group_fp != NULL) {
         rewind(g_group_fp);
     } else {

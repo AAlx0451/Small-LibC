@@ -2,10 +2,10 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 int fclose(FILE *f) {
+    int flush_res, close_res;
     if(!f) {
         errno = EINVAL;
         return EOF;
@@ -14,8 +14,7 @@ int fclose(FILE *f) {
     // Remove from global list BEFORE closing/freeing.
     // This prevents __stdio_flush_all from accessing 'f' after we free it.
     __stdio_remove_file(f);
-
-    int flush_res = 0;
+    flush_res = 0;
     _spin_lock(&f->_lock);
 
     // Ensure we check flag correctly inside locked region (though f is removed)
@@ -24,7 +23,7 @@ int fclose(FILE *f) {
     }
     _spin_unlock(&f->_lock);
 
-    int close_res = close(f->_fd);
+    close_res = close(f->_fd);
 
     // Use centralized buffer freeing (handles __S_FREEBUF check)
     __stdio_free_buffer(f);

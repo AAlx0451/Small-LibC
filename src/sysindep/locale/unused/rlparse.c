@@ -29,7 +29,7 @@
 #define OFF_TOLOWER 0x0434
 #define OFF_TOUPPER 0x0834
 
-/* 
+/*
  * The "Hidden" Header.
  * Located immediately after the 3rd ASCII table (0x0834 + 0x400 = 0x0C34).
  * Stores the number of entries for the variable-length tables.
@@ -41,7 +41,7 @@
 
 /* ================= ON-DISK STRUCTURES ================= */
 
-/* 
+/*
  * FileRuneEntry16
  * Represents a range in the Ranges table.
  * Size: 16 bytes (Packed, Big-Endian)
@@ -53,7 +53,7 @@ typedef struct {
     uint32_t flags; /* Flags: 0x01000000 implies Variable Data exists */
 } __attribute__((packed)) FileRuneEntry16;
 
-/* 
+/*
  * FileCaseMap16
  * Represents a range in MapLower/MapUpper tables.
  * Size: 16 bytes (Packed, Big-Endian) - Note the 4-byte padding!
@@ -98,7 +98,7 @@ RuneLocale *rune_locale_load(const char *path) {
         return NULL;
     }
 
-    /* 
+    /*
      * 1. Load ASCII Tables
      * The file stores exactly 256 entries (0x00-0xFF).
      * We map them to indices 1-256 in our array, reserving index 0 for EOF.
@@ -119,7 +119,7 @@ RuneLocale *rune_locale_load(const char *path) {
     rl->__s_toupper[0] = EOF;
     read_u32_array(f, &rl->__s_toupper[1], _CACHED_RUNES);
 
-    /* 
+    /*
      * 2. Read Dynamic Counts
      * The header at 0x0C34 stores counts separated by 4-byte padding.
      * Stride appears to be 8 bytes.
@@ -128,7 +128,7 @@ RuneLocale *rune_locale_load(const char *path) {
     uint32_t cnt_lower = read_u32(f, OFF_COUNTS + 8);
     uint32_t cnt_upper = read_u32(f, OFF_COUNTS + 16);
 
-    /* 
+    /*
      * 3. Calculate Table Offsets
      * All tables are 16-byte aligned structures.
      */
@@ -146,7 +146,7 @@ RuneLocale *rune_locale_load(const char *path) {
         return NULL;
     }
 
-    /* 
+    /*
      * 4. Load Case Maps
      */
 
@@ -174,7 +174,7 @@ RuneLocale *rune_locale_load(const char *path) {
         rl->mapupper_ext[i].map = ntohl(fm.map);
     }
 
-    /* 
+    /*
      * 5. Load Variable Data
      * This blob contains arrays of types for complex ranges.
      */
@@ -186,7 +186,7 @@ RuneLocale *rune_locale_load(const char *path) {
         read_u32_array(f, rl->variable_data, vardata_len / 4);
     }
 
-    /* 
+    /*
      * 6. Load Ranges & Link Data
      */
     rl->runetype_count = cnt_ranges;

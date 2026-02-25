@@ -7,13 +7,10 @@
 
 long double strtold(const char *restrict nptr, char **restrict endptr) {
     const char *p = nptr;
-    long double value = 0.0L;
-    int sign = 1;
-    long double scale;
-    int exp_sign = 1;
-    long exponent = 0;
-    long decimal_exp = 0;
-    int has_digits = 0;
+    char *save_p;
+    long double value = 0.0L, scale, p10;
+    int sign = 1, exp_sign = 1, exp_has_digits, tmp_exp, has_digits = 0;
+    long exponent = 0, decimal_exp = 0, abs_exp;
 
     while(isspace((unsigned char)*p)) {
         p++;
@@ -75,9 +72,9 @@ long double strtold(const char *restrict nptr, char **restrict endptr) {
             p++;
         }
 
-        const char *save_p = p;
-        int exp_has_digits = 0;
-        long tmp_exp = 0;
+        save_p = (char *)(uintptr_t)p;
+        exp_has_digits = 0;
+        tmp_exp = 0;
 
         while(isdigit((unsigned char)*p)) {
             exp_has_digits = 1;
@@ -98,8 +95,8 @@ long double strtold(const char *restrict nptr, char **restrict endptr) {
 
     if(value != 0.0L) {
         scale = 1.0L;
-        long abs_exp = (exponent < 0) ? -exponent : exponent;
-        long double p10 = 10.0L;
+        abs_exp = (exponent < 0) ? -exponent : exponent;
+        p10 = 10.0L;
 
         if(abs_exp > 5000) {
             if(exponent > 0) {

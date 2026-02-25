@@ -6,9 +6,10 @@
 char *cuserid(char *s) {
     struct passwd *pw;
     static char buf[L_cuserid];
+    char *target;
 
     pw = getpwuid(geteuid());
-    char *target = s ? s : buf;
+    target = s ? s : buf;
 
     if(!pw) {
         target[0] = '\0';

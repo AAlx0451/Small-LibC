@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 int fflush(FILE *stream) {
+    int ret;
     if(!stream) {
         __stdio_flush_all();
         return 0;
@@ -14,7 +15,7 @@ int fflush(FILE *stream) {
         return 0;
     }
 
-    int ret = __stdio_flush_impl(stream);
+    ret = __stdio_flush_impl(stream);
     _spin_unlock(&stream->_lock);
     return ret;
 }

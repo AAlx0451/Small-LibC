@@ -23,11 +23,11 @@ static int get_sysctl_string(int major, int minor, char *buf, size_t maxlen) {
     mib[1] = minor;
     len = maxlen;
 
-    /* 
-     * sysctl(int *name, u_int namelen, void *oldp, size_t *oldlenp, 
+    /*
+     * sysctl(int *name, u_int namelen, void *oldp, size_t *oldlenp,
      *        void *newp, size_t newlen);
      */
-    ret = syscall(SYS___sysctl, (long)mib, 2, (long)buf, (long)&len, (long)NULL, 0);
+    ret = (int)syscall(SYS___sysctl, (long)mib, 2, (long)buf, (long)&len, (long)NULL, 0);
 
     if(ret == 0) {
         if(len < maxlen) {
@@ -40,11 +40,10 @@ static int get_sysctl_string(int major, int minor, char *buf, size_t maxlen) {
 }
 
 int uname(struct utsname *name) {
+    int res = 0;
     if(name == NULL) {
         return -1; // EFAULT
     }
-
-    int res = 0;
 
     if(get_sysctl_string(CTL_KERN, KERN_OSTYPE, name->sysname, 256) != 0)
         res = -1;

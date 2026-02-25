@@ -2,9 +2,10 @@
 #include <stdio.h>
 
 int asprintf(char **strp, const char *fmt, ...) {
+    int result;
     va_list ap;
     va_start(ap, fmt);
-    int result = vasprintf(strp, fmt, ap);
+    result = vasprintf(strp, fmt, ap);
     va_end(ap);
     return result;
 }

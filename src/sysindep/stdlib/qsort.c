@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 static inline void swap(void *a, void *b, size_t size) {
-    char *p = a;
-    char *q = b;
+    char *p = (char *)a;
+    char *q = (char *)b;
     for(size_t i = 0; i < size; i++) {
         char temp = p[i];
         p[i] = q[i];
@@ -13,13 +13,15 @@ static inline void swap(void *a, void *b, size_t size) {
 
 static inline void qsort_recursive(void *base, size_t nmemb, size_t size,
                                    int (*compar)(const void *, const void *)) {
+    char *arr;
+    size_t i = 0, j;
+    void *pivot;
     if(nmemb <= 1) {
         return;
     }
-    char *arr = base;
-    void *pivot = arr + (nmemb - 1) * size;
-    size_t i = 0;
-    for(size_t j = 0; j < nmemb - 1; j++) {
+    arr = (char *)base;
+    pivot = arr + (nmemb - 1) * size;
+    for(j = 0; j < nmemb - 1; j++) {
         if(compar(arr + j * size, pivot) < 0) {
             swap(arr + i * size, arr + j * size, size);
             i++;

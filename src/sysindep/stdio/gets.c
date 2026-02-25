@@ -4,14 +4,13 @@
 char *gets(char *s);
 
 char *gets(char *s) {
+    char *p;
+    int chars_read = 0, c;
     if(s == NULL) {
         return NULL;
     }
 
-    char *p = s;
-    int c;
-    int chars_read = 0;
-
+    p = s;
     _spin_lock(&stdin->_lock);
 
     for(;;) {
