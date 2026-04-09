@@ -4,6 +4,7 @@
 #include <limits.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <locale.h>
 
 long double strtold(const char *restrict nptr, char **restrict endptr) {
     const char *p = nptr;
@@ -11,6 +12,7 @@ long double strtold(const char *restrict nptr, char **restrict endptr) {
     long double value = 0.0L, scale, p10;
     int sign = 1, exp_sign = 1, exp_has_digits, tmp_exp, has_digits = 0;
     long exponent = 0, decimal_exp = 0, abs_exp;
+    const char separ = localeconv()->decimal_point[0];
 
     while(isspace((unsigned char)*p)) {
         p++;
@@ -47,7 +49,7 @@ long double strtold(const char *restrict nptr, char **restrict endptr) {
         p++;
     }
 
-    if(*p == '.') {
+    if(*p == separ) {
         p++;
         while(isdigit((unsigned char)(uintptr_t)*p)) {
             has_digits = 1;
