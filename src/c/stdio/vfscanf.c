@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <limits.h>
+#include <locale.h>
 #include <stdarg.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -62,18 +63,16 @@ static void _unget_char(FILE *f, int c) {
         return;
     }
 
-    /* FIX: Handle ungetc for Unbuffered (NBF) streams by allocating a tiny buffer */
     if(f->_flags & __S_NBF) {
         if(f->_base == NULL) {
             f->_base = (unsigned char *)malloc(1);
             if(f->_base == NULL)
-                return; /* Allocation failed, lose char */
+                return;
             f->_flags |= __S_FREEBUF;
             f->_bsize = 1;
             f->_ptr = f->_base + 1;
             f->_cnt = 0;
         } else if(f->_cnt == 0) {
-            /* Reset pointer to end if buffer is empty */
             f->_ptr = f->_base + 1;
         }
     }
@@ -96,59 +95,34 @@ static int _skip_whitespace(FILE *f, int *consumed) {
     return EOF;
 }
 
-/*
- * Helper to read a single UTF-8 character from the stream.
- * Returns the decoded wide character (wint_t), or EOF on error/EOF.
- * Updates consumed counter.
- */
-static wint_t _in_char_utf8(FILE *f, int *consumed) {
-    int c1 = _in_char(f), num_bytes;
-    uint32_t val;
-    if(c1 == EOF)
-        return EOF;
-    (*consumed)++;
+static wint_t _in_char_wc(FILE *f, int *consumed) {
+    char mbuf[16];
+    int len = 0;
+    int c;
+    wchar_t wc;
 
-    /* 1-byte sequence (ASCII) */
-    if((c1 & 0x80) == 0) {
-        return (wint_t)c1;
-    }
-
-    num_bytes = 0;
-    val = 0;
-
-    if((c1 & 0xE0) == 0xC0) {
-        val = c1 & 0x1F;
-        num_bytes = 1;
-    } else if((c1 & 0xF0) == 0xE0) {
-        val = c1 & 0x0F;
-        num_bytes = 2;
-    } else if((c1 & 0xF8) == 0xF0) {
-        val = c1 & 0x07;
-        num_bytes = 3;
-    } else {
-        /* Invalid start byte */
-        _unget_char(f, c1);
-        (*consumed)--;
-        return EOF;
-    }
-
-    for(int i = 0; i < num_bytes; i++) {
-        int cn = _in_char(f);
-        if(cn == EOF)
-            return EOF; /* Unexpected EOF */
-
-        /* Check continuation byte 10xxxxxx */
-        if((cn & 0xC0) != 0x80) {
-            _unget_char(f, cn);
-            /* We cannot easily unget previously read bytes in this simple implementation,
-               so we stop and fail here. */
-            return EOF;
-        }
+    while (len < (int)MB_CUR_MAX && len < 16) {
+        c = _in_char(f);
+        if (c == EOF) break;
+        mbuf[len++] = (char)c;
         (*consumed)++;
-        val = (val << 6) | (cn & 0x3F);
+
+        int res = mbtowc(&wc, mbuf, len);
+        if (res > 0) {
+            return (wint_t)wc;
+        } else if (res == 0) {
+            return (wint_t)0;
+        }
     }
 
-    return (wint_t)val;
+    if (len == 0) return EOF;
+
+    /* If sequence is invalid, unget all bytes except the first and return it as-is */
+    for (int i = len - 1; i >= 1; i--) {
+        _unget_char(f, (unsigned char)mbuf[i]);
+        (*consumed)--;
+    }
+    return (wint_t)(unsigned char)mbuf[0];
 }
 
 #define FL_SPLAT 0x01
@@ -160,6 +134,8 @@ static wint_t _in_char_utf8(FILE *f, int *consumed) {
 #define FL_DOUBLE 0x40
 
 int vfscanf(FILE *stream, const char *format, va_list arg) {
+    struct lconv *lc = localeconv();
+    const char *dp = (lc && lc->decimal_point && lc->decimal_point[0]) ? lc->decimal_point : ".";
     const char *p = format;
     int c, m, val, nmatch = 0, width, flags, conversion_char, i, chars_consumed = 0, digits, read_count, matched;
     char buf[MAX_SCAN_WIDTH + 1];
@@ -284,7 +260,6 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
 
         conversion_char = *p++;
 
-        /* For c, C, n, [, s, S we handle whitespace manually or differently */
         if(conversion_char != 'c' && conversion_char != 'C' &&
            conversion_char != 's' && conversion_char != 'S' &&
            conversion_char != '[' && conversion_char != 'n') {
@@ -482,7 +457,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                         chars_consumed--;
                     break;
                 }
-                if(isdigit(c) || c == '.' || c == 'e' || c == 'E' || c == '+' || c == '-') {
+                if(isdigit(c) || c == (unsigned char)dp[0] || c == 'e' || c == 'E' || c == '+' || c == '-') {
                     if(isdigit(c))
                         digits = 1;
                     buf[i++] = (char)c;
@@ -518,19 +493,17 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
 
         case 'S':
         case 's': {
-            /* Handle %ls or %lS (Wide String, UTF-8 to uint32_t) */
             if(conversion_char == 'S' || (flags & FL_LONG)) {
                 uint32_t *wstr = (flags & FL_SPLAT) ? NULL : va_arg(arg, uint32_t *);
 
-                /* %s/%ls skips whitespace first */
                 c = _skip_whitespace(stream, &chars_consumed);
                 if(c == EOF)
                     goto input_failure;
                 _unget_char(stream, c);
-                chars_consumed--; /* Compensate for unget */
+                chars_consumed--;
 
                 if(width == -1)
-                    width = INT_MAX; /* Default unlimited */
+                    width = INT_MAX;
 
                 read_count = 0;
                 while(width > 0) {
@@ -538,16 +511,14 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                     if(peek == EOF)
                         break;
 
-                    /* Check for whitespace. Stop scanning if found. */
                     if(_safe_isspace(peek)) {
                         _unget_char(stream, peek);
                         break;
                     }
 
-                    /* It's not space. Put back and read as UTF-8 char. */
                     _unget_char(stream, peek);
 
-                    wc = _in_char_utf8(stream, &chars_consumed);
+                    wc = _in_char_wc(stream, &chars_consumed);
                     if(wc == EOF)
                         break;
 
@@ -565,18 +536,16 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                     goto input_failure;
 
             } else {
-                /* Standard String (char*) */
                 char *str = (flags & FL_SPLAT) ? NULL : va_arg(arg, char *);
 
                 c = _skip_whitespace(stream, &chars_consumed);
                 if(c == EOF)
                     goto input_failure;
 
-                /* Read until whitespace */
                 if(str)
-                    *str++ = (char)c; /* First char is valid non-space */
+                    *str++ = (char)c;
                 if(width > 0)
-                    width--; /* width handling for first char */
+                    width--;
 
                 while(width != 0) {
                     c = _in_char(stream);
@@ -606,7 +575,6 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
 
         case 'C':
         case 'c': {
-            /* Handle %lc or %lC (Wide Char, UTF-8 to uint32_t) */
             if(conversion_char == 'C' || (flags & FL_LONG)) {
                 uint32_t *wstr = (flags & FL_SPLAT) ? NULL : va_arg(arg, uint32_t *);
                 if(width == -1)
@@ -614,8 +582,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
 
                 read_count = 0;
                 while(width-- > 0) {
-                    /* %c / %lc does NOT skip whitespace automatically */
-                    wc = _in_char_utf8(stream, &chars_consumed);
+                    wc = _in_char_wc(stream, &chars_consumed);
                     if(wc == EOF) {
                         if(read_count == 0)
                             goto input_failure;
@@ -628,7 +595,6 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
                 if(!(flags & FL_SPLAT) && read_count > 0)
                     nmatch++;
             } else {
-                /* Original %c logic */
                 char *str = (flags & FL_SPLAT) ? NULL : va_arg(arg, char *);
                 if(width == -1)
                     width = 1;
@@ -649,8 +615,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
             }
             break;
         }
-
-        case '[': {
+               case '[': {
             char *str = (flags & FL_SPLAT) ? NULL : va_arg(arg, char *);
             int invert = 0;
             char scanset[256];
