@@ -46,6 +46,9 @@ void toupper_test();
 void localeconv_test();
 void setlocale_test();
 
+// locale/unused
+void runelocale_test();
+
 // stdlib
 void abs_test();
 
@@ -105,6 +108,7 @@ void (*tests[])() = {
     toupper_test, /* toupper() */
     localeconv_test, /* localeconv() */
     setlocale_test, /* setlocale() */
+    runelocale_test, /* runelocale() */
     abs_test, /* abs() */
     memchr_test, /* memchr() */
     memcmp_test, /* memcmp() */

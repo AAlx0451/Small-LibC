@@ -13,7 +13,7 @@ CFLAGS = -I$(INC_DIR) -I$(LLVM_INC) -nostdinc -Wall -Wextra -g -O0
 LDFLAGS = -static -nostdlib -L$(LIB_OUT_DIR) -L$(SRC_LIB_DIR)
 BASE_LIBS = -lc -lrt -lmach
 
-CT_SRCS  = $(wildcard asm/*.c asm/*/*.c c/*/*.c)
+CT_SRCS  = $(wildcard asm/*.c asm/*/*.c c/*/*.c c/*/*/*.c)
 CT_OBJS  = $(patsubst %.c, $(OBJ_DIR)/%.o, $(CT_SRCS))
 
 RTT_SRCS = $(wildcard runtime/asm/*.c runtime/c/*.c)
