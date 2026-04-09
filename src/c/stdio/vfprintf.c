@@ -1,3 +1,5 @@
+#include <limits.h>
+#include <locale.h>
 #include <math.h>
 #include <stdarg.h>
 #include <stdint.h>
@@ -17,15 +19,14 @@
 #define PRINT_HEX_UP 32
 #define PRINT_OCT 64
 #define PRINT_ALT 128
+#define PRINT_GROUP 256
 
 #define MAX_PRECISION 256
 #define MAX_WIDTH 256
 
 static int _out_char(FILE *f, int c) {
-    /* Optimization for sprintf (String buffer) - no locking, no flushing logic needed */
     if(f->_flags & __S_STR) {
         if(f->_cnt > 0) {
-            /* Check if base is not NULL before writing. */
             if(f->_base != NULL) {
                 *f->_ptr++ = (unsigned char)c;
             }
@@ -34,25 +35,20 @@ static int _out_char(FILE *f, int c) {
         return 1;
     }
 
-    /* Handle Unbuffered I/O (_IONBF) directly to avoid NULL pointer dereference */
     if(f->_flags & __S_NBF) {
         unsigned char ch = (unsigned char)c;
         if(write(f->_fd, &ch, 1) != 1) {
-            return 0; /* Error */
+            return 0;
         }
         return 1;
     }
 
-    /* Regular buffered stream logic */
     if(f->_cnt > 0) {
         *f->_ptr++ = (unsigned char)c;
         f->_cnt--;
         f->_flags |= __S_DIRTY;
     } else {
-        /* Buffer full, flush using internal impl */
         if(__stdio_flush_impl(f) == 0) {
-            /* After flush, pointers should be reset. Double check we have space now. */
-            /* If flush succeeded but we still have no buffer (unlikely if not NBF), write directly */
             if(f->_cnt > 0) {
                 *f->_ptr++ = (unsigned char)c;
                 f->_cnt--;
@@ -63,11 +59,10 @@ static int _out_char(FILE *f, int c) {
                     return 0;
             }
         } else {
-            return 0; /* Error */
+            return 0;
         }
     }
 
-    /* Support Line Buffering (_IOLBF) */
     if((f->_flags & __S_LBF) && (c == '\n')) {
         __stdio_flush_impl(f);
     }
@@ -101,11 +96,36 @@ static int _itoa_base(uintmax_t val, int base, int flags, char *buf) {
     return ((int)(buf - orig));
 }
 
-/*
- * Helper to encode a single wide char to UTF-8.
- * Returns the number of bytes written to buf (0 on failure).
- * Ensure buf has at least 4 bytes of space.
- */
+static int _itoa_base_grouped(uintmax_t val, int base, int flags, char *buf, const char *sep, const char *grp) {
+    char *orig = buf;
+    const char *digits = (flags & PRINT_HEX_UP) ? "0123456789ABCDEF" : "0123456789abcdef";
+    int count = 0;
+    int sep_len = strlen(sep);
+    int current_grp = (grp && *grp) ? *grp : CHAR_MAX;
+
+    if(val == 0) {
+        *buf++ = '0';
+        return 1;
+    }
+
+    while(val) {
+        if(current_grp != CHAR_MAX && count == current_grp && count > 0) {
+            for(int i = sep_len - 1; i >= 0; i--) {
+                *buf++ = sep[i];
+            }
+            count = 0;
+            if(*(grp + 1) != '\0') {
+                grp++;
+                current_grp = *grp;
+            }
+        }
+        *buf++ = digits[val % (uintmax_t)base];
+        val /= (uintmax_t)base;
+        count++;
+    }
+    return ((int)(buf - orig));
+}
+
 static int _encode_utf8(uint32_t wc, char *buf) {
     if(wc < 0x80) {
         buf[0] = (char)wc;
@@ -129,12 +149,14 @@ static int _encode_utf8(uint32_t wc, char *buf) {
     return 0;
 }
 
-static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
+static int _fmt_float(double val, int prec, int flags, char type, char *buf, const struct lconv *lc) {
     double tmp, v, rounding, fpart;
     char *orig = buf, *num_start, *exp_start;
     int exp = 0, e, digit, elen;
     char fmt_type;
     uintmax_t ipart;
+    const char *dp = (lc && lc->decimal_point && lc->decimal_point[0]) ? lc->decimal_point : ".";
+    int dp_len = strlen(dp);
 
     if(val != val) {
         if(type >= 'a' && type <= 'z')
@@ -217,13 +239,17 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
     fpart = val - (double)ipart;
 
     num_start = buf;
-    buf += _itoa_base(ipart, 10, 0, buf);
+    if((flags & PRINT_GROUP) && lc && lc->thousands_sep[0]) {
+        buf += _itoa_base_grouped(ipart, 10, 0, buf, lc->thousands_sep, lc->grouping);
+    } else {
+        buf += _itoa_base(ipart, 10, 0, buf);
+    }
 
-    /* Fixed incorrect mirroring: reverse integer part immediately so it is forward-oriented, matching the fractional part. */
     _reverse(num_start, ((int)(buf - num_start)));
 
     if(prec > 0 || (flags & PRINT_ALT)) {
-        *buf++ = '.';
+        strcpy(buf, dp);
+        buf += dp_len;
     }
 
     if(prec > 0) {
@@ -237,19 +263,18 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
 
     if((type == 'g' || type == 'G') && !(flags & PRINT_ALT)) {
         char *end = buf - 1;
-        if(strchr(num_start, '.')) {
+        if(strstr(num_start, dp)) {
             while(end > num_start && *end == '0') {
                 end--;
                 buf--;
             }
-            if(end > num_start && *end == '.') {
-                buf--;
+            if(buf - num_start >= dp_len && strncmp(buf - dp_len, dp, dp_len) == 0) {
+                buf -= dp_len;
             }
         }
     }
 
     if(fmt_type == 'e' || fmt_type == 'E') {
-        /* No global reverse needed here anymore */
         *buf++ = fmt_type;
         *buf++ = (exp >= 0) ? '+' : '-';
         if(exp < 0)
@@ -260,8 +285,6 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
         if(elen < 2)
             *buf++ = '0';
         _reverse(exp_start, ((int)(buf - exp_start)));
-    } else {
-        /* No global reverse needed here anymore */
     }
 
     return ((int)(buf - orig));
@@ -269,6 +292,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf) {
 
 int vfprintf(FILE *stream, const char *format, va_list arg) {
     const char *p = format, *prefix;
+    struct lconv *lc = localeconv();
     int total_written = 0, flags, width, prec, len_mod, slen, base, is_signed, is_integer, is_float, total_bytes, padding, written_so_far, prec_zeros, pad_len, prefix_len, sgn_len, actual_len;
     char temp_buf[512], type, *str_val, dummy[4], sgn_char;
     uintmax_t uval;
@@ -284,16 +308,12 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
     }
 
     if(stream->_flags & __S_RD) {
-        /* Transition from Read to Write */
         stream->_flags &= ~__S_RD;
         stream->_flags |= __S_WR;
-        /* Invalidate read buffer */
         stream->_cnt = stream->_bsize;
         stream->_ptr = stream->_base;
     } else if(!(stream->_flags & __S_WR)) {
-        /* Transition from Neutral to Write */
         stream->_flags |= __S_WR;
-        /* Initialize buffer pointers if they were cleared */
         if(stream->_cnt == 0 && stream->_ptr == stream->_base) {
             stream->_cnt = stream->_bsize;
         }
@@ -323,6 +343,8 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                 flags |= PRINT_ALT;
             else if(*p == '0')
                 flags |= PAD_ZERO;
+            else if(*p == '\'')
+                flags |= PRINT_GROUP;
             else
                 break;
             p++;
@@ -474,14 +496,11 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
 
         case 'C':
         case 'c':
-            /* Handle %lc / %lC (Wide Char) */
             if(type == 'C' || len_mod == 3) {
-                /* wint_t is usually passed as int-sized arg */
                 uint32_t wc = (uint32_t)va_arg(arg, unsigned int);
                 slen = _encode_utf8(wc, temp_buf);
                 str_val = temp_buf;
             } else {
-                /* Standard Char */
                 temp_buf[0] = (char)va_arg(arg, int);
                 slen = 1;
                 str_val = temp_buf;
@@ -490,13 +509,11 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
 
         case 'S':
         case 's':
-            /* Handle %ls / %lS (Wide String to UTF-8) */
             if(type == 'S' || len_mod == 3) {
                 uint32_t *wstr = va_arg(arg, uint32_t *);
                 if(!wstr)
                     wstr = (uint32_t *)L"(null)";
 
-                /* Calculate length in bytes for UTF-8 output, respecting precision */
                 total_bytes = 0;
                 ptr = wstr;
 
@@ -508,21 +525,18 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                     ptr++;
                 }
 
-                /* Handle Left Padding */
                 padding = width - total_bytes;
                 if(!(flags & PAD_RIGHT)) {
                     while(padding-- > 0)
                         total_written += _out_char(stream, ' ');
                 }
 
-                /* Output the encoded characters */
                 written_so_far = 0;
                 ptr = wstr;
                 while(*ptr) {
                     char utf8_buf[4];
                     int char_len = _encode_utf8((uint32_t)*ptr, utf8_buf);
 
-                    /* Stop if next char exceeds precision */
                     if(prec >= 0 && (written_so_far + char_len) > prec)
                         break;
 
@@ -532,16 +546,12 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                     ptr++;
                 }
 
-                /* Handle Right Padding */
                 if(flags & PAD_RIGHT) {
                     while(padding-- > 0)
                         total_written += _out_char(stream, ' ');
                 }
-
-                /* Skip the generic footer loop since we handled output here */
                 continue;
             } else {
-                /* Standard String */
                 str_val = va_arg(arg, char *);
                 if(!str_val)
                     str_val = "(null)";
@@ -562,7 +572,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
             if(fval < 0) {
                 flags |= PRINT_SGN;
             }
-            slen = _fmt_float(fval, prec, flags, type, temp_buf);
+            slen = _fmt_float(fval, prec, flags, type, temp_buf, lc);
             str_val = temp_buf;
             break;
 
@@ -582,7 +592,13 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
         if(is_integer) {
             if(prec >= 0)
                 flags &= ~PAD_ZERO;
-            slen = _itoa_base(uval, base, flags, temp_buf);
+            
+            if((flags & PRINT_GROUP) && base == 10 && lc->thousands_sep && lc->thousands_sep[0]) {
+                slen = _itoa_base_grouped(uval, base, flags, temp_buf, lc->thousands_sep, lc->grouping);
+            } else {
+                slen = _itoa_base(uval, base, flags, temp_buf);
+            }
+            
             _reverse(temp_buf, slen);
             str_val = temp_buf;
         }
