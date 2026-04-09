@@ -11,6 +11,21 @@ static char *num_buf = NULL;
 static char *mon_buf = NULL;
 static char last_num_loc[256] = "";
 static char last_mon_loc[256] = "";
+static char grouping_bin[16]; 
+static char mon_grouping_bin[16];
+
+static char* parse_grouping(char *src, char *dest) {
+    int i = 0;
+    char *token = strtok(src, ";");
+    while (token && i < 15) {
+        int val = atoi(token);
+        if (val <= 0) break;
+        dest[i++] = (char)val;
+        token = strtok(NULL, ";");
+    }
+    dest[i] = '\0';
+    return dest;
+}
 
 static char* get_str_val(char **ptr, char *end) {
     char *p = *ptr;
@@ -96,7 +111,8 @@ struct lconv *localeconv(void) {
             end = num_buf + sz;
             current_lconv.decimal_point = get_str_val(&p, end);
             current_lconv.thousands_sep = get_str_val(&p, end);
-            current_lconv.grouping = get_str_val(&p, end);
+            char *raw_grp = get_str_val(&p, end);
+            current_lconv.grouping = parse_grouping(raw_grp, grouping_bin);
         } else {
             reset_numeric();
         }
@@ -113,7 +129,8 @@ struct lconv *localeconv(void) {
             current_lconv.currency_symbol = get_str_val(&p, end);
             current_lconv.mon_decimal_point = get_str_val(&p, end);
             current_lconv.mon_thousands_sep = get_str_val(&p, end);
-            current_lconv.mon_grouping = get_str_val(&p, end);
+            char *raw_mon_grp = get_str_val(&p, end);
+            current_lconv.mon_grouping = parse_grouping(raw_mon_grp, mon_grouping_bin);
             current_lconv.positive_sign = get_str_val(&p, end);
             current_lconv.negative_sign = get_str_val(&p, end);
             current_lconv.int_frac_digits = get_int_val(&p, end);
