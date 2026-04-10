@@ -11,14 +11,22 @@ static char ret_buf[256];
 
 static const char *get_env_name(int category) {
     switch(category) {
-    case LC_ALL: return "LC_ALL";
-    case LC_CTYPE: return "LC_CTYPE";
-    case LC_COLLATE: return "LC_COLLATE";
-    case LC_TIME: return "LC_TIME";
-    case LC_NUMERIC: return "LC_NUMERIC";
-    case LC_MONETARY: return "LC_MONETARY";
-    case LC_MESSAGES: return "LC_MESSAGES";
-    default: return NULL;
+    case LC_ALL:
+        return "LC_ALL";
+    case LC_CTYPE:
+        return "LC_CTYPE";
+    case LC_COLLATE:
+        return "LC_COLLATE";
+    case LC_TIME:
+        return "LC_TIME";
+    case LC_NUMERIC:
+        return "LC_NUMERIC";
+    case LC_MONETARY:
+        return "LC_MONETARY";
+    case LC_MESSAGES:
+        return "LC_MESSAGES";
+    default:
+        return NULL;
     }
 }
 
@@ -64,12 +72,17 @@ char *setlocale(int category, const char *locale) {
     end = (category == LC_ALL) ? 6 : category;
 
     for(i = start; i <= end; i++) {
-        if(i == LC_ALL && category == LC_ALL) continue; 
-        
+        if(i == LC_ALL && category == LC_ALL)
+            continue;
+
+        if(i == LC_CTYPE) {
+            if(setrlocale(target) != 0)
+                return NULL;
+        }
         if(active_locales[i] && active_locales[i] != c_locale_name) {
             free(active_locales[i]);
         }
-        
+
         if(target == c_locale_name) {
             active_locales[i] = (char *)c_locale_name;
         } else {
