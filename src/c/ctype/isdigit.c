@@ -1,5 +1,7 @@
 #include <ctype.h>
+#include <locale.h>
 
-int isdigit(int c) {
-    return (unsigned int)c - '0' < 10;
+int isdigit(int c)
+{
+    return (c > 255 || c < 0) ? 0 : (!!(_CurrentRuneLocale->runetype[c] & RL_CTYPE_D));
 }
