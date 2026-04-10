@@ -101,24 +101,26 @@ static wint_t _in_char_wc(FILE *f, int *consumed) {
     int c;
     wchar_t wc;
 
-    while (len < (int)MB_CUR_MAX && len < 16) {
+    while(len < (int)MB_CUR_MAX && len < 16) {
         c = _in_char(f);
-        if (c == EOF) break;
+        if(c == EOF)
+            break;
         mbuf[len++] = (char)c;
         (*consumed)++;
 
         int res = mbtowc(&wc, mbuf, len);
-        if (res > 0) {
+        if(res > 0) {
             return (wint_t)wc;
-        } else if (res == 0) {
+        } else if(res == 0) {
             return (wint_t)0;
         }
     }
 
-    if (len == 0) return EOF;
+    if(len == 0)
+        return EOF;
 
     /* If sequence is invalid, unget all bytes except the first and return it as-is */
-    for (int i = len - 1; i >= 1; i--) {
+    for(int i = len - 1; i >= 1; i--) {
         _unget_char(f, (unsigned char)mbuf[i]);
         (*consumed)--;
     }
@@ -615,7 +617,7 @@ int vfscanf(FILE *stream, const char *format, va_list arg) {
             }
             break;
         }
-               case '[': {
+        case '[': {
             char *str = (flags & FL_SPLAT) ? NULL : va_arg(arg, char *);
             int invert = 0;
             char scanset[256];

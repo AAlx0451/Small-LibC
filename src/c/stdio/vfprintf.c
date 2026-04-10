@@ -592,13 +592,13 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
         if(is_integer) {
             if(prec >= 0)
                 flags &= ~PAD_ZERO;
-            
+
             if((flags & PRINT_GROUP) && base == 10 && lc->thousands_sep && lc->thousands_sep[0]) {
                 slen = _itoa_base_grouped(uval, base, flags, temp_buf, lc->thousands_sep, lc->grouping);
             } else {
                 slen = _itoa_base(uval, base, flags, temp_buf);
             }
-            
+
             _reverse(temp_buf, slen);
             str_val = temp_buf;
         }

@@ -2,9 +2,9 @@
 #include <errno.h>
 #include <float.h>
 #include <limits.h>
+#include <locale.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <locale.h>
 
 long double strtold(const char *restrict nptr, char **restrict endptr) {
     const char *p = nptr;
