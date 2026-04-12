@@ -188,7 +188,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf, con
 
         v = val;
         e = 0;
-        if(fabs(v) >= 1e-15) {
+        if(fabs(v) > 1e-300) {
             while(v >= 10.0) {
                 v /= 10.0;
                 e++;
@@ -212,7 +212,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf, con
         prec = 6;
 
     if(fmt_type == 'e' || fmt_type == 'E') {
-        if(fabs(val) >= 1e-15) {
+        if(fabs(val) >= 1e-300) {
             while(val >= 10.0) {
                 val /= 10.0;
                 exp++;
@@ -283,6 +283,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf, con
 
         exp_start = buf;
         elen = _itoa_base((uintmax_t)exp, 10, 0, buf);
+	buf += elen;
         if(elen < 2)
             *buf++ = '0';
         _reverse(exp_start, ((int)(buf - exp_start)));
