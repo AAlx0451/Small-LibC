@@ -45,6 +45,8 @@ size_t mbsrtowcs(wchar_t *dst, const char **src, size_t len, mbstate_t *ps);
 size_t wcsrtombs(char *dst, const wchar_t **src, size_t len, mbstate_t *ps);
 
 double wcstod(const wchar_t *restrict nptr, wchar_t **restrict endptr);
+long wcstol(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base);
+unsigned long long wcstoull(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base);
 
 int fwide(FILE *f, int mode);
 
@@ -81,6 +83,9 @@ int vswscanf(const wchar_t *restrict ws, const wchar_t *restrict format, va_list
 
 long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr);
 float wcstof(const wchar_t *restrict nptr, wchar_t **restrict endptr);
+
+long long wcstoll(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base);
+unsigned long long wcstoull(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base);
 
 #endif /* __STDC_VERSION__ && __STDC_VERSION__ >= 199901L */
 
