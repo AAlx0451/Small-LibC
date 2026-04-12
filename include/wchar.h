@@ -47,8 +47,12 @@ size_t wcsrtombs(char *dst, const wchar_t **src, size_t len, mbstate_t *ps);
 int fwide(FILE *f, int mode);
 
 wint_t fgetwc(FILE *f);
+wint_t getwc(FILE *stream);
+wint_t getwchar(void);
 wint_t ungetwc(wint_t c, FILE *f);
 wint_t fputwc(wchar_t c, FILE *f);
+wint_t putwc(wchar_t c, FILE *stream);
+wint_t putwchar(wchar_t c);
 
 #endif /* !_ANSI && ((_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _XOPEN_SOURCE && _XOPEN_SOURCE >= 600) || (__STDC_VERSION__ && __STDC_VERSION__ >= 199409L)) */
 
