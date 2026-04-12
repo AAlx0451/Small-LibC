@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <wchar.h>
 #include <string.h>
 #include <unistd.h>
 #include <wchar.h>
@@ -14,8 +13,10 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
         return 0;
 
     int mode = fwide(stream, 0);
-    if (mode > 0) return EOF;
-    else if (mode == 0) fwide(stream, -1);
+    if(mode > 0)
+        return EOF;
+    else if(mode == 0)
+        fwide(stream, -1);
 
     _spin_lock(&stream->_lock);
 

@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <wchar.h>
 #include <unistd.h> /* for write() */
+#include <wchar.h>
 
 int fputc(int c, FILE *f) {
     unsigned char ch = (unsigned char)c;
@@ -10,8 +10,10 @@ int fputc(int c, FILE *f) {
         return EOF;
 
     int mode = fwide(f, 0);
-    if (mode > 0) return EOF;
-    else if (mode == 0) fwide(f, -1);
+    if(mode > 0)
+        return EOF;
+    else if(mode == 0)
+        fwide(f, -1);
 
     _spin_lock(&f->_lock);
 

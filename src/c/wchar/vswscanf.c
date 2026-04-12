@@ -1,8 +1,8 @@
-#include <wchar.h>
+#include <stdarg.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <stdarg.h>
 #include <string.h>
+#include <wchar.h>
 
 int vswscanf(const wchar_t *restrict ws, const wchar_t *restrict format, va_list arg) {
     FILE f;
@@ -16,7 +16,8 @@ int vswscanf(const wchar_t *restrict ws, const wchar_t *restrict format, va_list
 
     /* length in wide characters */
     size_t len = 0;
-    while(ws[len]) len++;
+    while(ws[len])
+        len++;
 
     f._cnt = len;
     f._bsize = len;

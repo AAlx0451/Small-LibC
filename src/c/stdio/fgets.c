@@ -11,8 +11,10 @@ char *fgets(char *s, int size, FILE *stream) {
     }
 
     int mode = fwide(stream, 0);
-    if (mode > 0) return NULL;
-    else if (mode == 0) fwide(stream, -1);
+    if(mode > 0)
+        return NULL;
+    else if(mode == 0)
+        fwide(stream, -1);
 
     p = s;
     _spin_lock(&stream->_lock);

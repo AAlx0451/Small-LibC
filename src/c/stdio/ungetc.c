@@ -8,8 +8,10 @@ int ungetc(int c, FILE *f) {
         return EOF;
 
     int mode = fwide(f, 0);
-    if (mode > 0) return EOF;
-    else if (mode == 0) fwide(f, -1);
+    if(mode > 0)
+        return EOF;
+    else if(mode == 0)
+        fwide(f, -1);
 
     _spin_lock(&f->_lock);
 

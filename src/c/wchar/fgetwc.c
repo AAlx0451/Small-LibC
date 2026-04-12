@@ -1,7 +1,7 @@
-#include <stdio.h>
-#include <wchar.h>
 #include <errno.h>
 #include <limits.h>
+#include <stdio.h>
+#include <wchar.h>
 
 wint_t fgetwc(FILE *f) {
     if(!f)
@@ -9,8 +9,10 @@ wint_t fgetwc(FILE *f) {
 
     /* Check and set wide orientation */
     int mode = fwide(f, 0);
-    if (mode < 0) return WEOF;
-    else if (mode == 0) fwide(f, 1);
+    if(mode < 0)
+        return WEOF;
+    else if(mode == 0)
+        fwide(f, 1);
 
     _spin_lock(&f->_lock);
 
@@ -21,7 +23,7 @@ wint_t fgetwc(FILE *f) {
     size_t bytes_consumed = 0;
 
     /* We read byte-by-byte into mbrtowc to properly handle stream buffering */
-    while (1) {
+    while(1) {
         /* Inline fgetc buffer logic to avoid dropping the lock */
         if(f->_cnt > 0) {
             byte_read = *f->_ptr++;
@@ -35,8 +37,8 @@ wint_t fgetwc(FILE *f) {
             }
         }
 
-        if (byte_read == EOF) {
-            if (bytes_consumed == 0) {
+        if(byte_read == EOF) {
+            if(bytes_consumed == 0) {
                 /* Normal EOF at the start of character */
                 _spin_unlock(&f->_lock);
                 return WEOF;
@@ -55,7 +57,7 @@ wint_t fgetwc(FILE *f) {
         /* Feed one byte to mbrtowc. It maintains state in f->_mbstate */
         res = mbrtowc(&wc, &c_byte, 1, &f->_mbstate);
 
-        if (res == (size_t)-1) {
+        if(res == (size_t)-1) {
             /* Illegal byte sequence */
             f->_flags |= __S_ERR;
             errno = EILSEQ;
@@ -63,7 +65,7 @@ wint_t fgetwc(FILE *f) {
             return WEOF;
         }
 
-        if (res == (size_t)-2) {
+        if(res == (size_t)-2) {
             /* Incomplete multibyte character, need more bytes, continue loop */
             continue;
         }

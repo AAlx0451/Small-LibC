@@ -1,8 +1,8 @@
-#include <stdio.h>
-#include <wchar.h>
-#include <unistd.h> /* for write() */
 #include <errno.h>
 #include <limits.h>
+#include <stdio.h>
+#include <unistd.h> /* for write() */
+#include <wchar.h>
 
 int fputws(const wchar_t *restrict ws, FILE *restrict stream) {
     int ret = 0;
@@ -19,8 +19,10 @@ int fputws(const wchar_t *restrict ws, FILE *restrict stream) {
 
     /* Wide orientation check */
     int mode = fwide(stream, 0);
-    if (mode < 0) return EOF;
-    else if (mode == 0) fwide(stream, 1);
+    if(mode < 0)
+        return EOF;
+    else if(mode == 0)
+        fwide(stream, 1);
 
     _spin_lock(&stream->_lock);
 
@@ -44,7 +46,7 @@ int fputws(const wchar_t *restrict ws, FILE *restrict stream) {
     if(stream->_flags & __S_NBF) {
         char chunk[128];
         size_t c_idx = 0;
-        
+
         while(*ws) {
             size_t len = wcrtomb(buf, *ws, &stream->_mbstate);
             if(len == (size_t)-1) {
@@ -53,7 +55,7 @@ int fputws(const wchar_t *restrict ws, FILE *restrict stream) {
                 ret = EOF;
                 goto cleanup;
             }
-            
+
             /* If chunk is full, flush to file descriptor */
             if(c_idx + len > sizeof(chunk)) {
                 if(write(stream->_fd, chunk, c_idx) != (ssize_t)c_idx) {
@@ -63,14 +65,14 @@ int fputws(const wchar_t *restrict ws, FILE *restrict stream) {
                 }
                 c_idx = 0;
             }
-            
+
             /* Append multibyte sequence to chunk */
-            for (size_t i = 0; i < len; i++) {
+            for(size_t i = 0; i < len; i++) {
                 chunk[c_idx++] = buf[i];
             }
             ws++;
         }
-        
+
         /* Flush any remaining bytes in chunk */
         if(c_idx > 0) {
             if(write(stream->_fd, chunk, c_idx) != (ssize_t)c_idx) {

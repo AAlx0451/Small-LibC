@@ -1,4 +1,3 @@
-#include <wctype.h>
 #include <errno.h>
 #include <float.h>
 #include <limits.h>
@@ -6,6 +5,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <wchar.h>
+#include <wctype.h>
 
 long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
     const wchar_t *p = nptr;
@@ -13,7 +13,7 @@ long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
     long double value = 0.0L, scale, p10;
     int sign = 1, exp_sign = 1, exp_has_digits, tmp_exp, has_digits = 0;
     long exponent = 0, decimal_exp = 0, abs_exp;
-    
+
     /* Safely cast the narrow decimal point to wide character */
     const wchar_t separ = (wchar_t)(unsigned char)localeconv()->decimal_point[0];
 

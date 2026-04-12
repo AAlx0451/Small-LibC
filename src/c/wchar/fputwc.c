@@ -1,23 +1,25 @@
-#include <stdio.h>
-#include <wchar.h>
 #include <errno.h>
 #include <limits.h>
+#include <stdio.h>
 #include <unistd.h> /* for write() */
+#include <wchar.h>
 
 wint_t fputwc(wchar_t c, FILE *f) {
     if(!f)
         return WEOF;
 
     int mode = fwide(f, 0);
-    if (mode < 0) return WEOF;
-    else if (mode == 0) fwide(f, 1);
+    if(mode < 0)
+        return WEOF;
+    else if(mode == 0)
+        fwide(f, 1);
 
     _spin_lock(&f->_lock);
 
     char buf[MB_LEN_MAX];
     size_t len = wcrtomb(buf, c, &f->_mbstate);
 
-    if (len == (size_t)-1) {
+    if(len == (size_t)-1) {
         f->_flags |= __S_ERR;
         errno = EILSEQ;
         _spin_unlock(&f->_lock);

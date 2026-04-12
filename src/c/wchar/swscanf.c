@@ -1,5 +1,5 @@
-#include <wchar.h>
 #include <stdarg.h>
+#include <wchar.h>
 
 int swscanf(const wchar_t *s, const wchar_t *format, ...) {
     va_list arg;

@@ -1,14 +1,16 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
-#include <stdint.h>
 
 int puts(const char *s) {
     int result = 0;
 
     int mode = fwide(stdout, 0);
-    if (mode > 0) return EOF;
-    else if (mode == 0) fwide(stdout, -1);
+    if(mode > 0)
+        return EOF;
+    else if(mode == 0)
+        fwide(stdout, -1);
 
     _spin_lock(&stdout->_lock);
 

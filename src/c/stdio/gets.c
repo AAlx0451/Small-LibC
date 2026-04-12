@@ -14,8 +14,10 @@ char *gets(char *s) {
     p = s;
 
     int mode = fwide(stdin, 0);
-    if (mode > 0) return NULL;
-    else if (mode == 0) fwide(stdin, -1);
+    if(mode > 0)
+        return NULL;
+    else if(mode == 0)
+        fwide(stdin, -1);
 
     _spin_lock(&stdin->_lock);
 

@@ -1,6 +1,6 @@
-#include <wchar.h>
 #include <stdarg.h>
 #include <stdio.h>
+#include <wchar.h>
 
 int fwscanf(FILE *stream, const wchar_t *format, ...) {
     va_list arg;

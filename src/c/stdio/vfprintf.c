@@ -283,7 +283,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf, con
 
         exp_start = buf;
         elen = _itoa_base((uintmax_t)exp, 10, 0, buf);
-	buf += elen;
+        buf += elen;
         if(elen < 2)
             *buf++ = '0';
         _reverse(exp_start, ((int)(buf - exp_start)));
@@ -303,8 +303,10 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
     uint32_t *ptr;
 
     int mode = fwide(stream, 0);
-    if (mode > 0) return EOF;
-    else if (mode == 0) fwide(stream, -1);
+    if(mode > 0)
+        return EOF;
+    else if(mode == 0)
+        fwide(stream, -1);
 
     if(!stream)
         return -1;
