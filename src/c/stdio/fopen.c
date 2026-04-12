@@ -73,6 +73,7 @@ FILE *fopen(const char *pathname, const char *mode) {
     f->_next = NULL;
 
     f->_mode = 0;
+    memset(&f->_mbstate, 0, sizeof(f->_mbstate));
 
     if(stdio_flags & __S_RD) {
         f->_cnt = 0;

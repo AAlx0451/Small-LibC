@@ -4,6 +4,7 @@
 #include <features.h>
 #include <stddef.h>
 #include <stdarg.h>
+#include <_types.h>
 
 #define BUFSIZ 1024
 #define EOF (-1)
@@ -56,6 +57,7 @@ typedef struct __sFILE {
     unsigned int _flags;
     volatile int _lock;
     int _mode;
+    mbstate_t _mbstate;
     struct __sFILE *_next;
 } FILE;
 

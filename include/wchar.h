@@ -8,15 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <limits.h>
+#include <_types.h>
 #include <stdio.h>
 
 typedef int wint_t;
-
-typedef struct
-{
-    int __count;
-    char __bytes[4];
-} mbstate_t;
 
 #define WEOF ((wint_t)-1)
 
@@ -50,6 +45,10 @@ size_t mbsrtowcs(wchar_t *dst, const char **src, size_t len, mbstate_t *ps);
 size_t wcsrtombs(char *dst, const wchar_t **src, size_t len, mbstate_t *ps);
 
 int fwide(FILE *f, int mode);
+
+wint_t fgetwc(FILE *f);
+wint_t ungetwc(wint_t c, FILE *f);
+wint_t fputwc(wchar_t c, FILE *f);
 
 #endif /* !_ANSI && ((_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _XOPEN_SOURCE && _XOPEN_SOURCE >= 600) || (__STDC_VERSION__ && __STDC_VERSION__ >= 199409L)) */
 

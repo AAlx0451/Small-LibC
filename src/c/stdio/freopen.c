@@ -76,6 +76,9 @@ FILE *freopen(const char *pathname, const char *mode, FILE *stream) {
     /* reset orientation */
     stream->_mode = 0;
 
+    /* reset mbstate */
+    memset(&stream->_mbstate, 0, sizeof(stream->_mbstate));
+
     if(stdio_flags & __S_RD) {
         stream->_cnt = 0;
     } else {

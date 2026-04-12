@@ -64,6 +64,7 @@ FILE *fdopen(int fildes, const char *mode) {
     f->_lock = 0;
     f->_next = NULL;
     f->_mode = 0;
+    memset(&f->_mbstate, 0, sizeof(f->_mbstate));
 
     if(stdio_flags & __S_RD) {
         f->_cnt = 0;
