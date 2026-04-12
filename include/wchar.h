@@ -44,6 +44,8 @@ size_t wcrtomb(char *s, wchar_t wc, mbstate_t *ps);
 size_t mbsrtowcs(wchar_t *dst, const char **src, size_t len, mbstate_t *ps);
 size_t wcsrtombs(char *dst, const wchar_t **src, size_t len, mbstate_t *ps);
 
+double wcstod(const wchar_t *restrict nptr, wchar_t **restrict endptr);
+
 int fwide(FILE *f, int mode);
 
 wint_t fgetwc(FILE *f);
@@ -76,6 +78,9 @@ int swscanf(const wchar_t *s, const wchar_t *format, ...);
 int vfwscanf(FILE *restrict stream, const wchar_t *restrict format, va_list arg);
 int vwscanf(const wchar_t *restrict format, va_list arg);
 int vswscanf(const wchar_t *restrict ws, const wchar_t *restrict format, va_list arg);
+
+long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr);
+float wcstof(const wchar_t *restrict nptr, wchar_t **restrict endptr);
 
 #endif /* __STDC_VERSION__ && __STDC_VERSION__ >= 199901L */
 
