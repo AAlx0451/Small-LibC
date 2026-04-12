@@ -49,10 +49,35 @@ int fwide(FILE *f, int mode);
 wint_t fgetwc(FILE *f);
 wint_t getwc(FILE *stream);
 wint_t getwchar(void);
+
 wint_t ungetwc(wint_t c, FILE *f);
+
 wint_t fputwc(wchar_t c, FILE *f);
 wint_t putwc(wchar_t c, FILE *stream);
 wint_t putwchar(wchar_t c);
+
+int fputws(const wchar_t *restrict ws, FILE *restrict stream);
+wchar_t *fgetws(wchar_t *restrict ws, int n, FILE *restrict stream);
+
+int wprintf(const wchar_t *format, ...);
+int fwprintf(FILE *stream, const wchar_t *format, ...);
+int swprintf(wchar_t *restrict s, size_t n, const wchar_t *restrict format, ...);
+
+int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list arg);
+int vwprintf(const wchar_t *format, va_list arg);
+int vswprintf(wchar_t *restrict ws, size_t n, const wchar_t *restrict format, va_list ap);
+
+int fwscanf(FILE *stream, const wchar_t *format, ...);
+int wscanf(const wchar_t *format, ...);
+int swscanf(const wchar_t *s, const wchar_t *format, ...);
+
+#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+
+int vfwscanf(FILE *restrict stream, const wchar_t *restrict format, va_list arg);
+int vwscanf(const wchar_t *restrict format, va_list arg);
+int vswscanf(const wchar_t *restrict ws, const wchar_t *restrict format, va_list arg);
+
+#endif /* __STDC_VERSION__ && __STDC_VERSION__ >= 199901L */
 
 #endif /* !_ANSI && ((_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _XOPEN_SOURCE && _XOPEN_SOURCE >= 600) || (__STDC_VERSION__ && __STDC_VERSION__ >= 199409L)) */
 
