@@ -1,10 +1,15 @@
 #include <stdio.h>
+#include <wchar.h>
 
 int fgetc(FILE *f) {
     int c;
 
     if(!f)
         return EOF;
+    
+    int mode = fwide(f, 0);
+    if (mode > 0) return EOF;
+    else if (mode == 0) fwide(f, -1);
 
     _spin_lock(&f->_lock);
 

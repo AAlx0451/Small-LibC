@@ -73,6 +73,9 @@ FILE *freopen(const char *pathname, const char *mode, FILE *stream) {
     /* reset buffer pointers */
     stream->_ptr = stream->_base;
 
+    /* reset orientation */
+    stream->_mode = 0;
+
     if(stdio_flags & __S_RD) {
         stream->_cnt = 0;
     } else {

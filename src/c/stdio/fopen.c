@@ -49,8 +49,8 @@ FILE *fopen(const char *pathname, const char *mode) {
         return NULL;
     }
 
-    // Allocate +1 byte for ungetc reserve.
-    alloc_buf = (unsigned char *)malloc(BUFSIZ + 1);
+    // Allocate +MB_LEN_MAX byte for ungetc reserve.
+    alloc_buf = (unsigned char *)malloc(BUFSIZ + MB_LEN_MAX);
     if(!alloc_buf) {
         close(fd);
         free(f);
@@ -64,13 +64,15 @@ FILE *fopen(const char *pathname, const char *mode) {
     // Set __S_RESERVE to indicate offset base
     f->_flags = stdio_flags | __S_FREEBUF | __S_RESERVE;
 
-    // Offset base by 1 to allow ungetc at start of stream
-    f->_base = alloc_buf + 1;
+    // Offset base by MB_LEN_MAX to allow ungetc at start of stream
+    f->_base = alloc_buf + MB_LEN_MAX;
     f->_ptr = f->_base;
 
     f->_bsize = BUFSIZ;
     f->_lock = 0;
     f->_next = NULL;
+
+    f->_mode = 0;
 
     if(stdio_flags & __S_RD) {
         f->_cnt = 0;

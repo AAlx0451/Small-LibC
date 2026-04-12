@@ -26,6 +26,12 @@
 #define FOPEN_MAX 20
 #define FILENAME_MAX 1024
 
+#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600L))
+
+#undef MB_LEN_MAX
+#define MB_LEN_MAX 6 /* UTF-8 */
+
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || (__STDC_VERSION__ && __STDC_VERSION__ >= 199901L) || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 600)) */
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
 #  define L_ctermid 10
 #endif /* !_ANSI && (_DARWIN_C_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE) */
@@ -82,7 +88,7 @@ FILE *fopen(const char *pathname, const char *mode);
 int fclose(FILE *f);
 int getchar(void);
 int putchar(int c);
-int setvbuf(FILE *stream, char *buf, int mode, size_t size);
+int setvbuf(FILE *strem, char *buf, int mode, size_t size);
 int ungetc(int c, FILE *f);
 int putc(int c, FILE *f);
 int getc(FILE *f);

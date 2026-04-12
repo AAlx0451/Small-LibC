@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <wchar.h>
 
 #pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
@@ -299,6 +300,10 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
     intmax_t sval;
     double fval;
     uint32_t *ptr;
+
+    int mode = fwide(stream, 0);
+    if (mode > 0) return EOF;
+    else if (mode == 0) fwide(stream, -1);
 
     if(!stream)
         return -1;

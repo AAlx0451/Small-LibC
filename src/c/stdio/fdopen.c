@@ -43,8 +43,8 @@ FILE *fdopen(int fildes, const char *mode) {
         return NULL;
     }
 
-    // Allocate +1 byte for ungetc reserve
-    alloc_buf = (unsigned char *)malloc(BUFSIZ + 1);
+    // Allocate +MB_LEN_MAX byte for ungetc reserve
+    alloc_buf = (unsigned char *)malloc(BUFSIZ + MB_LEN_MAX);
     if(!alloc_buf) {
         free(f);
         errno = ENOMEM;
@@ -58,11 +58,12 @@ FILE *fdopen(int fildes, const char *mode) {
     f->_flags = stdio_flags | __S_FREEBUF | __S_RESERVE;
 
     // Offset base by 1 to allow ungetc at start of stream
-    f->_base = alloc_buf + 1;
+    f->_base = alloc_buf + MB_LEN_MAX;
     f->_ptr = f->_base;
     f->_bsize = BUFSIZ;
     f->_lock = 0;
     f->_next = NULL;
+    f->_mode = 0;
 
     if(stdio_flags & __S_RD) {
         f->_cnt = 0;

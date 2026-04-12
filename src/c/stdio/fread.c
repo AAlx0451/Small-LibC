@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <wchar.h>
 
 size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream) {
     size_t total_to_read, bytes_read = 0, chunk;
@@ -7,6 +8,10 @@ size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream) {
     if(size == 0 || nmemb == 0) {
         return 0;
     }
+
+    int mode = fwide(stream, 0);
+    if (mode > 0) return EOF;
+    else if (mode == 0) fwide(stream, -1);
 
     total_to_read = size * nmemb;
     if(nmemb > 0 && total_to_read / nmemb != size) {

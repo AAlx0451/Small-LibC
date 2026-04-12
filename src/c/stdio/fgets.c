@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdio.h>
+#include <wchar.h>
 
 char *fgets(char *s, int size, FILE *stream) {
     char *p;
@@ -8,6 +9,10 @@ char *fgets(char *s, int size, FILE *stream) {
     if(s == NULL || size <= 0) {
         return NULL;
     }
+
+    int mode = fwide(stream, 0);
+    if (mode > 0) return NULL;
+    else if (mode == 0) fwide(stream, -1);
 
     p = s;
     _spin_lock(&stream->_lock);

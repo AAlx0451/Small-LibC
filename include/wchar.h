@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <limits.h>
+#include <stdio.h>
 
 typedef int wint_t;
 
@@ -47,6 +48,8 @@ size_t mbrlen(const char *s, size_t n, mbstate_t *ps);
 size_t wcrtomb(char *s, wchar_t wc, mbstate_t *ps);
 size_t mbsrtowcs(wchar_t *dst, const char **src, size_t len, mbstate_t *ps);
 size_t wcsrtombs(char *dst, const wchar_t **src, size_t len, mbstate_t *ps);
+
+int fwide(FILE *f, int mode);
 
 #endif /* !_ANSI && ((_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _XOPEN_SOURCE && _XOPEN_SOURCE >= 600) || (__STDC_VERSION__ && __STDC_VERSION__ >= 199409L)) */
 

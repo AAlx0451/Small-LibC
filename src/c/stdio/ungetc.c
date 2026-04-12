@@ -1,10 +1,15 @@
 #include <stdio.h>
+#include <wchar.h>
 
 int ungetc(int c, FILE *f) {
     int has_reserve;
     unsigned char *min_ptr;
     if(c == EOF || !f)
         return EOF;
+
+    int mode = fwide(f, 0);
+    if (mode > 0) return EOF;
+    else if (mode == 0) fwide(f, -1);
 
     _spin_lock(&f->_lock);
 

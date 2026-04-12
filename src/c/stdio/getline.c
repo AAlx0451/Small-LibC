@@ -2,6 +2,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <wchar.h>
 
 ssize_t getline(char **lineptr, size_t *n, FILE *stream) {
     size_t cur_len = 0;
@@ -12,6 +13,10 @@ ssize_t getline(char **lineptr, size_t *n, FILE *stream) {
         errno = EINVAL;
         return -1;
     }
+
+    int mode = fwide(stream, 0);
+    if (mode > 0) return EOF;
+    else if (mode == 0) fwide(stream, -1);
 
     if(*lineptr == NULL || *n == 0) {
         *n = 128;

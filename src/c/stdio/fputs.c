@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h> // for strlen()
 #include <unistd.h> // for write()
+#include <wchar.h>
 
 int fputs(const char *s, FILE *stream) {
     size_t len, chunk_len, remaining_in_string, space_in_buffer, to_copy;
@@ -14,6 +15,10 @@ int fputs(const char *s, FILE *stream) {
     if(len == 0) {
         return 0;
     }
+
+    int mode = fwide(stream, 0);
+    if (mode > 0) return EOF;
+    else if (mode == 0) fwide(stream, -1);
 
     _spin_lock(&stream->_lock);
 
