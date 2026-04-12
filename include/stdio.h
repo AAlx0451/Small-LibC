@@ -43,10 +43,15 @@
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
 #include <sys/types.h>
-typedef off_t fpos_t;
+typedef off_t _fpos_t;
 #else
-typedef long long fpos_t;
+typedef long long _fpos_t;
 #endif /* !_ANSI && (_DARWIN_C_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE) */
+
+typedef struct {
+    _fpos_t _pos;
+    mbstate_t _state;
+} fpos_t;
 
 typedef struct __sFILE {
     int _fd;

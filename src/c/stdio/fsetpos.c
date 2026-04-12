@@ -2,9 +2,15 @@
 #include <sys/types.h>
 
 int fsetpos(FILE *stream, const fpos_t *pos) {
-    if(pos == NULL) {
+    if (stream == NULL || pos == NULL) {
         return -1;
     }
 
-    return fseeko(stream, *pos, SEEK_SET);
+    if (fseeko(stream, pos->_pos, SEEK_SET) == -1) {
+        return -1;
+    }
+
+    stream->_mbstate = pos->_state;
+
+    return 0;
 }

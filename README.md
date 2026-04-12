@@ -11,11 +11,14 @@ If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile 
 
 ## Status
 * Full ANSI C89
+* Full ISO C90AMD1
 * Full POSIX.1-1990
 * Full POSIX.2-1992
-* POSIX.1b-1993, POSIX.1c-1995 are TODO
 
 Note that LibM is a git submodule, so run `git submodule update --recursive --init` before compiling.
+
+## Future
+Full C99, then tests, then POSIX.1c-1995, POSIX.1-2001, C11, XPG, etc.
 
 ## License
 This project is a Public Domain and licensed under The Unlicense. Note that 570161d commit and older are MIT-licensed
@@ -29,3 +32,4 @@ This project is a Public Domain and licensed under The Unlicense. Note that 5701
 5. `./src/runtime/asm` – C Startup code and UBSan runtime
 6. `./src/runtime/c` – stack canary, division runtime
 7. `./src/math` – libM
+8. `./test` - Tests (3-5% coverage)
