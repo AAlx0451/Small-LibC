@@ -10,6 +10,7 @@
 #include <limits.h>
 #include <_types.h>
 #include <stdio.h>
+#include <time.h>
 
 typedef int wint_t;
 
@@ -74,6 +75,8 @@ int vswprintf(wchar_t *restrict ws, size_t n, const wchar_t *restrict format, va
 int fwscanf(FILE *stream, const wchar_t *format, ...);
 int wscanf(const wchar_t *format, ...);
 int swscanf(const wchar_t *s, const wchar_t *format, ...);
+
+size_t wcsftime(wchar_t *restrict s, size_t maxsize, const wchar_t *restrict format, const struct tm *restrict timeptr);
 
 #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 
