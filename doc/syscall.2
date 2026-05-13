@@ -1,0 +1,33 @@
+.Dd May 14, 2026
+.Dt SYSCALL 2
+.Os
+.Sh NAME
+.Nm syscall
+.Nd do a system call.
+.Sh LIBRARY
+.Lb libc
+.Sh SYNOPSIS
+.In unistd.h
+.Ft long
+.Fn syscall "int number" "..."
+.Sh DESCRIPTION
+The
+.Nm Ns ()
+function performs an indirect system call using the
+.Fa number
+as a system call number and passing variadic arguments to the kernel.
+.Sh RETURN VALUES
+The
+.Nm Ns ()
+function returns system call result if successful; otherwise the value -1 is returned and the global variable 
+.Va errno
+is set to indicate the error.
+.Sh BUGS
+There is no way to implement
+.Nm Ns ()
+for system calls returning multiple values, such as
+.Xr fork 2 .
+.Sh HISTORY
+The
+.Nm Ns ()
+function first appeared at 4.0 Berkeley Software Distribution.
