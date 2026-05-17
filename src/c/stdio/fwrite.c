@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -13,8 +14,10 @@ size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream) {
         return 0;
 
     int mode = fwide(stream, 0);
-    if(mode > 0)
-        return EOF;
+    if(mode > 0) {
+        errno = EILSEQ;
+        return 0;
+    }
     else if(mode == 0)
         fwide(stream, -1);
 
