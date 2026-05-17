@@ -3,7 +3,6 @@
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 
 #define NO_UBSAN __attribute__((no_sanitize("undefined")))
-#define NORETURN __attribute__((noreturn))
 #define COLOR_BOLD_RED "\x1b[1;31m"
 #define COLOR_BOLD "\x1b[1m"
 #define COLOR_RESET "\x1b[0m"
@@ -135,7 +134,7 @@ NO_UBSAN static void print_loc(struct SourceLocation *loc) {
         print_str(msg "\n");                                                                         \
     }                                                                                                \
     void __ubsan_handle_##name##_abort(void *data, uintptr_t lhs, uintptr_t rhs);                    \
-    NO_UBSAN NORETURN void __ubsan_handle_##name##_abort(void *data, uintptr_t lhs, uintptr_t rhs) { \
+    NO_UBSAN __noreturn void __ubsan_handle_##name##_abort(void *data, uintptr_t lhs, uintptr_t rhs) { \
         __ubsan_handle_##name(data, lhs, rhs);                                                       \
         __builtin_trap();                                                                            \
     }
@@ -148,7 +147,7 @@ NO_UBSAN static void print_loc(struct SourceLocation *loc) {
         print_str(msg "\n");                                                           \
     }                                                                                  \
     void __ubsan_handle_##name##_abort(void *data, uintptr_t arg1);                    \
-    NO_UBSAN NORETURN void __ubsan_handle_##name##_abort(void *data, uintptr_t arg1) { \
+    NO_UBSAN __noreturn void __ubsan_handle_##name##_abort(void *data, uintptr_t arg1) { \
         __ubsan_handle_##name(data, arg1);                                             \
         __builtin_trap();                                                              \
     }
@@ -160,7 +159,7 @@ NO_UBSAN static void print_loc(struct SourceLocation *loc) {
         print_str(msg "\n");                                           \
     }                                                                  \
     void __ubsan_handle_##name##_abort(void *data);                    \
-    NO_UBSAN NORETURN void __ubsan_handle_##name##_abort(void *data) { \
+    NO_UBSAN __noreturn void __ubsan_handle_##name##_abort(void *data) { \
         __ubsan_handle_##name(data);                                   \
         __builtin_trap();                                              \
     }
@@ -209,7 +208,7 @@ NO_UBSAN void __ubsan_handle_type_mismatch_v1(struct TypeMismatchData_v1 *data, 
     }
 }
 
-NO_UBSAN NORETURN void __ubsan_handle_type_mismatch_v1_abort(struct TypeMismatchData_v1 *data, uintptr_t ptr) {
+NO_UBSAN __noreturn void __ubsan_handle_type_mismatch_v1_abort(struct TypeMismatchData_v1 *data, uintptr_t ptr) {
     __ubsan_handle_type_mismatch_v1(data, ptr);
     __builtin_trap();
 }

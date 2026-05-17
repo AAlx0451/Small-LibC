@@ -5,17 +5,15 @@
 #pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 
-#define _Used __attribute__((used)) /* readability */
-#define _noreturn __attribute__((noreturn))
 extern int NXArgc;
 extern char **NXArgv;
 extern char *__progname;
-_Used _noreturn void _c_startup(int argc, char **argv, char **envp);
+__used __noreturn void _c_startup(int argc, char **argv, char **envp);
 
-_Used int NXArgc;
-_Used char **NXArgv;
-_Used char **environ;
-_Used char *__progname;
+__used int NXArgc;
+__used char **NXArgv;
+__used char **environ;
+__used char *__progname;
 
 extern int main(int argc, char **argv, char **envp, char **apple);
 void __stack_chk_guard_init(void);
@@ -29,10 +27,10 @@ static char *get_basename(const char *path) {
         if(*path++ == '/')
             p = path;
     }
-    return (char *)(uintptr_t)p;
+    return __deconst(char *, p);
 }
 
-_Used _noreturn void _c_startup(int argc, char **argv, char **envp) {
+__used __noreturn void _c_startup(int argc, char **argv, char **envp) {
     char **ptr;
     char **apple = NULL;
     NXArgc = argc;
@@ -51,12 +49,8 @@ _Used _noreturn void _c_startup(int argc, char **argv, char **envp) {
         apple = ptr + 1;
     }
 
-#ifdef SMALL_LIBC
     __stdio_init();
     __stack_chk_guard_init();
-#endif /* defined at S-LibC's stdio */
-
-    // actually,  #ifdef SMALL_LIBC isn't required, because with LC_MAIN lazy binding we don't need crt with libSystem (Argc/v stuff will be initialized using libdyld/libSystem symbols), but I just want to think that my code is compatible (but it's not, lol). and that's aside from SMALL_LIBC being always defined because this lib is incompatible with libSystem, so it's literally useless. but it's my lib, so y not
 
     exit(main(argc, argv, envp, apple));
 }
@@ -73,5 +67,5 @@ __asm__(
     "    add r2, r1, r2, lsl #2\n" /* r2 = argv + (argc + 1) * 4 */
     "    bic sp, sp, #7\n"
     "    bl __c_startup\n"
-    "    trap\n" /* how could get here? exit() is broken(?) */
+    "    trap\n"
 );

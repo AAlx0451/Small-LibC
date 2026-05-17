@@ -9,28 +9,17 @@
 # define assert(expr) ((void)0)
 #else
 
+#include <features.h>
 #include <unistd.h>
 #include <stdlib.h>
 
-#if defined(__GNUC__) || defined(__clang__)
-# define always __attribute__((always_inline))
-# define noreturn __attribute__((noreturn))
-# define cold __attribute__((cold))
-#else
-# define always
-# define noreturn
-# define cold
-#endif /* __GNUC__ || __clang__ */
-
-void static always inline write_str(const char* s) {
-    if(s) {
-        size_t len = 0;
-        while (s[len]) len++;
-        write(STDERR_FILENO, s, len);
-    }
+void static __always_inline write_str(const char* s) {
+    size_t len = 0;
+    while (s[len]) len++;
+    write(STDERR_FILENO, s, len);
 }
 
-static noreturn cold void __assert_fail_internal(const char *expr, const char *file, int line, const char *func) {
+static __noreturn __cold void __assert_fail_internal(const char *expr, const char *file, int line, const char *func) {
     char buf[12];
     char *p = buf + sizeof(buf) - 1;
     *p = '\0';

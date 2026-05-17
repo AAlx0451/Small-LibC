@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define PATH "/usr/share/locale"
-
 static char *active_locales[7] = {NULL};
 static const char c_locale_name[] = "C";
 static char ret_buf[256];
@@ -45,9 +43,9 @@ char *setlocale(int category, const char *locale) {
                     return active_locales[i];
                 }
             }
-            return (char *)c_locale_name;
+            return __deconst(char *, c_locale_name);
         }
-        return active_locales[category] ? active_locales[category] : (char *)c_locale_name;
+        return active_locales[category] ? active_locales[category] : __deconst(char *, c_locale_name);
     }
 
     target = locale;
@@ -84,7 +82,7 @@ char *setlocale(int category, const char *locale) {
         }
 
         if(target == c_locale_name) {
-            active_locales[i] = (char *)c_locale_name;
+            active_locales[i] = __deconst(char *, c_locale_name);
         } else {
             active_locales[i] = strdup(target);
         }

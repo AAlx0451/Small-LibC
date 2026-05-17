@@ -34,13 +34,13 @@ void *malloc(size_t size);
 void *calloc(size_t number, size_t size);
 void *realloc(void *p, size_t size);
 
-NORETURN void exit(int status);
+__noreturn void exit(int status);
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || \
     (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || \
     (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || \
     (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600))
-NORETURN void _Exit(int status);
+__noreturn void _Exit(int status);
 #endif /* !_ANSI && (_DARWIN_C_SOURCE || (__STDC_VERSION__ && __STDC_VERSION__ >= 199901L) || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 600)) */
 
 int abs(int num);

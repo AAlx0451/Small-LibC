@@ -1,41 +1,34 @@
 /*
  * SAFE syscall() implementation
- * target: iOS 6, ARMv7 (thumb-2 preferred, UAL ARM as well), clang
  */
 
 #include <errno.h>
 #include <stdarg.h>
 #include <unistd.h>
 
-#ifdef __arm__
-#ifdef __APPLE__
-
 /*
  * simple helper
  * aligns stack by 16 bytes (pushing 4 regs) and marks stack changes for CFI
  */
-__asm__( // static __attribute__("naked") void do_syscall(void)
-    ".text\n\t"
-    ".align 4\n\t"
-    ".thumb_func _do_syscall\n\t"
-    "_do_syscall:\n\t"
-    ".cfi_startproc\n\t"
-    "push {r4, r5, r6, r8}\n\t" // r7 is a frame pointer (actually, it will protect CFI if code will break :D)
-    ".cfi_def_cfa_offset 16\n\t"
-    ".cfi_offset r4, -16\n\t"
-    ".cfi_offset r5, -12\n\t"
-    ".cfi_offset r6, -8\n\t"
-    ".cfi_offset r8, -4\n\t"
-    "svc #128\n\t"
-    "pop {r4, r5, r6, r8}\n\t"
-    ".cfi_def_cfa_offset 0\n\t"
-    "bx lr\n\t"
-    ".cfi_endproc\n");
+static __naked __noinline void do_syscall(void) {
+    __asm__ volatile(
+        "push {r4, r5, r6, r8}\n\t" // r7 is a frame pointer
+        ".cfi_def_cfa_offset 16\n\t"
+        ".cfi_offset r4, -16\n\t"
+        ".cfi_offset r5, -12\n\t"
+        ".cfi_offset r6, -8\n\t"
+        ".cfi_offset r8, -4\n\t"
+        "svc #128\n\t"
+        "pop {r4, r5, r6, r8}\n\t"
+        ".cfi_def_cfa_offset 0\n\t"
+        "bx lr\n\t"
+    );
+}
 
 #define REG(name, val) register long name __asm__(#name) = (long)(val)
 
 // we don't add r4-r6,r8 to clobbers, because we bind
-// args to register and compiler follows ABI and will generate correct prologue
+// args to register and compiler will generate correct prologue
 // r0-r3,r12 are caller-saved, so no clobbers too
 // "lr" in clobbers because we now use 'bl' instruction for >4 args
 #define DEFINE_SYSCALL(n, args, regs, asm_code, ...)                                                 \
@@ -118,6 +111,3 @@ DEFINE_SYSCALL(8, (long number, long arg1, long arg2, long arg3, long arg4, long
                REG(r4, arg5); REG(r5, arg6); REG(r6, arg7); REG(r8, arg8);,
                                                                           "bl _do_syscall\n\t",
                                                                           "r"(r1), "r"(r2), "r"(r3), "r"(r12), "r"(r4), "r"(r5), "r"(r6), "r"(r8))
-
-#endif
-#endif

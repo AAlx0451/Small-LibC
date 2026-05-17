@@ -1,16 +1,8 @@
-#if defined(__APPLE__) && defined(__arm__)
-
 #include <errno.h>
 #include <sys/syscall.h>
 #include <sys/time.h>
 
-#if defined(__GNUC__) || defined(__clang__)
-#define _unused __attribute__((unused))
-#else
-#define _unused
-#endif /* __GNUC__ || __clang__ */
-
-int gettimeofday(struct timeval *tp, void *_unused tzp) {
+int gettimeofday(struct timeval *tp, __unused void *tzp) {
     register long r12_syscall __asm__("r12") = SYS_gettimeofday;
     long sec, usec;
     long err;
@@ -44,9 +36,3 @@ int gettimeofday(struct timeval *tp, void *_unused tzp) {
 
     return 0;
 }
-
-#else
-
-#error
-
-#endif

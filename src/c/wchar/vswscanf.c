@@ -11,8 +11,8 @@ int vswscanf(const wchar_t *restrict ws, const wchar_t *restrict format, va_list
     f._fd = -1;
     f._lock = 0;
 
-    f._base = (unsigned char *)ws;
-    f._ptr = (unsigned char *)ws;
+    f._base = __deconst(unsigned char *, ws);
+    f._ptr = __deconst(unsigned char *, ws);
 
     /* length in wide characters */
     size_t len = 0;

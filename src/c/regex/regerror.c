@@ -1,6 +1,6 @@
 #include "regex_internal.h"
 
-size_t regerror(int errcode, __attribute__((unused)) const regex_t *preg, char *errbuf, size_t errbuf_size) {
+size_t regerror(int errcode, __unused const regex_t *preg, char *errbuf, size_t errbuf_size) {
     const char *msg = "Unknown error";
     switch(errcode) {
     case REG_NOMATCH:

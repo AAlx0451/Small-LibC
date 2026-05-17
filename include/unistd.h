@@ -128,7 +128,7 @@ extern char **environ;
 /* FUNCTIONS */
 
 #if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 1) || defined(_XOPEN_SOURCE)
-NORETURN void _exit(int status);
+__noreturn void _exit(int status);
 pid_t fork(void);
 ssize_t read(int fd, void *buf, size_t count);
 ssize_t write(int fd, const void *buf, size_t count);

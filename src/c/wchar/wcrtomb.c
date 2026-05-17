@@ -2,7 +2,7 @@
 #include <stdint.h>
 #include <wchar.h>
 
-size_t wcrtomb(char *s, wchar_t wc, mbstate_t *ps) {
+size_t wcrtomb(char *s, wchar_t wc, __unused mbstate_t *ps) {
     if(!s)
         return 1;
     uint32_t val = (uint32_t)wc;

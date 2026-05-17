@@ -7,7 +7,7 @@
 
 uintptr_t __stack_chk_guard;
 
-__attribute__((noreturn)) void __stack_chk_fail(void) {
+__noreturn void __stack_chk_fail(void) {
     const char msg[] = "*** stack smashing detected ***\n";
     write(STDERR_FILENO, msg, sizeof(msg) - 1);
     abort();

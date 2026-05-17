@@ -652,7 +652,7 @@ const RuneLocale _DefaultRuneLocale = {
     .maplower_ext = {0, NULL},
     .mapupper_ext = {0, NULL}};
 
-RuneLocale *_CurrentRuneLocale = (RuneLocale *)&_DefaultRuneLocale;
+RuneLocale *_CurrentRuneLocale = __deconst(RuneLocale *, &_DefaultRuneLocale);
 
 int setrlocale(const char *locale) {
     if(!locale) {
@@ -663,7 +663,7 @@ int setrlocale(const char *locale) {
         if(_CurrentRuneLocale != &_DefaultRuneLocale) {
             rl_free(_CurrentRuneLocale);
         }
-        _CurrentRuneLocale = (RuneLocale *)&_DefaultRuneLocale;
+        _CurrentRuneLocale = __deconst(RuneLocale *, &_DefaultRuneLocale);
         return 0;
     }
 
