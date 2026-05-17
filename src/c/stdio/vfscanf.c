@@ -108,7 +108,7 @@ static wint_t _in_char_wc(FILE *f, int *consumed) {
         mbuf[len++] = (char)c;
         (*consumed)++;
 
-        int res = mbtowc(&wc, mbuf, len);
+        int res = mbtowc(&wc, mbuf, (size_t)len);
         if(res > 0) {
             return (wint_t)wc;
         } else if(res == 0) {

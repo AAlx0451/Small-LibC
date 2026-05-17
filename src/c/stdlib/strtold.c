@@ -32,14 +32,14 @@ long double strtold(const char *restrict nptr, char **restrict endptr) {
             p += 5;
         }
         if(endptr)
-            *endptr = (char *)(uintptr_t)p;
+            *endptr = __deconst(char *, p);
         return sign * (1.0L / 0.0L);
     }
 
     if((tolower((unsigned char)p[0]) == 'n') && (tolower((unsigned char)p[1]) == 'a') && (tolower((unsigned char)p[2]) == 'n')) {
         p += 3;
         if(endptr)
-            *endptr = (char *)(uintptr_t)p;
+            *endptr = __deconst(char *, p);
         return 0.0L / 0.0L;
     }
 
@@ -74,7 +74,7 @@ long double strtold(const char *restrict nptr, char **restrict endptr) {
             p++;
         }
 
-        save_p = (char *)(uintptr_t)p;
+        save_p = __deconst(char *, p);
         exp_has_digits = 0;
         tmp_exp = 0;
 
@@ -133,7 +133,7 @@ long double strtold(const char *restrict nptr, char **restrict endptr) {
     }
 
     if(endptr) {
-        *endptr = (char *)(uintptr_t)p;
+        *endptr = __deconst(char *, p);
     }
 
     return value;

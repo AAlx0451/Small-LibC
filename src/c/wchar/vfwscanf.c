@@ -29,7 +29,8 @@ static wint_t _in_wchar(FILE *f) {
     if(f->_flags & __S_STR) {
         if(f->_cnt > 0) {
             f->_cnt--;
-            wchar_t wc = *(wchar_t *)f->_ptr;
+            wchar_t wc;
+            memcpy(&wc, f->_ptr, sizeof(wc));
             f->_ptr += sizeof(wchar_t);
             return (wint_t)wc;
         }

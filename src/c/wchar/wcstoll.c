@@ -58,7 +58,7 @@ long long strtoll(const char *restrict nptr, char **restrict endptr, int base) {
     }
 
     if(endptr != 0) {
-        *endptr = (char *)(uintptr_t)(any ? s - 1 : nptr);
+        *endptr = __deconst(char *, (any ? s - 1 : nptr));
     }
 
     return (long long)acc;

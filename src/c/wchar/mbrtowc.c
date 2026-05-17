@@ -27,7 +27,7 @@ size_t mbrtowc(wchar_t *pwc, const char *s, size_t n, mbstate_t *ps) {
             errno = EILSEQ;
             return (size_t)-1;
         }
-        ps->__bytes[0] = b;
+        ps->__bytes[0] = (char)(char)(char)(char)(char)(char)(char)(char)b;
         ps->__count = 1;
         consumed = 1;
     }
@@ -46,7 +46,7 @@ size_t mbrtowc(wchar_t *pwc, const char *s, size_t n, mbstate_t *ps) {
     }
 
     while(ps->__count < expected) {
-        if(consumed >= n)
+        if((size_t)consumed >= n)
             return (size_t)-2;
         unsigned char b = (unsigned char)s[consumed];
         if((b & 0xC0) != 0x80) {
@@ -54,18 +54,18 @@ size_t mbrtowc(wchar_t *pwc, const char *s, size_t n, mbstate_t *ps) {
             ps->__count = 0;
             return (size_t)-1;
         }
-        ps->__bytes[ps->__count++] = b;
+        ps->__bytes[ps->__count++] = (char)b;
         consumed++;
     }
 
     uint32_t res;
     unsigned char *p = (unsigned char *)ps->__bytes;
     if(expected == 2)
-        res = ((p[0] & 0x1F) << 6) | (p[1] & 0x3F);
+        res = (uint32_t)((p[0] & 0x1F) << 6) | (p[1] & 0x3F);
     else if(expected == 3)
-        res = ((p[0] & 0x0F) << 12) | ((p[1] & 0x3F) << 6) | (p[2] & 0x3F);
+        res = (uint32_t)((p[0] & 0x0F) << 12) | ((uint32_t)(p[1] & 0x3F) << 6) | (p[2] & 0x3F);
     else
-        res = ((p[0] & 0x07) << 18) | ((p[1] & 0x3F) << 12) | ((p[2] & 0x3F) << 6) | (p[3] & 0x3F);
+        res = (uint32_t)((p[0] & 0x07) << 18) | (uint32_t)((p[1] & 0x3F) << 12) | (uint32_t)((p[2] & 0x3F) << 6) | (p[3] & 0x3F);
 
     if(res > 0x10FFFF || (res >= 0xD800 && res <= 0xDFFF))
         goto err;
@@ -77,7 +77,7 @@ size_t mbrtowc(wchar_t *pwc, const char *s, size_t n, mbstate_t *ps) {
     if(pwc)
         *pwc = (wchar_t)res;
     ps->__count = 0;
-    return (res == 0) ? 0 : consumed;
+    return (res == 0) ? 0 : (size_t)consumed;
 
 err:
     errno = EILSEQ;

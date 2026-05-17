@@ -63,7 +63,7 @@ unsigned long long wcstoull(const wchar_t *restrict nptr, wchar_t **restrict end
     }
 
     if(endptr != 0)
-        *endptr = (wchar_t *)(uintptr_t)(any ? s - 1 : nptr);
+        *endptr = __deconst(wchar_t *, (any ? s - 1 : nptr));
 
     return acc;
 }

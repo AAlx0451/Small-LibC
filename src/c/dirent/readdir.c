@@ -19,7 +19,7 @@ struct dirent *readdir(DIR *dir) {
         if(dir->dd_loc >= dir->dd_len) {
             dir->dd_loc = 0;
             basep = 0;
-            nread = (int)syscall(SYS_getdirentries64, dir->dd_fd, (long)(uintptr_t)dir->dd_buf, DIR_BUFFER_SIZE, (long)(uintptr_t)&basep);
+            nread = (int)syscall(SYS_getdirentries64, dir->dd_fd, __deconst(long, (const long)dir->dd_buf), DIR_BUFFER_SIZE, (long)(uintptr_t)&basep);
 
             if(nread <= 0) {
                 return NULL;

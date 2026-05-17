@@ -31,7 +31,8 @@ int vswprintf(wchar_t *restrict ws, size_t n, const wchar_t *restrict format, va
 
     /* NULL terminate string */
     if(f._ptr < f._base + (n * sizeof(wchar_t))) {
-        *(wchar_t *)f._ptr = L'\0';
+        wchar_t zero = L'\0';
+        memcpy(f._ptr, &zero, sizeof(zero));
     } else {
         ws[n - 1] = L'\0';
     }

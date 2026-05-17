@@ -61,9 +61,9 @@ static char *load_file(const char *loc, const char *cat, long *out_sz) {
     sz = ftell(f);
     fseek(f, 0, SEEK_SET);
 
-    buf = malloc(sz + 1);
+    buf = malloc(((size_t)(sz)) + 1);
     if(buf) {
-        fread(buf, 1, sz, f);
+        fread(buf, 1, ((size_t)(sz)), f);
         buf[sz] = '\0';
         for(i = 0; i < sz; i++) {
             if(buf[i] == '\n')

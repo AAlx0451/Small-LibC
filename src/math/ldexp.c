@@ -25,7 +25,7 @@ double ldexp(double num, int ex) {
     }
 
     memcpy(&bits, &num, sizeof(double));
-    e = ((bits >> 52) & 0x7FF) + ex;
+    e = (int64_t)((bits >> 52) & 0x7FF) + ex;
 
     if(e >= 2047) { /* overflow */
         if(math_errhandling & MATH_ERRNO)

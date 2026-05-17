@@ -9,7 +9,7 @@ wchar_t *wcsrchr(const wchar_t *s, wchar_t c) {
         s++;
     }
     if(c == L'\0') {
-        return (wchar_t *)s;
+        return __deconst(wchar_t *, s);
     }
-    return (wchar_t *)last;
+    return __deconst(wchar_t *, last);
 }

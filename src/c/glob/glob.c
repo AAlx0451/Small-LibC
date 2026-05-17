@@ -7,7 +7,9 @@
 #include <sys/stat.h>
 
 static int compare_paths(const void *a, const void *b) {
-    return strcoll(*(const char **)(uintptr_t)a, *(const char **)(uintptr_t)b);
+    const char *str_a = *(const char * const *)a;
+    const char *str_b = *(const char * const *)b;
+    return strcoll(str_a, str_b);
 }
 
 static int append_match(glob_t *pglob, const char *match, int flags) {

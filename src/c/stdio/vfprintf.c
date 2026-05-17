@@ -101,7 +101,7 @@ static int _itoa_base_grouped(uintmax_t val, int base, int flags, char *buf, con
     char *orig = buf;
     const char *digits = (flags & PRINT_HEX_UP) ? "0123456789ABCDEF" : "0123456789abcdef";
     int count = 0;
-    int sep_len = strlen(sep);
+    int sep_len = (int)strlen(sep);
     int current_grp = (grp && *grp) ? *grp : CHAR_MAX;
 
     if(val == 0) {
@@ -157,7 +157,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf, con
     char fmt_type;
     uintmax_t ipart;
     const char *dp = (lc && lc->decimal_point && lc->decimal_point[0]) ? lc->decimal_point : ".";
-    int dp_len = strlen(dp);
+    int dp_len = (int)strlen(dp);
 
     if(val != val) {
         if(type >= 'a' && type <= 'z')
@@ -269,7 +269,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf, con
                 end--;
                 buf--;
             }
-            if(buf - num_start >= dp_len && strncmp(buf - dp_len, dp, dp_len) == 0) {
+            if(buf - num_start >= dp_len && strncmp(buf - dp_len, dp, (unsigned)dp_len) == 0) {
                 buf -= dp_len;
             }
         }

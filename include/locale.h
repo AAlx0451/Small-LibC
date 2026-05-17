@@ -61,6 +61,8 @@ struct lconv* localeconv(void);
 #define RL_CTYPE_T 0x00100000L
 #define RL_CTYPE_Q 0x00200000L
 
+#define getmap(mapnam, rlptr, c) ((int)(rlptr->map##mapnam[c]))
+
 typedef struct {
     uint32_t min;
     uint32_t max;

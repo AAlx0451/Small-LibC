@@ -14,7 +14,7 @@ long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
     int sign = 1, exp_sign = 1, exp_has_digits, tmp_exp, has_digits = 0;
     long exponent = 0, decimal_exp = 0, abs_exp;
 
-    /* Safely cast the narrow decimal point to wide character */
+    /* safely cast the narrow decimal point to wide character */
     const wchar_t separ = (wchar_t)(unsigned char)localeconv()->decimal_point[0];
 
     while(iswspace(*p)) {
@@ -35,14 +35,14 @@ long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
             p += 5;
         }
         if(endptr)
-            *endptr = (wchar_t *)(uintptr_t)p;
+            *endptr = __deconst(wchar_t *, p);
         return sign * (1.0L / 0.0L);
     }
 
     if((towlower(p[0]) == L'n') && (towlower(p[1]) == L'a') && (towlower(p[2]) == L'n')) {
         p += 3;
         if(endptr)
-            *endptr = (wchar_t *)(uintptr_t)p;
+            *endptr = __deconst(wchar_t *, p);
         return 0.0L / 0.0L;
     }
 
@@ -64,7 +64,7 @@ long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
 
     if(!has_digits) {
         if(endptr)
-            *endptr = (wchar_t *)(uintptr_t)nptr;
+            *endptr = __deconst(wchar_t *, nptr);
         return 0.0L;
     }
 
@@ -77,7 +77,7 @@ long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
             p++;
         }
 
-        save_p = (wchar_t *)(uintptr_t)p;
+        save_p = __deconst(wchar_t *, p);
         exp_has_digits = 0;
         tmp_exp = 0;
 
@@ -136,7 +136,7 @@ long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
     }
 
     if(endptr) {
-        *endptr = (wchar_t *)(uintptr_t)p;
+        *endptr = __deconst(wchar_t *, p);
     }
 
     return value;

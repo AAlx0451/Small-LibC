@@ -10,8 +10,9 @@
  * simple helper
  * aligns stack by 16 bytes (pushing 4 regs) and marks stack changes for CFI
  */
-static __naked __noinline void do_syscall(void) {
+static __naked __noinline __used void do_syscall(void) {
     __asm__ volatile(
+        ".cfi_startproc\n\t"
         "push {r4, r5, r6, r8}\n\t" // r7 is a frame pointer
         ".cfi_def_cfa_offset 16\n\t"
         ".cfi_offset r4, -16\n\t"
@@ -22,6 +23,7 @@ static __naked __noinline void do_syscall(void) {
         "pop {r4, r5, r6, r8}\n\t"
         ".cfi_def_cfa_offset 0\n\t"
         "bx lr\n\t"
+        ".cfi_endproc\n\t"
     );
 }
 

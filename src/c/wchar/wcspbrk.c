@@ -6,7 +6,7 @@ wchar_t *wcspbrk(const wchar_t *s, const wchar_t *accept) {
         p = accept;
         while(*p != L'\0') {
             if(*s == *p) {
-                return (wchar_t *)s;
+                return __deconst(wchar_t *, s);
             }
             p++;
         }

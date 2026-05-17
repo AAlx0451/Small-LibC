@@ -30,15 +30,15 @@ RuneLocale *rl_load_mem(const void *data, size_t size) {
 
     uint32_t val;
     memcpy(&val, p + 3124, 4);
-    rl->runetype_ext.nranges = ntohl(val);
+    rl->runetype_ext.nranges = (int)ntohl(val);
     memcpy(&val, p + 3132, 4);
-    rl->maplower_ext.nranges = ntohl(val);
+    rl->maplower_ext.nranges = (int)ntohl(val);
     memcpy(&val, p + 3140, 4);
-    rl->mapupper_ext.nranges = ntohl(val);
+    rl->mapupper_ext.nranges = (int)ntohl(val);
     memcpy(&val, p + 3152, 4);
     uint32_t variable_len = ntohl(val);
     memcpy(&val, p + 3156, 4);
-    int ncharclasses = ntohl(val);
+    int ncharclasses = (int)ntohl(val);
 
     const uint8_t *ptr = p + 3164;
     const uint8_t *end = p + size;
@@ -47,7 +47,7 @@ RuneLocale *rl_load_mem(const void *data, size_t size) {
         size_t req = (size_t)rl->runetype_ext.nranges * 16;
         if((size_t)(end - ptr) < req)
             goto fail;
-        rl->runetype_ext.ranges = calloc(rl->runetype_ext.nranges, sizeof(RuneEntry));
+        rl->runetype_ext.ranges = calloc((size_t)rl->runetype_ext.nranges, sizeof(RuneEntry));
         if(!rl->runetype_ext.ranges)
             goto fail;
         for(int i = 0; i < rl->runetype_ext.nranges; i++) {
@@ -67,7 +67,7 @@ RuneLocale *rl_load_mem(const void *data, size_t size) {
         size_t req = (size_t)rl->maplower_ext.nranges * 16;
         if((size_t)(end - ptr) < req)
             goto fail;
-        rl->maplower_ext.ranges = calloc(rl->maplower_ext.nranges, sizeof(RuneEntry));
+        rl->maplower_ext.ranges = calloc((size_t)rl->maplower_ext.nranges, sizeof(RuneEntry));
         if(!rl->maplower_ext.ranges)
             goto fail;
         for(int i = 0; i < rl->maplower_ext.nranges; i++) {
@@ -87,7 +87,7 @@ RuneLocale *rl_load_mem(const void *data, size_t size) {
         size_t req = (size_t)rl->mapupper_ext.nranges * 16;
         if((size_t)(end - ptr) < req)
             goto fail;
-        rl->mapupper_ext.ranges = calloc(rl->mapupper_ext.nranges, sizeof(RuneEntry));
+        rl->mapupper_ext.ranges = calloc((size_t)rl->mapupper_ext.nranges, sizeof(RuneEntry));
         if(!rl->mapupper_ext.ranges)
             goto fail;
         for(int i = 0; i < rl->mapupper_ext.nranges; i++) {
@@ -160,20 +160,20 @@ RuneLocale *rl_load_file(const char *path) {
         return NULL;
     }
 
-    void *data = malloc(size);
+    void *data = malloc((size_t)size);
     if(!data) {
         fclose(fp);
         return NULL;
     }
 
-    if(fread(data, 1, size, fp) != (size_t)size) {
+    if(fread(data, 1, (size_t)size, fp) != (size_t)size) {
         free(data);
         fclose(fp);
         return NULL;
     }
     fclose(fp);
 
-    RuneLocale *rl = rl_load_mem(data, size);
+    RuneLocale *rl = rl_load_mem(data, (size_t)size);
     free(data);
     return rl;
 }

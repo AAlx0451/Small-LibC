@@ -35,7 +35,7 @@ static const nl_item ampm_i[] = {AM_STR, PM_STR};
         *s++ = (wchar_t)(L'0' + (val_ % 10));      \
     } while(0)
 
-static int wfmt_int(wchar_t **s, wchar_t *end, long val, int width, wchar_t pad_char) {
+static int wfmt_int(wchar_t * restrict * restrict s, wchar_t *end, long val, int width, wchar_t pad_char) {
     wchar_t buf[32];
     wchar_t *p = buf;
     int neg = val < 0;
@@ -149,7 +149,7 @@ size_t wcsftime(wchar_t *restrict s, size_t maxsize, const wchar_t *restrict for
             break;
         }
         case L'C':
-            if(!wfmt_int((wchar_t **)&s, endp, (1900L + timeptr->tm_year) / 100, 2, L'0'))
+            if(!wfmt_int(&s, endp, (1900L + timeptr->tm_year) / 100, 2, L'0'))
                 return 0;
             break;
         case L'd':
@@ -184,7 +184,7 @@ size_t wcsftime(wchar_t *restrict s, size_t maxsize, const wchar_t *restrict for
             format++;
             goto again;
         case L'F':
-            if(!wfmt_int((wchar_t **)&s, endp, 1900L + timeptr->tm_year, 4, L'0'))
+            if(!wfmt_int(&s, endp, 1900L + timeptr->tm_year, 4, L'0'))
                 return 0;
             if(s >= endp)
                 return 0;
@@ -204,7 +204,7 @@ size_t wcsftime(wchar_t *restrict s, size_t maxsize, const wchar_t *restrict for
             else if(timeptr->tm_mon == 0 && w >= 52)
                 y--;
             if(*format == L'G') {
-                if(!wfmt_int((wchar_t **)&s, endp, y, 4, L'0'))
+                if(!wfmt_int(&s, endp, y, 4, L'0'))
                     return 0;
             } else {
                 OUTNUM2((y % 100 + 100) % 100);
@@ -224,7 +224,7 @@ size_t wcsftime(wchar_t *restrict s, size_t maxsize, const wchar_t *restrict for
             break;
         }
         case L'j':
-            if(!wfmt_int((wchar_t **)&s, endp, timeptr->tm_yday + 1, 3, L'0'))
+            if(!wfmt_int(&s, endp, timeptr->tm_yday + 1, 3, L'0'))
                 return 0;
             break;
         case L'm':
@@ -263,7 +263,7 @@ size_t wcsftime(wchar_t *restrict s, size_t maxsize, const wchar_t *restrict for
             break;
         case L's': {
             struct tm tmp = *timeptr;
-            if(!wfmt_int((wchar_t **)&s, endp, (long)mktime(&tmp), 1, L'0'))
+            if(!wfmt_int(&s, endp, (long)mktime(&tmp), 1, L'0'))
                 return 0;
             break;
         }
@@ -340,7 +340,7 @@ size_t wcsftime(wchar_t *restrict s, size_t maxsize, const wchar_t *restrict for
             OUTNUM2((timeptr->tm_year % 100 + 100) % 100);
             break;
         case L'Y':
-            if(!wfmt_int((wchar_t **)&s, endp, 1900L + timeptr->tm_year, 4, L'0'))
+            if(!wfmt_int(&s, endp, 1900L + timeptr->tm_year, 4, L'0'))
                 return 0;
             break;
         case L'z': {
