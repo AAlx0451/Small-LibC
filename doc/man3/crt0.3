@@ -1,0 +1,32 @@
+.Dd May 15, 2026
+.Dt CRT0 3
+.Os
+.Sh NAME
+.Nm crt0.o
+.Nd execution startup routines
+.Sh DESCRIPTION
+The C compiler links the
+.Nm
+object file to provide startup capabilities and environments.
+.Pp
+The following symbols shall be defined in
+.Nm :
+.Bl -tag -width "__progname" -offset indent
+.It Va environ
+An array of character pointers to the environment strings.
+.It Va __progname
+A string containing the program name without its path.
+.It Va NXArgc
+An integer with program arguments count.
+.It Va NXArgv
+An array of character pointers to the program arguments.
+.El
+.Sh HISTORY
+The
+.Nm
+file first appeared in
+.At v6 .
+.Sh SEE ALSO
+.Xr cc 1 ,
+.Xr exec 2 ,
+.Xr environ 7
