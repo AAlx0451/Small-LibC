@@ -1,0 +1,50 @@
+CC = clang
+INCDIR = ../include
+OBJDIR = obj
+CFLAGS = -Os
+
+TARGET_LIBC = libc.a
+TARGET_LIBRT = librt.a
+TARGET_LIBM = libm.a
+
+AR = ar
+
+BASE_CFLAGS = $CPPFLAGS $CFLAGS -isystem $INCDIR -fPIC -std=gnu11 -nostdinc \
+        -isystem /usr/share/llvm/lib/clang/7.1.0/include \
+        -isystem /usr/share/llvm/lib/clang/6.0.1/include
+
+GENERIC_SRCS = `ls c/*/*.c c/*/*/*.c 2>/dev/null || true`
+SYSDEP_SRCS  = asm/syscall.c `ls asm/*/*.c asm/*.c 2>/dev/null || true`
+RT_SRCS      = `ls runtime/*/*.c 2>/dev/null || true`
+MATH_SRCS    = `ls math/*.c 2>/dev/null || true`
+
+OBJS_C  = ${GENERIC_SRCS:%.c=$OBJDIR/%.o} ${SYSDEP_SRCS:%.c=$OBJDIR/%.o}
+OBJS_RT = ${RT_SRCS:%.c=$OBJDIR/%.o}
+OBJS_M  = ${MATH_SRCS:%.c=$OBJDIR/%.o}
+
+NPROC=4
+
+all:V: $TARGET_LIBC $TARGET_LIBRT $TARGET_LIBM
+
+$OBJDIR/%.o:Q: %.c
+    printf '\tCC\t%s\n' "$prereq"
+    mkdir -p `dirname $target`
+    $CC $BASE_CFLAGS -c $prereq -o $target
+
+$TARGET_LIBC:Q: $OBJS_C
+    printf '\tAR\t%s\n' "$target"
+    $AR rcs $target $prereq
+
+$TARGET_LIBRT:Q: $OBJS_RT
+    printf '\tAR\t%s\n' "$target"
+    $AR rcs $target $prereq
+
+$TARGET_LIBM:Q: $OBJS_M
+    printf '\tAR\t%s\n' "$target"
+    $AR rcs $target $prereq
+
+clean:VQ:
+    printf '\tCLEAN\n'
+    rm -rf $TARGET_LIBC $TARGET_LIBRT $TARGET_LIBM $OBJDIR
+
+uninstall:VQ: clean
