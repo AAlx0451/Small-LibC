@@ -69,6 +69,7 @@ void strspn_test();
 void strstr_test();
 void strtok_test();
 void strxfrm_test();
+void clock_test();
 
 // time
 void asctime_test();
@@ -124,5 +125,6 @@ void (*tests[])() = {
     strtok_test, /* strtok() */
     strxfrm_test, /* strxfrm() */
     asctime_test, /* asctime() */
+    clock_test,
     0
 };
