@@ -18,13 +18,13 @@ double log(double x) {
     if (x == 0.0) {
         if (math_errhandling & MATH_ERRNO) errno = ERANGE;
         if (math_errhandling & MATH_ERREXCEPT) feraiseexcept(FE_DIVBYZERO);
-        return -INFINITY;
+        return -HUGE_VAL;
     }
 
     if (x < 0.0) {
         if (math_errhandling & MATH_ERRNO) errno = EDOM;
         if (math_errhandling & MATH_ERREXCEPT) feraiseexcept(FE_INVALID);
-        return NAN;
+        return nan("");
     }
 
     if (isinf(x)) return x;
