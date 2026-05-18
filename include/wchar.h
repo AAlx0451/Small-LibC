@@ -48,6 +48,7 @@ size_t wcsrtombs(char *dst, const wchar_t **src, size_t len, mbstate_t *ps);
 double wcstod(const wchar_t *restrict nptr, wchar_t **restrict endptr);
 long wcstol(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base);
 unsigned long long wcstoull(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base);
+unsigned long wcstoul(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base);
 
 int fwide(FILE *f, int mode);
 
