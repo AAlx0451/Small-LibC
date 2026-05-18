@@ -42,4 +42,10 @@ char *strdup(const char *s);
 void *memccpy(void *restrict dest, const void *restrict src, int c, size_t n);
 #endif /* !_ANSI && (_DARWIN_C_SOURCE || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 500) || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200809L)) */
 
+#if !defined(_ANSI) && defined(_DARWIN_C_SOURCE)
+void memset_pattern4(void *b, const void *pattern4, size_t len);
+void memset_pattern8(void *b, const void *pattern8, size_t len);
+void memset_pattern16(void *b, const void *pattern16, size_t len);
+#endif /* !_ANSI && _DARWIN_C_SOURCE */
+
 #endif /* !STRING_H */
