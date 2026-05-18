@@ -2,19 +2,13 @@
 #include <limits.h>
 #include <wchar.h>
 
-long wcstol(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base) {
-    long long val = wcstoll(nptr, endptr, base);
-    if(val > LONG_MAX) {
+unsigned long wcstoul(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base) {
+    unsigned long long val = wcstoull(nptr, endptr, base);
+    if(val > ULONG_MAX) {
         if(endptr)
-            wcstoll(nptr, endptr, base);
+            wcstoull(nptr, endptr, base);
         errno = ERANGE;
-        return LONG_MAX;
+        return ULONG_MAX;
     }
-    if(val < LONG_MIN) {
-        if(endptr)
-            wcstoll(nptr, endptr, base);
-        errno = ERANGE;
-        return LONG_MIN;
-    }
-    return (long)val;
+    return (unsigned long)val;
 }

@@ -1,44 +1,51 @@
-#include <ctype.h>
 #include <errno.h>
 #include <limits.h>
 #include <stdint.h>
-#include <stdlib.h>
+#include <wchar.h>
+#include <wctype.h>
 
-long long strtoll(const char *restrict nptr, char **restrict endptr, int base) {
-    const char *s = nptr;
+long long wcstoll(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base) {
+    const wchar_t *s = nptr;
     unsigned long long acc;
-    int c;
+    wint_t c;
     unsigned long long cutoff, cutlim;
     int neg = 0, any;
+
     do {
         c = *s++;
-    } while(isspace(c));
-    if(c == '-') {
+    } while(iswspace(c));
+
+    if(c == L'-') {
         neg = 1;
         c = *s++;
-    } else if(c == '+') {
+    } else if(c == L'+') {
         c = *s++;
     }
-    if((base == 0 || base == 16) && c == '0' && (*s == 'x' || *s == 'X')) {
+
+    if((base == 0 || base == 16) && c == L'0' && (*s == L'x' || *s == L'X')) {
         c = s[1];
         s += 2;
         base = 16;
     }
     if(base == 0) {
-        base = c == '0' ? 8 : 10;
+        base = c == L'0' ? 8 : 10;
     }
+
     cutoff = neg ? -(unsigned long long)LLONG_MIN : LLONG_MAX;
     cutlim = cutoff % (unsigned long long)base;
     cutoff /= (unsigned long long)base;
+
     for(acc = 0, any = 0;; c = *s++) {
-        if(isdigit(c))
-            c -= '0';
-        else if(isalpha(c))
-            c -= isupper(c) ? 'A' - 10 : 'a' - 10;
+        if(c >= L'0' && c <= L'9')
+            c -= L'0';
+        else if(c >= L'A' && c <= L'Z')
+            c -= L'A' - 10;
+        else if(c >= L'a' && c <= L'z')
+            c -= L'a' - 10;
         else
             break;
 
-        if(c >= base)
+        if((int)c >= base)
             break;
 
         if(any < 0 || acc > cutoff || (acc == cutoff && (unsigned long long)c > cutlim)) {
@@ -58,7 +65,7 @@ long long strtoll(const char *restrict nptr, char **restrict endptr, int base) {
     }
 
     if(endptr != 0) {
-        *endptr = __deconst(char *, (any ? s - 1 : nptr));
+        *endptr = __deconst(wchar_t *, (any ? s - 1 : nptr));
     }
 
     return (long long)acc;

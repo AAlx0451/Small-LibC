@@ -1,7 +1,9 @@
 #include <pwd.h>
 #include <stdio.h>
 
-static FILE *pwd_file = NULL;
+extern FILE *pwd_file;
+
+FILE *pwd_file = NULL;
 
 void setpwent(void) {
     if(pwd_file) {
