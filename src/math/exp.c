@@ -35,6 +35,11 @@ double exp(double x)
     if (isnan(x)) {
         return x;
     }
+
+    if (isinf(x)) {
+        return x < 0.0 ? 0.0 : x;
+    }
+
     if (x > 709.78271289338397) {
         if (math_errhandling & MATH_ERRNO) errno = ERANGE;
         if (math_errhandling & MATH_ERREXCEPT) feraiseexcept(FE_OVERFLOW | FE_INEXACT);
