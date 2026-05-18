@@ -22,7 +22,10 @@
 #define FL_LONGLONG 0x08
 #define FL_SHORT 0x10
 #define FL_SHORTSHORT 0x20
-#define FL_DOUBLE 0x40
+#define FL_LONGDOUBLE 0x40
+#define FL_INTMAX 0x80
+#define FL_SIZE 0x100
+#define FL_PTRDIFF 0x200
 
 /* Read a single wide character atomically from stream without internal locks */
 static wint_t _in_wchar(FILE *f) {
@@ -243,6 +246,7 @@ int vfwscanf(FILE *restrict stream, const wchar_t *restrict format, va_list arg)
         } else
             width = -1;
 
+        /* Parse length modifiers including C99 j, z, t */
         if(*p == L'h') {
             p++;
             if(*p == L'h') {
@@ -260,10 +264,16 @@ int vfwscanf(FILE *restrict stream, const wchar_t *restrict format, va_list arg)
                 flags |= FL_LONG;
             }
         } else if(*p == L'L') {
-            flags |= FL_DOUBLE;
+            flags |= FL_LONGDOUBLE;
             p++;
-        } else if(*p == L'z' || *p == L't' || *p == L'j') {
-            flags |= FL_LONG;
+        } else if(*p == L'j') {
+            flags |= FL_INTMAX;
+            p++;
+        } else if(*p == L'z') {
+            flags |= FL_SIZE;
+            p++;
+        } else if(*p == L't') {
+            flags |= FL_PTRDIFF;
             p++;
         }
 
@@ -291,6 +301,12 @@ int vfwscanf(FILE *restrict stream, const wchar_t *restrict format, va_list arg)
                     *va_arg(arg, short *) = (short)chars_consumed;
                 else if(flags & FL_SHORTSHORT)
                     *va_arg(arg, char *) = (char)chars_consumed;
+                else if(flags & FL_INTMAX)
+                    *va_arg(arg, intmax_t *) = chars_consumed;
+                else if(flags & FL_SIZE)
+                    *va_arg(arg, ssize_t *) = chars_consumed;
+                else if(flags & FL_PTRDIFF)
+                    *va_arg(arg, ptrdiff_t *) = chars_consumed;
                 else
                     *va_arg(arg, int *) = chars_consumed;
             }
@@ -419,6 +435,12 @@ int vfwscanf(FILE *restrict stream, const wchar_t *restrict format, va_list arg)
                             *va_arg(arg, short *) = (short)sres;
                         else if(flags & FL_SHORTSHORT)
                             *va_arg(arg, char *) = (char)sres;
+                        else if(flags & FL_INTMAX)
+                            *va_arg(arg, intmax_t *) = (intmax_t)sres;
+                        else if(flags & FL_SIZE)
+                            *va_arg(arg, ssize_t *) = (ssize_t)sres;
+                        else if(flags & FL_PTRDIFF)
+                            *va_arg(arg, ptrdiff_t *) = (ptrdiff_t)sres;
                         else
                             *va_arg(arg, int *) = (int)sres;
                     } else {
@@ -430,6 +452,12 @@ int vfwscanf(FILE *restrict stream, const wchar_t *restrict format, va_list arg)
                             *va_arg(arg, unsigned short *) = (unsigned short)res;
                         else if(flags & FL_SHORTSHORT)
                             *va_arg(arg, unsigned char *) = (unsigned char)res;
+                        else if(flags & FL_INTMAX)
+                            *va_arg(arg, uintmax_t *) = (uintmax_t)res;
+                        else if(flags & FL_SIZE)
+                            *va_arg(arg, size_t *) = (size_t)res;
+                        else if(flags & FL_PTRDIFF)
+                            *va_arg(arg, ptrdiff_t *) = (ptrdiff_t)res;
                         else
                             *va_arg(arg, unsigned int *) = (unsigned int)res;
                     }
@@ -439,11 +467,15 @@ int vfwscanf(FILE *restrict stream, const wchar_t *restrict format, va_list arg)
             break;
         }
 
+        case L'a':
+        case L'A':
         case L'f':
+        case L'F':
         case L'e':
         case L'E':
         case L'g':
         case L'G': {
+            int is_hex_float = 0;
             i = 0;
             c = _in_wchar(stream);
             if(c != WEOF)
@@ -468,8 +500,24 @@ int vfwscanf(FILE *restrict stream, const wchar_t *restrict format, va_list arg)
                         chars_consumed--;
                     break;
                 }
-                if(c < 128 && (isdigit(c) || c == (unsigned char)dp[0] || c == 'e' || c == 'E' || c == '+' || c == '-')) {
-                    if(isdigit(c))
+
+                int valid = 0;
+                /* Safely enable hex-float parsing only if "0x" or "0X" is legitimately detected */
+                if(c == L'x' || c == L'X') {
+                    if(i > 0 && buf[i-1] == '0' && (i == 1 || (i == 2 && (buf[0] == '+' || buf[0] == '-')))) {
+                        valid = 1;
+                        is_hex_float = 1;
+                    }
+                } else if(is_hex_float) {
+                    if((c < 128 && isxdigit((char)c)) || c == (wint_t)dp[0] || c == L'p' || c == L'P' || c == L'+' || c == L'-')
+                        valid = 1;
+                } else {
+                    if((c < 128 && isdigit((char)c)) || c == (wint_t)dp[0] || c == L'e' || c == L'E' || c == L'+' || c == L'-')
+                        valid = 1;
+                }
+
+                if(valid) {
+                    if(c < 128 && (is_hex_float ? isxdigit((char)c) : isdigit((char)c)))
                         digits = 1;
                     buf[i++] = (char)c;
                 } else {
@@ -478,6 +526,7 @@ int vfwscanf(FILE *restrict stream, const wchar_t *restrict format, va_list arg)
                         chars_consumed--;
                     break;
                 }
+
                 if(width > 0)
                     width--;
                 c = _in_wchar(stream);
@@ -489,13 +538,13 @@ int vfwscanf(FILE *restrict stream, const wchar_t *restrict format, va_list arg)
                 goto match_failure;
 
             if(!(flags & FL_SPLAT)) {
-                double val2 = strtod(buf, NULL);
-                if(flags & FL_LONG)
-                    *va_arg(arg, double *) = val2;
-                else if(flags & FL_DOUBLE)
-                    *va_arg(arg, double *) = val2;
-                else
-                    *va_arg(arg, float *) = (float)val2;
+                if(flags & FL_LONGDOUBLE) {
+                    *va_arg(arg, long double *) = strtold(buf, NULL);
+                } else if(flags & FL_LONG) {
+                    *va_arg(arg, double *) = strtod(buf, NULL);
+                } else {
+                    *va_arg(arg, float *) = strtof(buf, NULL);
+                }
                 nmatch++;
             }
             break;

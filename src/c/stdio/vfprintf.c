@@ -8,6 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <wchar.h>
+#include <float.h> // Added for completeness, though raw limits are used
 
 #pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
@@ -25,6 +26,7 @@
 #define MAX_PRECISION 256
 #define MAX_WIDTH 256
 
+/* Core output function: writes a character to the stream buffer or fd */
 static int _out_char(FILE *f, int c) {
     if(f->_flags & __S_STR) {
         if(f->_cnt > 0) {
@@ -71,6 +73,7 @@ static int _out_char(FILE *f, int c) {
     return 1;
 }
 
+/* Reverses a string in place (used for itoa algorithms) */
 static void _reverse(char *s, int len) {
     int i, j;
     char c;
@@ -81,6 +84,7 @@ static void _reverse(char *s, int len) {
     }
 }
 
+/* Converts unsigned integer to string with specified base */
 static int _itoa_base(uintmax_t val, int base, int flags, char *buf) {
     char *orig = buf;
     const char *digits = (flags & PRINT_HEX_UP) ? "0123456789ABCDEF" : "0123456789abcdef";
@@ -97,6 +101,7 @@ static int _itoa_base(uintmax_t val, int base, int flags, char *buf) {
     return ((int)(buf - orig));
 }
 
+/* Converts unsigned integer to string with grouping separators */
 static int _itoa_base_grouped(uintmax_t val, int base, int flags, char *buf, const char *sep, const char *grp) {
     char *orig = buf;
     const char *digits = (flags & PRINT_HEX_UP) ? "0123456789ABCDEF" : "0123456789abcdef";
@@ -127,6 +132,7 @@ static int _itoa_base_grouped(uintmax_t val, int base, int flags, char *buf, con
     return ((int)(buf - orig));
 }
 
+/* Encodes a 32-bit wide character to UTF-8 */
 static int _encode_utf8(uint32_t wc, char *buf) {
     if(wc < 0x80) {
         buf[0] = (char)wc;
@@ -150,6 +156,7 @@ static int _encode_utf8(uint32_t wc, char *buf) {
     return 0;
 }
 
+/* Formats standard floating point values (%f, %e, %g) */
 static int _fmt_float(double val, int prec, int flags, char type, char *buf, const struct lconv *lc) {
     double tmp, v, rounding, fpart;
     char *orig = buf, *num_start, *exp_start;
@@ -159,6 +166,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf, con
     const char *dp = (lc && lc->decimal_point && lc->decimal_point[0]) ? lc->decimal_point : ".";
     int dp_len = (int)strlen(dp);
 
+    /* Handle NaN */
     if(val != val) {
         if(type >= 'a' && type <= 'z')
             strcpy(buf, "nan");
@@ -167,6 +175,7 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf, con
         return 3;
     }
 
+    /* Handle Infinity */
     tmp = (val < 0) ? -val : val;
     if(tmp > 1.7976931348623157E+308) {
         if(type >= 'a' && type <= 'z')
@@ -292,10 +301,106 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf, con
     return ((int)(buf - orig));
 }
 
+/* Fully implements C99 Hexadecimal Floating-Point formatting (%a, %A) */
+static int _fmt_hex_float(double val, int prec, int flags, char type, char *buf, const struct lconv *lc) {
+    char *orig = buf;
+    const char *dp = (lc && lc->decimal_point && lc->decimal_point[0]) ? lc->decimal_point : ".";
+    int dp_len = (int)strlen(dp);
+    const char *hex_digits = (type == 'A') ? "0123456789ABCDEF" : "0123456789abcdef";
+    int exp2 = 0;
+    double m;
+
+    /* Handle NaN and Infinity */
+    if (val != val) {
+        strcpy(buf, (type == 'A') ? "NAN" : "nan");
+        return 3;
+    }
+    double tmp = (val < 0) ? -val : val;
+    if (tmp > 1.7976931348623157E+308) {
+        strcpy(buf, (type == 'A') ? "INF" : "inf");
+        return 3;
+    }
+
+    if (val < 0) val = -val;
+
+    /* Extract binary mantissa and exponent. frexp returns m in [0.5, 1.0) */
+    m = frexp(val, &exp2);
+
+    if (m == 0.0) {
+        exp2 = 0;
+        *buf++ = '0';
+        /* Print padding zeros if precision is explicitly provided */
+        int show_dp = (flags & PRINT_ALT) || (prec > 0);
+        if (show_dp) {
+            strcpy(buf, dp);
+            buf += dp_len;
+            for (int i = 0; i < (prec > 0 ? prec : 0); i++) *buf++ = '0';
+        }
+    } else {
+        /* Normalize mantissa to [1.0, 2.0) range */
+        m *= 2.0;
+        exp2 -= 1;
+
+        /* Apply hexadecimal rounding to nearest if precision is explicitly set */
+        if (prec >= 0) {
+            double rounding = 0.5;
+            for (int i = 0; i < prec; i++) rounding /= 16.0;
+            m += rounding;
+            if (m >= 2.0) {
+                m /= 2.0;
+                exp2 += 1;
+            }
+        }
+
+        /* Extract integer part (will always be 1 unless rounded up, handled above) */
+        int digit = (int)m;
+        *buf++ = hex_digits[digit];
+        m -= digit;
+
+        /* Determine if decimal point should be printed */
+        int show_dp = (flags & PRINT_ALT) || (prec > 0) || (prec < 0 && m > 0.0);
+        if (show_dp) {
+            strcpy(buf, dp);
+            buf += dp_len;
+        }
+
+        /* Extract fractional hexadecimal digits */
+        if (prec > 0) {
+            for (int i = 0; i < prec; i++) {
+                m *= 16.0;
+                digit = (int)m;
+                *buf++ = hex_digits[digit];
+                m -= digit;
+            }
+        } else if (prec < 0) {
+            /* C99: If precision is omitted, write enough digits to represent exact value */
+            while (m > 0.0 && (buf - orig) < 256) {
+                m *= 16.0;
+                digit = (int)m;
+                *buf++ = hex_digits[digit];
+                m -= digit;
+            }
+        }
+    }
+
+    /* Append exponent part (Base-2 power) */
+    *buf++ = (type == 'A') ? 'P' : 'p';
+    *buf++ = (exp2 >= 0) ? '+' : '-';
+    if (exp2 < 0) exp2 = -exp2;
+
+    char *exp_start = buf;
+    int elen = _itoa_base((uintmax_t)exp2, 10, 0, buf);
+    buf += elen;
+    _reverse(exp_start, elen);
+
+    return (int)(buf - orig);
+}
+
 int vfprintf(FILE *stream, const char *format, va_list arg) {
     const char *p = format, *prefix;
     struct lconv *lc = localeconv();
-    int total_written = 0, flags, width, prec, len_mod, slen, base, is_signed, is_integer, is_float, total_bytes, padding, written_so_far, prec_zeros, pad_len, prefix_len, sgn_len, actual_len;
+    int total_written = 0, flags, width, prec, len_mod, slen, base, is_signed, is_integer, is_float;
+    int total_bytes, padding, written_so_far, prec_zeros, pad_len, prefix_len, sgn_len, actual_len;
     char temp_buf[512], type, *str_val, dummy[4], sgn_char;
     uintmax_t uval;
     intmax_t sval;
@@ -340,6 +445,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
         prec = -1;
         len_mod = 0;
 
+        /* Parse flags */
         while(1) {
             if(*p == '-')
                 flags |= PAD_RIGHT;
@@ -358,6 +464,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
             p++;
         }
 
+        /* Parse width */
         if(*p == '*') {
             width = va_arg(arg, int);
             if(width < 0) {
@@ -375,6 +482,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
         if(width > MAX_WIDTH)
             width = MAX_WIDTH;
 
+        /* Parse precision */
         if(*p == '.') {
             p++;
             if(*p == '*') {
@@ -394,6 +502,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
         if(prec > MAX_PRECISION)
             prec = MAX_PRECISION;
 
+        /* Parse length modifiers including C99 'j' */
         if(*p == 'h') {
             len_mod = 1;
             p++;
@@ -409,13 +518,16 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                 p++;
             }
         } else if(*p == 'L') {
-            len_mod = 5;
+            len_mod = 5; /* long double */
             p++;
         } else if(*p == 'z') {
             len_mod = 6;
             p++;
         } else if(*p == 't') {
             len_mod = 7;
+            p++;
+        } else if(*p == 'j') {
+            len_mod = 8; /* intmax_t / uintmax_t */
             p++;
         }
 
@@ -443,6 +555,8 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                 sval = va_arg(arg, long);
             else if(len_mod == 6 || len_mod == 7)
                 sval = va_arg(arg, ssize_t);
+            else if(len_mod == 8)
+                sval = va_arg(arg, intmax_t);
             else if(len_mod == 1)
                 sval = (short)va_arg(arg, int);
             else if(len_mod == 2)
@@ -480,6 +594,8 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
                 uval = va_arg(arg, size_t);
             else if(len_mod == 7)
                 uval = va_arg(arg, uintptr_t);
+            else if(len_mod == 8)
+                uval = va_arg(arg, uintmax_t);
             else if(len_mod == 1)
                 uval = (unsigned short)va_arg(arg, unsigned int);
             else if(len_mod == 2)
@@ -569,6 +685,16 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
             }
             break;
 
+        case 'a':
+        case 'A':
+            is_float = 1;
+            /* Cast long double to double to maintain pure math compatibility if L is passed */
+            fval = (len_mod == 5) ? (double)va_arg(arg, long double) : va_arg(arg, double);
+            if(fval < 0) flags |= PRINT_SGN;
+            slen = _fmt_hex_float(fval, prec, flags, type, temp_buf, lc);
+            str_val = temp_buf;
+            break;
+
         case 'f':
         case 'F':
         case 'e':
@@ -576,7 +702,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
         case 'g':
         case 'G':
             is_float = 1;
-            fval = va_arg(arg, double);
+            fval = (len_mod == 5) ? (double)va_arg(arg, long double) : va_arg(arg, double);
             if(fval < 0) {
                 flags |= PRINT_SGN;
             }
@@ -590,7 +716,7 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
             str_val = temp_buf;
             break;
 
-        default:
+		default:
             temp_buf[0] = type;
             slen = 1;
             str_val = temp_buf;
@@ -633,7 +759,14 @@ int vfprintf(FILE *stream, const char *format, va_list arg) {
 
         prefix = "";
         prefix_len = 0;
-        if((flags & PRINT_ALT) && (uval != 0 || type == 'p')) {
+        
+        /* Force 0x prefix for hexadecimal floats unless it evaluates to NaN/Inf */
+        if(type == 'a' || type == 'A') {
+            if(str_val[0] == '0' || str_val[0] == '1') {
+                prefix = (type == 'A') ? "0X" : "0x";
+                prefix_len = 2;
+            }
+        } else if((flags & PRINT_ALT) && (uval != 0 || type == 'p')) {
             if(base == 8) {
                 prefix = "0";
                 prefix_len = 1;

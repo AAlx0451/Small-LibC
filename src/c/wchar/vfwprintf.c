@@ -280,6 +280,101 @@ static int _fmt_float(double val, int prec, int flags, char type, char *buf, con
     return ((int)(buf - orig));
 }
 
+/* Fully implements C99 Hexadecimal Floating-Point formatting (%a, %A) */
+static int _fmt_hex_float(double val, int prec, int flags, char type, char *buf, const struct lconv *lc) {
+    char *orig = buf;
+    const char *dp = (lc && lc->decimal_point && lc->decimal_point[0]) ? lc->decimal_point : ".";
+    int dp_len = (int)strlen(dp);
+    const char *hex_digits = (type == 'A') ? "0123456789ABCDEF" : "0123456789abcdef";
+    int exp2 = 0;
+    double m;
+
+    /* Handle NaN and Infinity using math.h macros */
+    if (isnan(val)) {
+        strcpy(buf, (type == 'A') ? "NAN" : "nan");
+        return 3;
+    }
+    double tmp = (val < 0) ? -val : val;
+    if (isinf(tmp)) {
+        strcpy(buf, (type == 'A') ? "INF" : "inf");
+        return 3;
+    }
+
+    if (val < 0) val = -val;
+
+    /* Extract binary mantissa and exponent. frexp returns m in [0.5, 1.0) */
+    m = frexp(val, &exp2);
+
+    if (m == 0.0) {
+        exp2 = 0;
+        *buf++ = '0';
+        /* Print padding zeros if precision is explicitly provided */
+        int show_dp = (flags & PRINT_ALT) || (prec > 0);
+        if (show_dp) {
+            strcpy(buf, dp);
+            buf += dp_len;
+            for (int i = 0; i < (prec > 0 ? prec : 0); i++) *buf++ = '0';
+        }
+    } else {
+        /* Normalize mantissa to [1.0, 2.0) range */
+        m *= 2.0;
+        exp2 -= 1;
+
+        /* Apply hexadecimal rounding to nearest if precision is explicitly set */
+        if (prec >= 0) {
+            double rounding = 0.5;
+            for (int i = 0; i < prec; i++) rounding /= 16.0;
+            m += rounding;
+            if (m >= 2.0) {
+                m /= 2.0;
+                exp2 += 1;
+            }
+        }
+
+        /* Extract integer part (will always be 1 unless rounded up, handled above) */
+        int digit = (int)m;
+        *buf++ = hex_digits[digit];
+        m -= digit;
+
+        /* Determine if decimal point should be printed */
+        int show_dp = (flags & PRINT_ALT) || (prec > 0) || (prec < 0 && m > 0.0);
+        if (show_dp) {
+            strcpy(buf, dp);
+            buf += dp_len;
+        }
+
+        /* Extract fractional hexadecimal digits */
+        if (prec > 0) {
+            for (int i = 0; i < prec; i++) {
+                m *= 16.0;
+                digit = (int)m;
+                *buf++ = hex_digits[digit];
+                m -= digit;
+            }
+        } else if (prec < 0) {
+            /* C99: If precision is omitted, write enough digits to represent exact value */
+            while (m > 0.0 && (buf - orig) < 256) {
+                m *= 16.0;
+                digit = (int)m;
+                *buf++ = hex_digits[digit];
+                m -= digit;
+            }
+        }
+    }
+
+    /* Append exponent part (Base-2 power) */
+    *buf++ = (type == 'A') ? 'P' : 'p';
+    *buf++ = (exp2 >= 0) ? '+' : '-';
+    if (exp2 < 0) exp2 = -exp2;
+
+    char *exp_start = buf;
+    int elen = _itoa_base((uintmax_t)exp2, 10, 0, buf);
+    buf += elen;
+    _reverse(exp_start, elen);
+
+    return (int)(buf - orig);
+}
+
 int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list arg) {
     const wchar_t *p = format;
     const char *prefix;
@@ -331,6 +426,7 @@ int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list arg
         prec = -1;
         len_mod = 0;
 
+        /* Parse flags */
         while(1) {
             if(*p == L'-')
                 flags |= PAD_RIGHT;
@@ -349,6 +445,7 @@ int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list arg
             p++;
         }
 
+        /* Parse width */
         if(*p == L'*') {
             width = va_arg(arg, int);
             if(width < 0) {
@@ -366,6 +463,7 @@ int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list arg
         if(width > MAX_WIDTH)
             width = MAX_WIDTH;
 
+        /* Parse precision */
         if(*p == L'.') {
             p++;
             if(*p == L'*') {
@@ -385,6 +483,7 @@ int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list arg
         if(prec > MAX_PRECISION)
             prec = MAX_PRECISION;
 
+        /* Parse length modifiers including C99 'j' */
         if(*p == L'h') {
             len_mod = 1;
             p++;
@@ -400,13 +499,16 @@ int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list arg
                 p++;
             }
         } else if(*p == L'L') {
-            len_mod = 5;
+            len_mod = 5; /* long double */
             p++;
         } else if(*p == L'z') {
             len_mod = 6;
             p++;
         } else if(*p == L't') {
             len_mod = 7;
+            p++;
+        } else if(*p == L'j') {
+            len_mod = 8; /* intmax_t / uintmax_t */
             p++;
         }
 
@@ -432,6 +534,8 @@ int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list arg
                 sval = va_arg(arg, long);
             else if(len_mod == 6 || len_mod == 7)
                 sval = va_arg(arg, ssize_t);
+            else if(len_mod == 8)
+                sval = va_arg(arg, intmax_t);
             else if(len_mod == 1)
                 sval = (short)va_arg(arg, int);
             else if(len_mod == 2)
@@ -468,6 +572,8 @@ int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list arg
                 uval = va_arg(arg, size_t);
             else if(len_mod == 7)
                 uval = va_arg(arg, uintptr_t);
+            else if(len_mod == 8)
+                uval = va_arg(arg, uintmax_t);
             else if(len_mod == 1)
                 uval = (unsigned short)va_arg(arg, unsigned int);
             else if(len_mod == 2)
@@ -593,6 +699,15 @@ int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list arg
             continue;
         }
 
+        case L'a':
+        case L'A':
+            is_float = 1;
+            fval = (len_mod == 5) ? (double)va_arg(arg, long double) : va_arg(arg, double);
+            if(fval < 0) flags |= PRINT_SGN;
+            slen = _fmt_hex_float(fval, prec, flags, (char)type, temp_buf, lc);
+            str_val = temp_buf;
+            break;
+
         case L'f':
         case L'F':
         case L'e':
@@ -600,7 +715,7 @@ int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list arg
         case L'g':
         case L'G':
             is_float = 1;
-            fval = va_arg(arg, double);
+            fval = (len_mod == 5) ? (double)va_arg(arg, long double) : va_arg(arg, double);
             if(fval < 0)
                 flags |= PRINT_SGN;
             slen = _fmt_float(fval, prec, flags, (char)type, temp_buf, lc);
@@ -655,7 +770,14 @@ int vfwprintf(FILE *restrict stream, const wchar_t *restrict format, va_list arg
 
         prefix = "";
         prefix_len = 0;
-        if((flags & PRINT_ALT) && (uval != 0 || type == L'p')) {
+
+        /* Force 0x prefix for hexadecimal floats unless it evaluates to NaN/Inf */
+        if(type == L'a' || type == L'A') {
+            if(str_val[0] == '0' || str_val[0] == '1') {
+                prefix = (type == L'A') ? "0X" : "0x";
+                prefix_len = 2;
+            }
+        } else if((flags & PRINT_ALT) && (uval != 0 || type == L'p')) {
             if(base == 8) {
                 prefix = "0";
                 prefix_len = 1;
