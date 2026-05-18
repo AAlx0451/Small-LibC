@@ -9,12 +9,12 @@
 
 long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
     const wchar_t *p = nptr;
-    wchar_t *save_p;
-    long double value = 0.0L, scale, p10;
+    const wchar_t *save_p;
+    long double value = 0.0L, scale;
     int sign = 1, exp_sign = 1, exp_has_digits, tmp_exp, has_digits = 0;
-    long exponent = 0, decimal_exp = 0, abs_exp;
-
-    /* safely cast the narrow decimal point to wide character */
+    long exponent = 0, radix_exp = 0, abs_exp;
+    int is_hex = 0;
+    
     const wchar_t separ = (wchar_t)(unsigned char)localeconv()->decimal_point[0];
 
     while(iswspace(*p)) {
@@ -46,18 +46,51 @@ long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
         return 0.0L / 0.0L;
     }
 
-    while(iswdigit(*p)) {
+    if (p[0] == L'0' && towlower(p[1]) == L'x') {
+        int has_hex_digit = iswxdigit(p[2]);
+        if (!has_hex_digit && p[2] == separ) {
+            has_hex_digit = iswxdigit(p[3]);
+        }
+        if (has_hex_digit) {
+            is_hex = 1;
+            p += 2;
+        }
+    }
+
+    while(1) {
+        wchar_t c = *p;
+        int digit = -1;
+        if (iswdigit(c)) {
+            digit = c - L'0';
+        } else if (is_hex && iswalpha(c)) {
+            wchar_t lc = towlower(c);
+            if (lc >= L'a' && lc <= L'f') {
+                digit = lc - L'a' + 10;
+            }
+        }
+        if (digit == -1) break;
         has_digits = 1;
-        value = value * 10.0L + (*p - L'0');
+        value = value * (is_hex ? 16.0L : 10.0L) + digit;
         p++;
     }
 
     if(*p == separ) {
         p++;
-        while(iswdigit(*p)) {
+        while(1) {
+            wchar_t c = *p;
+            int digit = -1;
+            if (iswdigit(c)) {
+                digit = c - L'0';
+            } else if (is_hex && iswalpha(c)) {
+                wchar_t lc = towlower(c);
+                if (lc >= L'a' && lc <= L'f') {
+                    digit = lc - L'a' + 10;
+                }
+            }
+            if (digit == -1) break;
             has_digits = 1;
-            value = value * 10.0L + (*p - L'0');
-            decimal_exp--;
+            value = value * (is_hex ? 16.0L : 10.0L) + digit;
+            radix_exp--;
             p++;
         }
     }
@@ -68,7 +101,8 @@ long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
         return 0.0L;
     }
 
-    if(towlower(*p) == L'e') {
+    wchar_t exp_char = is_hex ? L'p' : L'e';
+    if(towlower(*p) == exp_char) {
         p++;
         if(*p == L'-') {
             exp_sign = -1;
@@ -76,11 +110,9 @@ long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
         } else if(*p == L'+') {
             p++;
         }
-
-        save_p = __deconst(wchar_t *, p);
+        save_p = p;
         exp_has_digits = 0;
         tmp_exp = 0;
-
         while(iswdigit(*p)) {
             exp_has_digits = 1;
             if(tmp_exp < 100000) {
@@ -88,7 +120,6 @@ long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
             }
             p++;
         }
-
         if(!exp_has_digits) {
             p = save_p - 1;
         } else {
@@ -96,34 +127,49 @@ long double wcstold(const wchar_t *restrict nptr, wchar_t **restrict endptr) {
         }
     }
 
-    exponent += decimal_exp;
-
     if(value != 0.0L) {
         scale = 1.0L;
-        abs_exp = (exponent < 0) ? -exponent : exponent;
-        p10 = 10.0L;
-
-        if(abs_exp > 5000) {
-            if(exponent > 0) {
-                errno = ERANGE;
-                value = 1.0L / 0.0L;
+        if (is_hex) {
+            long exp2 = exponent + (radix_exp * 4);
+            abs_exp = (exp2 < 0) ? -exp2 : exp2;
+            long double p2 = 2.0L;
+            if(abs_exp > 20000) {
+                if(exp2 > 0) {
+                    errno = ERANGE;
+                    value = 1.0L / 0.0L;
+                } else {
+                    errno = ERANGE;
+                    value = 0.0L;
+                }
             } else {
-                errno = ERANGE;
-                value = 0.0L;
+                while(abs_exp > 0) {
+                    if(abs_exp & 1) scale *= p2;
+                    p2 *= p2;
+                    abs_exp >>= 1;
+                }
+                if(exp2 < 0) value /= scale;
+                else value *= scale;
             }
         } else {
-            while(abs_exp > 0) {
-                if(abs_exp & 1) {
-                    scale *= p10;
+            long exp10 = exponent + radix_exp;
+            abs_exp = (exp10 < 0) ? -exp10 : exp10;
+            long double p10 = 10.0L;
+            if(abs_exp > 5000) {
+                if(exp10 > 0) {
+                    errno = ERANGE;
+                    value = 1.0L / 0.0L;
+                } else {
+                    errno = ERANGE;
+                    value = 0.0L;
                 }
-                p10 *= p10;
-                abs_exp >>= 1;
-            }
-
-            if(exponent < 0) {
-                value /= scale;
             } else {
-                value *= scale;
+                while(abs_exp > 0) {
+                    if(abs_exp & 1) scale *= p10;
+                    p10 *= p10;
+                    abs_exp >>= 1;
+                }
+                if(exp10 < 0) value /= scale;
+                else value *= scale;
             }
         }
     }
