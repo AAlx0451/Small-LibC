@@ -5,11 +5,11 @@
 #include <math.h>
 
 /* double-double arithmetics. */
-#define LN2_HI  0x1.62e42fefa3800p-1
-#define LN2_LO  0x1.ef35793c76730p-45
+static const double LN2_HI =  0x1.62e42fefa3800p-1;
+static const double LN2_LO = 0x1.ef35793c76730p-45;
 
 /* sqrt(1.0/2) */
-#define SQRT1_2 0x1.6a09e667f3bcdp-1
+static const double SQRT1_2 = 0x1.6a09e667f3bcdp-1;
 
 double log(double x) {
     /* special cases */
