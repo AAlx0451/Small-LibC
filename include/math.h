@@ -272,7 +272,9 @@ typedef double double_t;
 */
 
 #ifdef _C99
-# define math_errhandling (MATH_ERRNO|MATH_ERREXCEPT)
+# ifndef math_errhandling
+#  define math_errhandling (MATH_ERRNO|MATH_ERREXCEPT)
+# endif /* !math_errhandling */
 #endif /* _C99 */
 
 /* The value of math_errhandling is constant for the duration of the program. 
