@@ -6,6 +6,7 @@ CFLAGS = -Os
 TARGET_LIBC = libc.a
 TARGET_LIBRT = librt.a
 TARGET_LIBM = libm.a
+TARGET_LIBM_DYLIB = libm.dylib
 
 AR = ar
 
@@ -29,7 +30,16 @@ all:V: $TARGET_LIBC $TARGET_LIBRT $TARGET_LIBM
 $OBJDIR/%.o:Q: %.c
     printf '\tCC\t%s\n' "$prereq"
     mkdir -p `dirname $target`
-    $CC $BASE_CFLAGS -c $prereq -o $target
+    math_flag=""
+    case "$prereq" in \
+    math/*) \
+        case "$MATHERR" in \
+        errno) math_flag='-Dmath_errhandling=(MATH_ERRNO)' ;; \
+        except) math_flag='-Dmath_errhandling=(MATH_ERREXCEPT)' ;; \
+        both|*errno*except*|*except*errno*) math_flag='-Dmath_errhandling=(MATH_ERRNO|MATH_ERREXCEPT)' ;; \
+        esac ;; \
+    esac
+    $CC $BASE_CFLAGS $math_flag -c $prereq -o $target
 
 $TARGET_LIBC:Q: $OBJS_C
     printf '\tAR\t%s\n' "$target"
@@ -43,8 +53,12 @@ $TARGET_LIBM:Q: $OBJS_M
     printf '\tAR\t%s\n' "$target"
     $AR rcs $target $prereq
 
+$TARGET_LIBM_DYLIB:Q: $OBJS_M
+    printf '\tLD\t%s\n' "$target"
+    $CC -dynamiclib -o $target $prereq
+
 clean:VQ:
     printf '\tCLEAN\n'
-    rm -rf $TARGET_LIBC $TARGET_LIBRT $TARGET_LIBM $OBJDIR
+    rm -rf $TARGET_LIBC $TARGET_LIBRT $TARGET_LIBM $TARGET_LIBM_DYLIB $OBJDIR
 
 uninstall:VQ: clean

@@ -12,6 +12,23 @@ SYSDEP_SRCS  := asm/syscall.c $(wildcard asm/*/*.c asm/*.c)
 RT_SRCS      := $(wildcard runtime/*/*.c)
 MATH_SRCS    := $(wildcard math/*.c)
 
+MATHERR_WORDS := $(subst |, ,$(MATHERR))
+HAS_ERRNO := $(filter errno,$(MATHERR_WORDS))
+HAS_EXCEPT := $(filter except,$(MATHERR_WORDS))
+HAS_BOTH := $(filter both,$(MATHERR_WORDS))
+
+ifneq ($(HAS_BOTH),)
+  MATH_CFLAGS := -Dmath_errhandling="(MATH_ERRNO | MATH_ERREXCEPT)"
+else ifeq ($(and $(HAS_ERRNO),$(HAS_EXCEPT)),)
+  ifeq ($(HAS_ERRNO),errno)
+    MATH_CFLAGS := -Dmath_errhandling="(MATH_ERRNO)"
+  else ifeq ($(HAS_EXCEPT),except)
+    MATH_CFLAGS := -Dmath_errhandling="(MATH_ERREXCEPT)"
+  endif
+else
+  MATH_CFLAGS := -Dmath_errhandling="(MATH_ERRNO | MATH_ERREXCEPT)"
+endif
+
 Q = $(if $(filter 1,$(VERBOSE)),,@)
 
 .PHONY: all clean install uninstall
@@ -34,10 +51,12 @@ ifeq ($(CROSS), 1)
   define BUILD_ARCH
     OBJS_$(1) := $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(GENERIC_SRCS) $(SYSDEP_SRCS) $(RT_SRCS) $(MATH_SRCS))
     
+    $(OBJDIR)/$(1)/math/%.o: BASE_CFLAGS += $(MATH_CFLAGS)
+
     $(OBJDIR)/$(1)/%.o: %.c
 	@echo -e "\tCC\t[$(1)] $$<"
 	@mkdir -p $$(dir $$@)
-	$(Q)$(CC) $(BASE_CFLAGS) -target $(1)-apple-ios6.1 -c $$< -o $$@
+	$(Q)$(CC) $$(BASE_CFLAGS) -target $(1)-apple-ios6.1 -c $$< -o $$@
 
     $(OBJDIR)/$(1)/libc.a: $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(GENERIC_SRCS) $(SYSDEP_SRCS))
     $(OBJDIR)/$(1)/librt.a: $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(RT_SRCS))
@@ -76,6 +95,8 @@ else
   OBJS_C  = $(patsubst %.c,$(OBJDIR)/%.o,$(GENERIC_SRCS) $(SYSDEP_SRCS))
   OBJS_RT = $(patsubst %.c,$(OBJDIR)/%.o,$(RT_SRCS))
   OBJS_M  = $(patsubst %.c,$(OBJDIR)/%.o,$(MATH_SRCS))
+
+  $(OBJDIR)/math/%.o: BASE_CFLAGS += $(MATH_CFLAGS)
 
   $(OBJDIR)/%.o: %.c
 	@echo -e "\tCC\t$<"
