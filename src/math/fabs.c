@@ -4,7 +4,8 @@
 #include <stdint.h>
 #include <string.h>
 
-double fabs(double x) {
+double fabs(double x)
+{
     uint64_t bits;
     memcpy(&bits, &x, sizeof(double));
 

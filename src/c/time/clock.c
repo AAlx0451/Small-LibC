@@ -3,11 +3,12 @@
 #include <time.h>
 #include <unistd.h>
 
-clock_t clock(void) {
+clock_t clock(void)
+{
     long total_sec, total_usec;
     clock_t result;
     struct rusage ru;
-    if(getrusage(RUSAGE_SELF, &ru) != 0) {
+    if (getrusage(RUSAGE_SELF, &ru) != 0) {
         return (clock_t)-1;
     }
 

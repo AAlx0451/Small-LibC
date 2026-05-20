@@ -4,19 +4,20 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-DIR *opendir(const char *name) {
+DIR *opendir(const char *name)
+{
     DIR *dir = (DIR *)malloc(sizeof(DIR));
     int fd = open(name, O_RDONLY | O_DIRECTORY);
-    if(fd == -1)
+    if (fd == -1)
         return NULL;
 
-    if(!dir) {
+    if (!dir) {
         close(fd);
         return NULL;
     }
 
     dir->dd_buf = (char *)malloc(DIR_BUFFER_SIZE);
-    if(!dir->dd_buf) {
+    if (!dir->dd_buf) {
         free(dir);
         close(fd);
         return NULL;

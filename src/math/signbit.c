@@ -5,7 +5,8 @@
 #include <stdint.h>
 #include <string.h>
 
-int _Signbit(double d) {
+int _Signbit(double d)
+{
     uint64_t bits;
     memcpy(&bits, &d, sizeof(double));
     return (bits >> 63) & 1;

@@ -2,6 +2,4 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-pid_t setsid(void) {
-    return (pid_t)syscall(SYS_setsid);
-}
+pid_t setsid(void) { return (pid_t)syscall(SYS_setsid); }

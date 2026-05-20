@@ -2,26 +2,27 @@
 #include <stdio.h>
 #include <wchar.h>
 
-wchar_t *fgetws(wchar_t *restrict ws, int n, FILE *restrict stream) {
+wchar_t *fgetws(wchar_t *restrict ws, int n, FILE *restrict stream)
+{
     wchar_t *p;
     int chars_read = 0;
 
-    if(ws == NULL || n <= 0 || stream == NULL) {
+    if (ws == NULL || n <= 0 || stream == NULL) {
         return NULL;
     }
 
     /* Wide orientation check */
     int mode = fwide(stream, 0);
-    if(mode < 0)
+    if (mode < 0)
         return NULL;
-    else if(mode == 0)
+    else if (mode == 0)
         fwide(stream, 1);
 
     p = ws;
     _spin_lock(&stream->_lock);
 
     /* Leave space for the null terminator. n represents wide chars, not bytes. */
-    while(--n > 0) {
+    while (--n > 0) {
         wchar_t wc;
         size_t res;
         int byte_read;
@@ -29,12 +30,12 @@ wchar_t *fgetws(wchar_t *restrict ws, int n, FILE *restrict stream) {
         size_t bytes_consumed = 0;
 
         /* State machine: fetch byte-by-byte into mbrtowc */
-        while(1) {
-            if(stream->_cnt > 0) {
+        while (1) {
+            if (stream->_cnt > 0) {
                 byte_read = *stream->_ptr++;
                 stream->_cnt--;
             } else {
-                if(__stdio_fill_impl(stream) == 0) {
+                if (__stdio_fill_impl(stream) == 0) {
                     byte_read = *stream->_ptr++;
                     stream->_cnt--;
                 } else {
@@ -42,8 +43,8 @@ wchar_t *fgetws(wchar_t *restrict ws, int n, FILE *restrict stream) {
                 }
             }
 
-            if(byte_read == EOF) {
-                if(bytes_consumed == 0) {
+            if (byte_read == EOF) {
+                if (bytes_consumed == 0) {
                     /* EOF at the very start of reading a wide character is normal */
                     goto done;
                 } else {
@@ -59,14 +60,14 @@ wchar_t *fgetws(wchar_t *restrict ws, int n, FILE *restrict stream) {
 
             res = mbrtowc(&wc, &c_byte, 1, &stream->_mbstate);
 
-            if(res == (size_t)-1) {
+            if (res == (size_t)-1) {
                 /* Invalid multibyte sequence */
                 stream->_flags |= __S_ERR;
                 errno = EILSEQ;
                 goto error_out;
             }
 
-            if(res == (size_t)-2) {
+            if (res == (size_t)-2) {
                 /* Incomplete sequence, loop to read next byte */
                 continue;
             }
@@ -79,13 +80,13 @@ wchar_t *fgetws(wchar_t *restrict ws, int n, FILE *restrict stream) {
         chars_read++;
 
         /* fgetws includes the newline character, then stops */
-        if(wc == L'\n') {
+        if (wc == L'\n') {
             break;
         }
     }
 
 done:
-    if(p)
+    if (p)
         *p = L'\0';
     _spin_unlock(&stream->_lock);
     /* Return string if we read anything, else pure EOF returns NULL */

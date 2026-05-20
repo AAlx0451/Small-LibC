@@ -1,7 +1,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-int vsprintf(char *str, const char *format, va_list ap) {
+int vsprintf(char *str, const char *format, va_list ap)
+{
     FILE f;
     int ret;
 

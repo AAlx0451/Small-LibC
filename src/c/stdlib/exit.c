@@ -4,7 +4,8 @@
 
 void _call_atexit_handlers(void);
 
-__noreturn void exit(int status) {
+__noreturn void exit(int status)
+{
     _call_atexit_handlers();
     fflush(NULL);
     _exit(status);

@@ -10,49 +10,50 @@
 #define PATH_MAX 4096
 #endif
 
-char *ttyname(int fd) {
+char *ttyname(int fd)
+{
     struct stat fs, ts;
     struct dirent *de;
     DIR *d;
     static char buf[PATH_MAX];
     size_t name_len;
 
-    if(!isatty(fd)) {
+    if (!isatty(fd)) {
         return NULL;
     }
 
-    if(fstat(fd, &fs) < 0) {
+    if (fstat(fd, &fs) < 0) {
         return NULL;
     }
 
-    if(!S_ISCHR(fs.st_mode)) {
+    if (!S_ISCHR(fs.st_mode)) {
         errno = ENOTTY;
         return NULL;
     }
 
     d = opendir("/dev");
-    if(!d) {
+    if (!d) {
         return NULL;
     }
 
-    while((de = readdir(d)) != NULL) {
-        if(de->d_name[0] == '.' &&
-           (de->d_name[1] == '\0' || (de->d_name[1] == '.' && de->d_name[2] == '\0'))) {
+    while ((de = readdir(d)) != NULL) {
+        if (de->d_name[0] == '.' &&
+            (de->d_name[1] == '\0' || (de->d_name[1] == '.' && de->d_name[2] == '\0'))) {
             continue;
         }
 
         name_len = strlen(de->d_name);
-        if(5 + name_len + 1 > PATH_MAX) {
+        if (5 + name_len + 1 > PATH_MAX) {
             continue;
         }
 
         strcpy(buf, "/dev/");
         strcat(buf, de->d_name);
-        if(stat(buf, &ts) < 0) {
+        if (stat(buf, &ts) < 0) {
             continue;
         }
 
-        if(ts.st_ino == fs.st_ino && ts.st_dev == fs.st_dev) {
+        if (ts.st_ino == fs.st_ino && ts.st_dev == fs.st_dev) {
             closedir(d);
             return buf;
         }

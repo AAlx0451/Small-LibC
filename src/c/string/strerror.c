@@ -1,7 +1,8 @@
 #include <stddef.h>
 
-static const char *resolve_err_text(int code) {
-    switch(code) {
+static const char *resolve_err_text(int code)
+{
+    switch (code) {
     case 0:
         return "Success";
     case 1:
@@ -221,69 +222,72 @@ static const char *resolve_err_text(int code) {
     }
 }
 
-static void util_strcpy(char *dst, const char *src, size_t cap) {
+static void util_strcpy(char *dst, const char *src, size_t cap)
+{
     size_t i = 0;
-    if(cap == 0)
+    if (cap == 0)
         return;
 
-    while(src[i] != '\0' && i < cap - 1) {
+    while (src[i] != '\0' && i < cap - 1) {
         dst[i] = src[i];
         i++;
     }
     dst[i] = '\0';
 }
 
-static void format_unknown(int code, char *buf, size_t cap) {
+static void format_unknown(int code, char *buf, size_t cap)
+{
     unsigned int val;
     const char *base_msg = "Unknown error: ";
     size_t i = 0;
     char temp_num[32];
     int t_idx = 0;
 
-    while(base_msg[i] && i < cap - 1) {
+    while (base_msg[i] && i < cap - 1) {
         buf[i] = base_msg[i];
         i++;
     }
 
-    if(i >= cap - 1) {
+    if (i >= cap - 1) {
         buf[i] = '\0';
         return;
     }
 
-    if(code < 0) {
+    if (code < 0) {
         buf[i++] = '-';
         val = (unsigned int)(-code);
     } else {
         val = (unsigned int)code;
     }
 
-    if(i >= cap - 1) {
+    if (i >= cap - 1) {
         buf[i] = '\0';
         return;
     }
 
-    if(val == 0) {
+    if (val == 0) {
         temp_num[t_idx++] = '0';
     } else {
-        while(val > 0) {
+        while (val > 0) {
             temp_num[t_idx++] = (val % 10) + '0';
             val /= 10;
         }
     }
 
-    while(t_idx > 0 && i < cap - 1) {
+    while (t_idx > 0 && i < cap - 1) {
         buf[i++] = temp_num[--t_idx];
     }
 
     buf[i] = '\0';
 }
 
-char *strerror(int errnum) {
+char *strerror(int errnum)
+{
     static char s_err_storage[256];
 
     const char *text = resolve_err_text(errnum);
 
-    if(text) {
+    if (text) {
         util_strcpy(s_err_storage, text, sizeof(s_err_storage));
     } else {
         format_unknown(errnum, s_err_storage, sizeof(s_err_storage));

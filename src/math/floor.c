@@ -1,7 +1,8 @@
 #include <stdint.h>
 #include <string.h>
 
-double floor(double x) {
+double floor(double x)
+{
     uint64_t i;
     uint64_t sign;
     int exponent;

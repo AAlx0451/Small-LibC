@@ -14,7 +14,8 @@
 
 #define HW_MACHINE 1 /* machine */
 
-static int get_sysctl_string(int major, int minor, char *buf, size_t maxlen) {
+static int get_sysctl_string(int major, int minor, char *buf, size_t maxlen)
+{
     int mib[2];
     size_t len;
     int ret;
@@ -29,8 +30,8 @@ static int get_sysctl_string(int major, int minor, char *buf, size_t maxlen) {
      */
     ret = (int)syscall(SYS___sysctl, (long)mib, 2, (long)buf, (long)&len, (long)NULL, 0);
 
-    if(ret == 0) {
-        if(len < maxlen) {
+    if (ret == 0) {
+        if (len < maxlen) {
             buf[len] = '\0';
         } else {
             buf[maxlen - 1] = '\0';
@@ -39,25 +40,26 @@ static int get_sysctl_string(int major, int minor, char *buf, size_t maxlen) {
     return ret;
 }
 
-int uname(struct utsname *name) {
+int uname(struct utsname *name)
+{
     int res = 0;
-    if(name == NULL) {
+    if (name == NULL) {
         return -1; // EFAULT
     }
 
-    if(get_sysctl_string(CTL_KERN, KERN_OSTYPE, name->sysname, 256) != 0)
+    if (get_sysctl_string(CTL_KERN, KERN_OSTYPE, name->sysname, 256) != 0)
         res = -1;
 
-    if(get_sysctl_string(CTL_KERN, KERN_HOSTNAME, name->nodename, 256) != 0)
+    if (get_sysctl_string(CTL_KERN, KERN_HOSTNAME, name->nodename, 256) != 0)
         res = -1;
 
-    if(get_sysctl_string(CTL_KERN, KERN_OSRELEASE, name->release, 256) != 0)
+    if (get_sysctl_string(CTL_KERN, KERN_OSRELEASE, name->release, 256) != 0)
         res = -1;
 
-    if(get_sysctl_string(CTL_KERN, KERN_VERSION, name->version, 256) != 0)
+    if (get_sysctl_string(CTL_KERN, KERN_VERSION, name->version, 256) != 0)
         res = -1;
 
-    if(get_sysctl_string(CTL_HW, HW_MACHINE, name->machine, 256) != 0)
+    if (get_sysctl_string(CTL_HW, HW_MACHINE, name->machine, 256) != 0)
         res = -1;
 
     return res;

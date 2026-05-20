@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-int dprintf(int fd, const char *format, ...) {
+int dprintf(int fd, const char *format, ...)
+{
     va_list args;
     char *buffer = NULL;
     int len;
@@ -13,7 +14,7 @@ int dprintf(int fd, const char *format, ...) {
     len = vasprintf(&buffer, format, args);
     va_end(args);
 
-    if(len == -1) {
+    if (len == -1) {
         return -1;
     }
 

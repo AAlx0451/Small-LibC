@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include <string.h>
 
-int vsscanf(const char *str, const char *format, va_list arg) {
+int vsscanf(const char *str, const char *format, va_list arg)
+{
     FILE f;
 
     /* Initialize a temporary FILE object for reading from memory */

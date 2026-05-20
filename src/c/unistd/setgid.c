@@ -1,5 +1,3 @@
 #include <sys/syscall.h>
 #include <unistd.h>
-int setgid(gid_t id) {
-    return (int)syscall(SYS_setgid, (long)id);
-}
+int setgid(gid_t id) { return (int)syscall(SYS_setgid, (long)id); }

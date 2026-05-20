@@ -11,33 +11,35 @@ int optopt = 0;
 
 static char *scan = NULL;
 
-static void _err_write(const char *s) {
-    if(s) {
+static void _err_write(const char *s)
+{
+    if (s) {
         size_t len = 0;
         const char *p = s;
-        while(*p++)
+        while (*p++)
             len++;
         write(STDERR_FILENO, s, len);
     }
 }
 
-int getopt(int argc, char *const argv[], const char *optstring) {
+int getopt(int argc, char *const argv[], const char *optstring)
+{
     char c, ch[2];
     char *place;
 
     optarg = NULL;
 
-    if(!scan || !*scan) {
-        if(optind == 0)
+    if (!scan || !*scan) {
+        if (optind == 0)
             optind++;
 
-        if(optind >= argc || !argv[optind])
+        if (optind >= argc || !argv[optind])
             return -1;
 
-        if(argv[optind][0] != '-' || argv[optind][1] == '\0')
+        if (argv[optind][0] != '-' || argv[optind][1] == '\0')
             return -1;
 
-        if(argv[optind][1] == '-' && argv[optind][2] == '\0') {
+        if (argv[optind][1] == '-' && argv[optind][2] == '\0') {
             optind++;
             return -1;
         }
@@ -50,8 +52,8 @@ int getopt(int argc, char *const argv[], const char *optstring) {
     optopt = c;
     place = strchr(optstring, c);
 
-    if(!place || c == ':') {
-        if(opterr && *optstring != ':') {
+    if (!place || c == ':') {
+        if (opterr && *optstring != ':') {
             _err_write(argv[0]);
             _err_write(": illegal option -- ");
             ch[0] = c;
@@ -62,16 +64,16 @@ int getopt(int argc, char *const argv[], const char *optstring) {
         return '?';
     }
 
-    if(place[1] == ':') {
-        if(*scan != '\0') {
+    if (place[1] == ':') {
+        if (*scan != '\0') {
             optarg = scan;
             scan = NULL;
-        } else if(optind < argc) {
+        } else if (optind < argc) {
             optarg = argv[optind];
             optind++;
             scan = NULL;
         } else {
-            if(opterr && *optstring != ':') {
+            if (opterr && *optstring != ':') {
                 _err_write(argv[0]);
                 _err_write(": option requires an argument -- ");
                 ch[0] = c;

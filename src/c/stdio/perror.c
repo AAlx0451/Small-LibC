@@ -2,9 +2,10 @@
 #include <string.h>
 #include <unistd.h>
 
-void perror(const char *s) {
+void perror(const char *s)
+{
     const char *error_msg = strerror(errno);
-    if(s != NULL && *s != '\0') {
+    if (s != NULL && *s != '\0') {
         write(STDERR_FILENO, s, strlen(s));
         write(STDERR_FILENO, ": ", 2);
     }

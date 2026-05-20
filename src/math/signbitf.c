@@ -5,7 +5,8 @@
 #include <stdint.h>
 #include <string.h>
 
-int _Signbitf(float f) {
+int _Signbitf(float f)
+{
     uint32_t bits;
     memcpy(&bits, &f, sizeof(float));
     return (bits >> 31) & 1;

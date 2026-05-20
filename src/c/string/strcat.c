@@ -1,8 +1,9 @@
-char *strcat(char *dest, const char *src) {
+char *strcat(char *dest, const char *src)
+{
     char *ptr = dest;
-    while(*ptr)
+    while (*ptr)
         ptr++;
-    while((*ptr++ = *src++))
+    while ((*ptr++ = *src++))
         ;
     return dest;
 }

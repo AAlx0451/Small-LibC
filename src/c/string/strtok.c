@@ -1,29 +1,30 @@
 static char *olds;
 
-char *strtok(char *s, const char *delim) {
+char *strtok(char *s, const char *delim)
+{
     char *token;
-    if(s == 0)
+    if (s == 0)
         s = olds;
-    while(*s) {
+    while (*s) {
         const char *d = delim;
-        while(*d) {
-            if(*s == *d)
+        while (*d) {
+            if (*s == *d)
                 break;
             d++;
         }
-        if(!*d)
+        if (!*d)
             break;
         s++;
     }
-    if(!*s) {
+    if (!*s) {
         olds = s;
         return 0;
     }
     token = s;
-    while(*s) {
+    while (*s) {
         const char *d = delim;
-        while(*d) {
-            if(*s == *d) {
+        while (*d) {
+            if (*s == *d) {
                 *s = '\0';
                 olds = s + 1;
                 return token;

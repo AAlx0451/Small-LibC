@@ -4,8 +4,9 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
-int plock(int op) {
-    switch(op) {
+int plock(int op)
+{
+    switch (op) {
     case TXTLOCK:
         return syscall(SYS_mlockall, MCL_CURRENT);
     case DATLOCK:

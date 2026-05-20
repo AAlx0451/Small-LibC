@@ -50,7 +50,8 @@ typedef struct {
 } FileRuneEntry;
 #pragma pack(pop)
 
-static void print_help(const char *prog_name) {
+static void print_help(const char *prog_name)
+{
     printf("Usage: %s [OPTIONS] <LC_CTYPE_FILE>\n\n", prog_name);
     printf("Inspect and dump Apple-style LC_CTYPE locale files.\n\n");
     printf("Options:\n");
@@ -63,63 +64,65 @@ static void print_help(const char *prog_name) {
     printf("  -h, --help  Show this help\n");
 }
 
-static void format_mask(uint32_t mask, char *buf) {
+static void format_mask(uint32_t mask, char *buf)
+{
     buf[0] = '\0';
-    if(mask == 0) {
+    if (mask == 0) {
         strcpy(buf, "NONE");
         return;
     }
 
-    if(mask & RL_CTYPE_A)
+    if (mask & RL_CTYPE_A)
         strcat(buf, "A|");
-    if(mask & RL_CTYPE_C)
+    if (mask & RL_CTYPE_C)
         strcat(buf, "C|");
-    if(mask & RL_CTYPE_D)
+    if (mask & RL_CTYPE_D)
         strcat(buf, "D|");
-    if(mask & RL_CTYPE_G)
+    if (mask & RL_CTYPE_G)
         strcat(buf, "G|");
-    if(mask & RL_CTYPE_L)
+    if (mask & RL_CTYPE_L)
         strcat(buf, "L|");
-    if(mask & RL_CTYPE_P)
+    if (mask & RL_CTYPE_P)
         strcat(buf, "P|");
-    if(mask & RL_CTYPE_S)
+    if (mask & RL_CTYPE_S)
         strcat(buf, "S|");
-    if(mask & RL_CTYPE_U)
+    if (mask & RL_CTYPE_U)
         strcat(buf, "U|");
-    if(mask & RL_CTYPE_X)
+    if (mask & RL_CTYPE_X)
         strcat(buf, "X|");
-    if(mask & RL_CTYPE_B)
+    if (mask & RL_CTYPE_B)
         strcat(buf, "B|");
-    if(mask & RL_CTYPE_R)
+    if (mask & RL_CTYPE_R)
         strcat(buf, "R|");
 
     size_t len = strlen(buf);
-    if(len > 0 && buf[len - 1] == '|') {
+    if (len > 0 && buf[len - 1] == '|') {
         buf[len - 1] = '\0';
     }
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     const char *filename = NULL;
     int show_header = 0, show_base = 0, show_ext_rt = 0, show_ext_ml = 0, show_ext_mu = 0;
 
-    for(int i = 1; i < argc; i++) {
-        if(strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
+    for (int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0) {
             print_help(argv[0]);
             return EXIT_SUCCESS;
-        } else if(strcmp(argv[i], "--header") == 0) {
+        } else if (strcmp(argv[i], "--header") == 0) {
             show_header = 1;
-        } else if(strcmp(argv[i], "--base") == 0) {
+        } else if (strcmp(argv[i], "--base") == 0) {
             show_base = 1;
-        } else if(strcmp(argv[i], "--ext-rt") == 0) {
+        } else if (strcmp(argv[i], "--ext-rt") == 0) {
             show_ext_rt = 1;
-        } else if(strcmp(argv[i], "--ext-ml") == 0) {
+        } else if (strcmp(argv[i], "--ext-ml") == 0) {
             show_ext_ml = 1;
-        } else if(strcmp(argv[i], "--ext-mu") == 0) {
+        } else if (strcmp(argv[i], "--ext-mu") == 0) {
             show_ext_mu = 1;
-        } else if(strcmp(argv[i], "--all") == 0) {
+        } else if (strcmp(argv[i], "--all") == 0) {
             show_header = show_base = show_ext_rt = show_ext_ml = show_ext_mu = 1;
-        } else if(argv[i][0] == '-') {
+        } else if (argv[i][0] == '-') {
             fprintf(stderr, "Error: Unknown option '%s'.\n", argv[i]);
             return EXIT_FAILURE;
         } else {
@@ -127,29 +130,29 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    if(!filename) {
+    if (!filename) {
         fprintf(stderr, "Error: Missing input file.\n");
         return EXIT_FAILURE;
     }
 
-    if(!show_header && !show_base && !show_ext_rt && !show_ext_ml && !show_ext_mu) {
+    if (!show_header && !show_base && !show_ext_rt && !show_ext_ml && !show_ext_mu) {
         show_header = 1;
     }
 
     FILE *fp = fopen(filename, "rb");
-    if(!fp) {
+    if (!fp) {
         fprintf(stderr, "Error: Cannot open file '%s': %s\n", filename, strerror(errno));
         return EXIT_FAILURE;
     }
 
     FileRuneLocale frl;
-    if(fread(&frl, sizeof(frl), 1, fp) != 1) {
+    if (fread(&frl, sizeof(frl), 1, fp) != 1) {
         fprintf(stderr, "Error: Failed to read header from '%s'\n", filename);
         fclose(fp);
         return EXIT_FAILURE;
     }
 
-    if(strncmp(frl.magic, "RuneMagA", 8) != 0) {
+    if (strncmp(frl.magic, "RuneMagA", 8) != 0) {
         fprintf(stderr, "Error: Invalid magic number. Not a valid LC_CTYPE file.\n");
         fclose(fp);
         return EXIT_FAILURE;
@@ -163,25 +166,25 @@ int main(int argc, char *argv[]) {
     FileRuneEntry *ml_ranges = NULL;
     FileRuneEntry *mu_ranges = NULL;
 
-    if(rt_nranges > 0) {
+    if (rt_nranges > 0) {
         rt_ranges = malloc(rt_nranges * sizeof(FileRuneEntry));
-        if(fread(rt_ranges, sizeof(FileRuneEntry), rt_nranges, fp) != (size_t)rt_nranges)
+        if (fread(rt_ranges, sizeof(FileRuneEntry), rt_nranges, fp) != (size_t)rt_nranges)
             goto read_err;
     }
-    if(ml_nranges > 0) {
+    if (ml_nranges > 0) {
         ml_ranges = malloc(ml_nranges * sizeof(FileRuneEntry));
-        if(fread(ml_ranges, sizeof(FileRuneEntry), ml_nranges, fp) != (size_t)ml_nranges)
+        if (fread(ml_ranges, sizeof(FileRuneEntry), ml_nranges, fp) != (size_t)ml_nranges)
             goto read_err;
     }
-    if(mu_nranges > 0) {
+    if (mu_nranges > 0) {
         mu_ranges = malloc(mu_nranges * sizeof(FileRuneEntry));
-        if(fread(mu_ranges, sizeof(FileRuneEntry), mu_nranges, fp) != (size_t)mu_nranges)
+        if (fread(mu_ranges, sizeof(FileRuneEntry), mu_nranges, fp) != (size_t)mu_nranges)
             goto read_err;
     }
 
     fclose(fp);
 
-    if(show_header) {
+    if (show_header) {
         printf("--- Header ---\n");
         printf("Magic:         %.8s\n", frl.magic);
         printf("Encoding:      %s\n", frl.encoding);
@@ -190,17 +193,17 @@ int main(int argc, char *argv[]) {
         printf("\n");
     }
 
-    if(show_base) {
+    if (show_base) {
         printf("--- Base Table (0x00 - 0xFF) ---\n");
         printf(" CODE | TYPE (MASK)         | LOWER  | UPPER  \n");
         printf("----------------------------------------------\n");
         char mask_buf[64];
-        for(int i = 0; i < 256; i++) {
+        for (int i = 0; i < 256; i++) {
             uint32_t mask = ntohl(frl.runetype[i]);
             uint32_t lower = ntohl(frl.maplower[i]);
             uint32_t upper = ntohl(frl.mapupper[i]);
 
-            if(mask == 0 && lower == (uint32_t)i && upper == (uint32_t)i)
+            if (mask == 0 && lower == (uint32_t)i && upper == (uint32_t)i)
                 continue;
 
             format_mask(mask, mask_buf);
@@ -209,38 +212,42 @@ int main(int argc, char *argv[]) {
         printf("\n");
     }
 
-    if(show_ext_rt && rt_nranges > 0) {
+    if (show_ext_rt && rt_nranges > 0) {
         printf("--- Extended Runetype Ranges ---\n");
         printf(" MIN    - MAX    | TYPE (MASK)\n");
         printf("----------------------------------\n");
         char mask_buf[64];
-        for(int i = 0; i < rt_nranges; i++) {
+        for (int i = 0; i < rt_nranges; i++) {
             uint32_t mask = ntohl(rt_ranges[i].map);
             format_mask(mask, mask_buf);
-            printf(" %06X - %06X | %s\n",
-                   ntohl(rt_ranges[i].min), ntohl(rt_ranges[i].max), mask_buf);
+            printf(
+                " %06X - %06X | %s\n", ntohl(rt_ranges[i].min), ntohl(rt_ranges[i].max), mask_buf);
         }
         printf("\n");
     }
 
-    if(show_ext_ml && ml_nranges > 0) {
+    if (show_ext_ml && ml_nranges > 0) {
         printf("--- Extended Maplower Ranges ---\n");
         printf(" MIN    - MAX    | MAP BASE\n");
         printf("----------------------------------\n");
-        for(int i = 0; i < ml_nranges; i++) {
+        for (int i = 0; i < ml_nranges; i++) {
             printf(" %06X - %06X | 0x%06X\n",
-                   ntohl(ml_ranges[i].min), ntohl(ml_ranges[i].max), ntohl(ml_ranges[i].map));
+                   ntohl(ml_ranges[i].min),
+                   ntohl(ml_ranges[i].max),
+                   ntohl(ml_ranges[i].map));
         }
         printf("\n");
     }
 
-    if(show_ext_mu && mu_nranges > 0) {
+    if (show_ext_mu && mu_nranges > 0) {
         printf("--- Extended Mapupper Ranges ---\n");
         printf(" MIN    - MAX    | MAP BASE\n");
         printf("----------------------------------\n");
-        for(int i = 0; i < mu_nranges; i++) {
+        for (int i = 0; i < mu_nranges; i++) {
             printf(" %06X - %06X | 0x%06X\n",
-                   ntohl(mu_ranges[i].min), ntohl(mu_ranges[i].max), ntohl(mu_ranges[i].map));
+                   ntohl(mu_ranges[i].min),
+                   ntohl(mu_ranges[i].max),
+                   ntohl(mu_ranges[i].map));
         }
         printf("\n");
     }

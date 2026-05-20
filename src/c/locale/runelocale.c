@@ -4,19 +4,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-RuneLocale *rl_load_mem(const void *data, size_t size) {
-    if(size < 3164)
+RuneLocale *rl_load_mem(const void *data, size_t size)
+{
+    if (size < 3164)
         return NULL;
 
     const uint8_t *p = (const uint8_t *)data;
-    if(memcmp(p, "RuneMagA", 8) != 0)
+    if (memcmp(p, "RuneMagA", 8) != 0)
         return NULL;
 
     RuneLocale *rl = calloc(1, sizeof(RuneLocale));
-    if(!rl)
+    if (!rl)
         return NULL;
 
-    for(int i = 0; i < 256; i++) {
+    for (int i = 0; i < 256; i++) {
         uint32_t val;
         memcpy(&val, p + 52 + i * 4, 4);
         rl->runetype[i] = ntohl(val);
@@ -43,14 +44,14 @@ RuneLocale *rl_load_mem(const void *data, size_t size) {
     const uint8_t *ptr = p + 3164;
     const uint8_t *end = p + size;
 
-    if(rl->runetype_ext.nranges > 0) {
+    if (rl->runetype_ext.nranges > 0) {
         size_t req = (size_t)rl->runetype_ext.nranges * 16;
-        if((size_t)(end - ptr) < req)
+        if ((size_t)(end - ptr) < req)
             goto fail;
         rl->runetype_ext.ranges = calloc((size_t)rl->runetype_ext.nranges, sizeof(RuneEntry));
-        if(!rl->runetype_ext.ranges)
+        if (!rl->runetype_ext.ranges)
             goto fail;
-        for(int i = 0; i < rl->runetype_ext.nranges; i++) {
+        for (int i = 0; i < rl->runetype_ext.nranges; i++) {
             uint32_t minv, maxv, mapv;
             memcpy(&minv, ptr, 4);
             memcpy(&maxv, ptr + 4, 4);
@@ -60,17 +61,17 @@ RuneLocale *rl_load_mem(const void *data, size_t size) {
             rl->runetype_ext.ranges[i].map = (int32_t)ntohl(mapv);
             ptr += 16;
         }
-    } else if(rl->runetype_ext.nranges < 0)
+    } else if (rl->runetype_ext.nranges < 0)
         goto fail;
 
-    if(rl->maplower_ext.nranges > 0) {
+    if (rl->maplower_ext.nranges > 0) {
         size_t req = (size_t)rl->maplower_ext.nranges * 16;
-        if((size_t)(end - ptr) < req)
+        if ((size_t)(end - ptr) < req)
             goto fail;
         rl->maplower_ext.ranges = calloc((size_t)rl->maplower_ext.nranges, sizeof(RuneEntry));
-        if(!rl->maplower_ext.ranges)
+        if (!rl->maplower_ext.ranges)
             goto fail;
-        for(int i = 0; i < rl->maplower_ext.nranges; i++) {
+        for (int i = 0; i < rl->maplower_ext.nranges; i++) {
             uint32_t minv, maxv, mapv;
             memcpy(&minv, ptr, 4);
             memcpy(&maxv, ptr + 4, 4);
@@ -80,17 +81,17 @@ RuneLocale *rl_load_mem(const void *data, size_t size) {
             rl->maplower_ext.ranges[i].map = (int32_t)ntohl(mapv);
             ptr += 16;
         }
-    } else if(rl->maplower_ext.nranges < 0)
+    } else if (rl->maplower_ext.nranges < 0)
         goto fail;
 
-    if(rl->mapupper_ext.nranges > 0) {
+    if (rl->mapupper_ext.nranges > 0) {
         size_t req = (size_t)rl->mapupper_ext.nranges * 16;
-        if((size_t)(end - ptr) < req)
+        if ((size_t)(end - ptr) < req)
             goto fail;
         rl->mapupper_ext.ranges = calloc((size_t)rl->mapupper_ext.nranges, sizeof(RuneEntry));
-        if(!rl->mapupper_ext.ranges)
+        if (!rl->mapupper_ext.ranges)
             goto fail;
-        for(int i = 0; i < rl->mapupper_ext.nranges; i++) {
+        for (int i = 0; i < rl->mapupper_ext.nranges; i++) {
             uint32_t minv, maxv, mapv;
             memcpy(&minv, ptr, 4);
             memcpy(&maxv, ptr + 4, 4);
@@ -100,25 +101,25 @@ RuneLocale *rl_load_mem(const void *data, size_t size) {
             rl->mapupper_ext.ranges[i].map = (int32_t)ntohl(mapv);
             ptr += 16;
         }
-    } else if(rl->mapupper_ext.nranges < 0)
+    } else if (rl->mapupper_ext.nranges < 0)
         goto fail;
 
-    for(int i = 0; i < rl->runetype_ext.nranges; i++) {
-        if(rl->runetype_ext.ranges[i].map == 0) {
+    for (int i = 0; i < rl->runetype_ext.nranges; i++) {
+        if (rl->runetype_ext.ranges[i].map == 0) {
             uint32_t minv = rl->runetype_ext.ranges[i].min;
             uint32_t maxv = rl->runetype_ext.ranges[i].max;
-            if(maxv < minv)
+            if (maxv < minv)
                 goto fail;
             uint32_t len = maxv - minv + 1;
 
-            if((size_t)(end - ptr) < len * 4)
+            if ((size_t)(end - ptr) < len * 4)
                 goto fail;
 
             rl->runetype_ext.ranges[i].types = calloc(len, 4);
-            if(!rl->runetype_ext.ranges[i].types)
+            if (!rl->runetype_ext.ranges[i].types)
                 goto fail;
 
-            for(uint32_t j = 0; j < len; j++) {
+            for (uint32_t j = 0; j < len; j++) {
                 uint32_t v;
                 memcpy(&v, ptr + j * 4, 4);
                 rl->runetype_ext.ranges[i].types[j] = ntohl(v);
@@ -127,15 +128,15 @@ RuneLocale *rl_load_mem(const void *data, size_t size) {
         }
     }
 
-    if(ncharclasses > 0) {
-        if((size_t)(end - ptr) < (size_t)ncharclasses * 20)
+    if (ncharclasses > 0) {
+        if ((size_t)(end - ptr) < (size_t)ncharclasses * 20)
             goto fail;
         ptr += ncharclasses * 20;
-    } else if(ncharclasses < 0)
+    } else if (ncharclasses < 0)
         goto fail;
 
-    if(variable_len > 0) {
-        if((size_t)(end - ptr) < variable_len)
+    if (variable_len > 0) {
+        if ((size_t)(end - ptr) < variable_len)
             goto fail;
     }
 
@@ -146,27 +147,28 @@ fail:
     return NULL;
 }
 
-RuneLocale *rl_load_file(const char *path) {
+RuneLocale *rl_load_file(const char *path)
+{
     FILE *fp = fopen(path, "rb");
-    if(!fp)
+    if (!fp)
         return NULL;
 
     fseek(fp, 0, SEEK_END);
     long size = ftell(fp);
     fseek(fp, 0, SEEK_SET);
 
-    if(size < 3164) {
+    if (size < 3164) {
         fclose(fp);
         return NULL;
     }
 
     void *data = malloc((size_t)size);
-    if(!data) {
+    if (!data) {
         fclose(fp);
         return NULL;
     }
 
-    if(fread(data, 1, (size_t)size, fp) != (size_t)size) {
+    if (fread(data, 1, (size_t)size, fp) != (size_t)size) {
         free(data);
         fclose(fp);
         return NULL;
@@ -178,11 +180,12 @@ RuneLocale *rl_load_file(const char *path) {
     return rl;
 }
 
-void rl_free(RuneLocale *rl) {
-    if(!rl)
+void rl_free(RuneLocale *rl)
+{
+    if (!rl)
         return;
-    if(rl->runetype_ext.ranges) {
-        for(int i = 0; i < rl->runetype_ext.nranges; i++) {
+    if (rl->runetype_ext.ranges) {
+        for (int i = 0; i < rl->runetype_ext.nranges; i++) {
             free(rl->runetype_ext.ranges[i].types);
         }
         free(rl->runetype_ext.ranges);

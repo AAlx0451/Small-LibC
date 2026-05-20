@@ -7,16 +7,18 @@
 
 uintptr_t __stack_chk_guard;
 
-__noreturn void __stack_chk_fail(void) {
+__noreturn void __stack_chk_fail(void)
+{
     const char msg[] = "*** stack smashing detected ***\n";
     write(STDERR_FILENO, msg, sizeof(msg) - 1);
     abort();
 }
 
-void __stack_chk_guard_init(void) {
+void __stack_chk_guard_init(void)
+{
     int fd = open("/dev/urandom", O_RDONLY);
     ssize_t bytes_read;
-    if(fd == -1) {
+    if (fd == -1) {
         perror("Could not open /dev/urandom");
         abort();
     }
@@ -24,7 +26,7 @@ void __stack_chk_guard_init(void) {
     bytes_read = read(fd, &__stack_chk_guard, sizeof(__stack_chk_guard));
     close(fd);
 
-    if(bytes_read != sizeof(__stack_chk_guard)) {
+    if (bytes_read != sizeof(__stack_chk_guard)) {
         abort();
     }
 

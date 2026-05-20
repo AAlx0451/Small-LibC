@@ -5,7 +5,8 @@
 #include <termios.h>
 #include <unistd.h>
 
-int ioctl(int fd, unsigned long request, ...) {
+int ioctl(int fd, unsigned long request, ...)
+{
     va_list ap;
     long arg;
     va_start(ap, request);

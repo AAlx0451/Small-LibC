@@ -2,9 +2,10 @@
 #include <sys/time.h>
 #include <time.h>
 
-int stime(const time_t *t) {
+int stime(const time_t *t)
+{
     struct timeval tv;
-    if(!t) {
+    if (!t) {
         errno = EFAULT;
         return -1;
     }

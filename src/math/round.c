@@ -2,7 +2,8 @@
 #include <stdint.h>
 #include <string.h>
 
-double round(double x) {
+double round(double x)
+{
     uint64_t i;
     uint64_t sign;
     int exponent;

@@ -2,6 +2,4 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
-int munmap(void *addr, size_t length) {
-    return (int)syscall(SYS_munmap, (long)addr, (long)length);
-}
+int munmap(void *addr, size_t length) { return (int)syscall(SYS_munmap, (long)addr, (long)length); }

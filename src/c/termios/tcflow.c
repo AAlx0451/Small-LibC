@@ -2,8 +2,9 @@
 #include <sys/ioctl.h>
 #include <termios.h>
 
-int tcflow(int fd, int action) {
-    switch(action) {
+int tcflow(int fd, int action)
+{
+    switch (action) {
     case TCOOFF:
         return ioctl(fd, TIOCSTOP, 0);
     case TCOON:

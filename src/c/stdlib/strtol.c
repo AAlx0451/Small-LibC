@@ -2,15 +2,16 @@
 #include <limits.h>
 #include <stdlib.h>
 
-long strtol(const char *restrict nptr, char **restrict endptr, int base) {
+long strtol(const char *restrict nptr, char **restrict endptr, int base)
+{
     long long val;
     val = strtoll(nptr, endptr, base);
 
-    if(val > LONG_MAX) {
+    if (val > LONG_MAX) {
         errno = ERANGE;
         return LONG_MAX;
     }
-    if(val < LONG_MIN) {
+    if (val < LONG_MIN) {
         errno = ERANGE;
         return LONG_MIN;
     }

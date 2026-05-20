@@ -3,7 +3,8 @@
 #include <string.h>
 #include <unistd.h>
 
-char *cuserid(char *s) {
+char *cuserid(char *s)
+{
     struct passwd *pw;
     static char buf[L_cuserid];
     char *target;
@@ -11,7 +12,7 @@ char *cuserid(char *s) {
     pw = getpwuid(geteuid());
     target = s ? s : buf;
 
-    if(!pw) {
+    if (!pw) {
         target[0] = '\0';
         return s ? s : NULL;
     }

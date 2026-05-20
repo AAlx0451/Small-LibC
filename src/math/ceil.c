@@ -1,7 +1,8 @@
 #include <stdint.h>
 #include <string.h>
 
-double ceil(double x) {
+double ceil(double x)
+{
     uint64_t i;
     uint64_t sign;
     int exponent;
@@ -13,7 +14,7 @@ double ceil(double x) {
 
     if (exponent < 0) {
         if ((i & 0x7FFFFFFFFFFFFFFFULL) == 0) {
-            
+
         } else if (sign) {
             i = 0x8000000000000000ULL;
         } else {

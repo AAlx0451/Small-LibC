@@ -6,9 +6,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-double nan(const char *tagp) {
+double nan(const char *tagp)
+{
     uint64_t payload = 0;
-    if(tagp && *tagp) {
+    if (tagp && *tagp) {
         payload = strtoull(tagp, NULL, 0);
     }
 

@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-FILE *tmpfile(void) {
+FILE *tmpfile(void)
+{
     char path[] = "/tmp/tmp.XXXXXX";
     int fd;
     FILE *f;
@@ -11,25 +12,25 @@ FILE *tmpfile(void) {
 
     /* create a secure temporary file using mkstemp */
     fd = mkstemp(path);
-    if(fd == -1) {
+    if (fd == -1) {
         return NULL;
     }
 
     /* unlink the file immediately */
-    if(unlink(path) == -1) {
+    if (unlink(path) == -1) {
         close(fd);
         return NULL;
     }
 
     /* allocate FILE object */
     f = (FILE *)malloc(sizeof(FILE));
-    if(f == NULL) {
+    if (f == NULL) {
         close(fd);
         return NULL;
     }
 
     buf = (unsigned char *)malloc(BUFSIZ + 1);
-    if(buf == NULL) {
+    if (buf == NULL) {
         free(f);
         close(fd);
         return NULL;

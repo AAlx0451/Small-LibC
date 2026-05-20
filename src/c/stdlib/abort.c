@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-void abort(void) {
+void abort(void)
+{
     raise(SIGABRT);
     _exit(127);
 }

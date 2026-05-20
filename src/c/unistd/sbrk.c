@@ -11,17 +11,16 @@ static uint8_t *sbrk_curbrk;
 
 int brk(void *addr);
 
-void *sbrk(intptr_t size) {
+void *sbrk(intptr_t size)
+{
     void *base, *old_brk;
     uint8_t *new_brk;
-    if(sbrk_needs_init) {
+    if (sbrk_needs_init) {
         sbrk_needs_init = 0; /* FALSE */
-        base = mmap(NULL, sbrk_total_size,
-                    PROT_READ | PROT_WRITE,
-                    MAP_PRIVATE | MAP_ANONYMOUS,
-                    -1, 0);
+        base =
+            mmap(NULL, sbrk_total_size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
-        if(base == MAP_FAILED) {
+        if (base == MAP_FAILED) {
             return (void *)-1;
         }
 
@@ -29,14 +28,14 @@ void *sbrk(intptr_t size) {
         sbrk_curbrk = (uint8_t *)base;
     }
 
-    if(size == 0) {
+    if (size == 0) {
         return (void *)sbrk_curbrk;
     }
 
     old_brk = sbrk_curbrk;
     new_brk = sbrk_curbrk + size;
 
-    if(new_brk >= sbrk_base && new_brk <= sbrk_base + sbrk_total_size) {
+    if (new_brk >= sbrk_base && new_brk <= sbrk_base + sbrk_total_size) {
         sbrk_curbrk = new_brk;
         return old_brk;
     }
@@ -45,16 +44,17 @@ void *sbrk(intptr_t size) {
     return (void *)-1;
 }
 
-int brk(void *addr) {
+int brk(void *addr)
+{
     uint8_t *new_brk;
-    if(sbrk_needs_init) {
-        if(sbrk(0) == (void *)-1) {
+    if (sbrk_needs_init) {
+        if (sbrk(0) == (void *)-1) {
             return -1;
         }
     }
 
     new_brk = (uint8_t *)addr;
-    if(new_brk >= sbrk_base && new_brk <= sbrk_base + sbrk_total_size) {
+    if (new_brk >= sbrk_base && new_brk <= sbrk_base + sbrk_total_size) {
         sbrk_curbrk = new_brk;
         return 0;
     }

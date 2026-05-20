@@ -1,5 +1,3 @@
 #include <unistd.h>
 
-int setpgrp(void) {
-    return setpgid(0, 0);
-}
+int setpgrp(void) { return setpgid(0, 0); }

@@ -7,17 +7,18 @@
 #include <stdint.h>
 #include <string.h>
 
-double ldexp(double num, int ex) {
+double ldexp(double num, int ex)
+{
     uint64_t bits;
     int64_t e;
 
-    switch(fpclassify(num)) {
+    switch (fpclassify(num)) {
     case FP_NAN:
     case FP_INFINITE:
     case FP_ZERO:
         return num;
     case FP_SUBNORMAL:
-        while(fpclassify(num) == FP_SUBNORMAL) {
+        while (fpclassify(num) == FP_SUBNORMAL) {
             num *= 1073741824.0; /* 2^30 */
             ex -= 30;
         }
@@ -27,12 +28,12 @@ double ldexp(double num, int ex) {
     memcpy(&bits, &num, sizeof(double));
     e = (int64_t)((bits >> 52) & 0x7FF) + ex;
 
-    if(e >= 2047) { /* overflow */
-        if(math_errhandling & MATH_ERRNO)
+    if (e >= 2047) { /* overflow */
+        if (math_errhandling & MATH_ERRNO)
             errno = ERANGE;
-        if(math_errhandling & MATH_ERREXCEPT)
+        if (math_errhandling & MATH_ERREXCEPT)
             feraiseexcept(FE_OVERFLOW | FE_INEXACT);
-        switch(fegetround()) {
+        switch (fegetround()) {
         case FE_TOWARDZERO:
             return (bits & 0x8000000000000000ULL) ? -DBL_MAX : DBL_MAX;
         case FE_UPWARD:
@@ -44,11 +45,11 @@ double ldexp(double num, int ex) {
         }
     }
 
-    if(e <= 0) {      /* potential underflow */
-        if(e < -54) { /* too small even for subnormal */
-            if(math_errhandling & MATH_ERRNO)
+    if (e <= 0) {      /* potential underflow */
+        if (e < -54) { /* too small even for subnormal */
+            if (math_errhandling & MATH_ERRNO)
                 errno = ERANGE;
-            if(math_errhandling & MATH_ERREXCEPT)
+            if (math_errhandling & MATH_ERREXCEPT)
                 feraiseexcept(FE_UNDERFLOW | FE_INEXACT);
             return (bits & 0x8000000000000000ULL) ? -0.0 : 0.0;
         }
@@ -61,8 +62,8 @@ double ldexp(double num, int ex) {
         memcpy(&scale, &s_bits, sizeof(double));
 
         double res = num * scale;
-        if(fpclassify(res) == FP_ZERO)
-            if(math_errhandling & MATH_ERRNO)
+        if (fpclassify(res) == FP_ZERO)
+            if (math_errhandling & MATH_ERRNO)
                 errno = ERANGE;
         return res;
     }

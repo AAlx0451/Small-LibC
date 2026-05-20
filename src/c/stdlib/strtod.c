@@ -10,6 +10,4 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-double strtod(const char *str, char **end) {
-    return (double)strtold(str, end);
-}
+double strtod(const char *str, char **end) { return (double)strtold(str, end); }

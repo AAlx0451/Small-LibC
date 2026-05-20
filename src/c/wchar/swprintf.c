@@ -1,7 +1,8 @@
 #include <stdarg.h>
 #include <wchar.h>
 
-int swprintf(wchar_t *s, size_t n, const wchar_t *format, ...) {
+int swprintf(wchar_t *s, size_t n, const wchar_t *format, ...)
+{
     va_list arg;
     int done;
 

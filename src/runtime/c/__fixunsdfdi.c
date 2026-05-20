@@ -2,10 +2,11 @@
 #include <limits.h>
 #include <string.h>
 
-unsigned long long __fixunsdfdi(double a) {
+unsigned long long __fixunsdfdi(double a)
+{
     int exponent_raw, exponent;
     unsigned long long bits, result, mantissa_raw;
-    if(a != a || a <= 0.0)
+    if (a != a || a <= 0.0)
         return 0; // NaN or negative
 
     memcpy(&bits, &a, sizeof(bits));
@@ -13,22 +14,22 @@ unsigned long long __fixunsdfdi(double a) {
     exponent_raw = (bits >> 52) & 0x7FF;
     mantissa_raw = bits & 0xFFFFFFFFFFFFFULL;
 
-    if(exponent_raw == 0x7FF)
+    if (exponent_raw == 0x7FF)
         return ULLONG_MAX; // Infinity
 
     exponent = exponent_raw - 1023;
-    if(exponent < 0)
+    if (exponent < 0)
         return 0;
-    if(exponent >= 64)
+    if (exponent >= 64)
         return ULLONG_MAX;
 
-    if(exponent_raw == 0) { // Subnormal number
+    if (exponent_raw == 0) { // Subnormal number
         result = mantissa_raw;
     } else { // Normal number
         result = mantissa_raw | (1ULL << 52);
     }
 
-    if(exponent > 52)
+    if (exponent > 52)
         return result << (exponent - 52);
     else
         return result >> (52 - exponent);

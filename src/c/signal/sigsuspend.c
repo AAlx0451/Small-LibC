@@ -3,8 +3,9 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
-int sigsuspend(const sigset_t *sigmask) {
-    if(!sigmask) {
+int sigsuspend(const sigset_t *sigmask)
+{
+    if (!sigmask) {
         errno = EFAULT;
         return -1;
     }

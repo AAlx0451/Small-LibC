@@ -1,16 +1,17 @@
 #include <stdio.h>
 #include <wchar.h>
 
-int ungetc(int c, FILE *f) {
+int ungetc(int c, FILE *f)
+{
     int has_reserve;
     unsigned char *min_ptr;
-    if(c == EOF || !f)
+    if (c == EOF || !f)
         return EOF;
 
     int mode = fwide(f, 0);
-    if(mode > 0)
+    if (mode > 0)
         return EOF;
-    else if(mode == 0)
+    else if (mode == 0)
         fwide(f, -1);
 
     _spin_lock(&f->_lock);
@@ -19,7 +20,7 @@ int ungetc(int c, FILE *f) {
     // If we have reserve, valid range is >= base - 1.
     has_reserve = (f->_flags & __S_RESERVE) ? 1 : 0;
     min_ptr = f->_base - has_reserve;
-    if(f->_base && f->_ptr > min_ptr) {
+    if (f->_base && f->_ptr > min_ptr) {
         f->_ptr--;
         *f->_ptr = (unsigned char)c;
         f->_cnt++;

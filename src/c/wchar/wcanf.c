@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <wchar.h>
 
-int wscanf(const wchar_t *format, ...) {
+int wscanf(const wchar_t *format, ...)
+{
     va_list arg;
     int done;
 

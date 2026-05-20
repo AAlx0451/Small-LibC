@@ -1,19 +1,20 @@
 #include <stddef.h>
 #include <stdlib.h>
 
-char *strdup(const char *s) {
+char *strdup(const char *s)
+{
     size_t len = 0;
     const char *p = s;
     char *copy, *cp;
-    while(*p++)
+    while (*p++)
         len++;
 
     copy = (char *)malloc(len + 1);
-    if(!copy)
+    if (!copy)
         return 0;
 
     cp = copy;
-    while((*cp++ = *s++))
+    while ((*cp++ = *s++))
         ;
 
     return copy;

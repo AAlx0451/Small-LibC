@@ -1,7 +1,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-int printf(const char *format, ...) {
+int printf(const char *format, ...)
+{
     va_list ap;
     int ret;
     va_start(ap, format);

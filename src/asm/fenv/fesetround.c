@@ -1,8 +1,9 @@
 #include "impl.h"
 #include <fenv.h>
 
-int fesetround(int round) {
-    if((round & ~(FE_TONEAREST | FE_DOWNWARD | FE_UPWARD | FE_TOWARDZERO)) != 0) {
+int fesetround(int round)
+{
+    if ((round & ~(FE_TONEAREST | FE_DOWNWARD | FE_UPWARD | FE_TOWARDZERO)) != 0) {
         return 1; /* invalid argument */
     }
 

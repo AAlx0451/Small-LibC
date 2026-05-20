@@ -8,7 +8,8 @@
 #error "Please include a proper syscall.h. See syscall.h"
 #endif
 
-pid_t getpid(void) {
+pid_t getpid(void)
+{
     long ret;
     ret = syscall0(SYS_getpid);
     return (pid_t)ret;

@@ -1,10 +1,11 @@
 /* This file has been put into the public domain by its author. */
 
-#include <math.h>
 #include <errno.h>
 #include <fenv.h>
+#include <math.h>
 
-double fmod(double x, double y) {
+double fmod(double x, double y)
+{
     int xchar, ychar;
     double t;
 
@@ -16,9 +17,11 @@ double fmod(double x, double y) {
     }
 
     if (errx == FP_INFINITE || erry == FP_ZERO) {
-        if (math_errhandling & MATH_ERRNO) errno = EDOM;
-        if (math_errhandling & MATH_ERREXCEPT) feraiseexcept(FE_INVALID);
-        return nan(""); 
+        if (math_errhandling & MATH_ERRNO)
+            errno = EDOM;
+        if (math_errhandling & MATH_ERREXCEPT)
+            feraiseexcept(FE_INVALID);
+        return nan("");
     }
 
     if (errx == FP_ZERO || erry == FP_INFINITE) {

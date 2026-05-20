@@ -2,9 +2,10 @@
 #include <limits.h>
 #include <stdio.h>
 
-long ftell(FILE *stream) {
+long ftell(FILE *stream)
+{
     off_t pos = ftello(stream);
-    if(pos > LONG_MAX) {
+    if (pos > LONG_MAX) {
         errno = EOVERFLOW;
         return -1L;
     }

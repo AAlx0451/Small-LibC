@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <wchar.h>
 
-int fwscanf(FILE *stream, const wchar_t *format, ...) {
+int fwscanf(FILE *stream, const wchar_t *format, ...)
+{
     va_list arg;
     int done;
 

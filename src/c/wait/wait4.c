@@ -4,6 +4,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-pid_t wait4(pid_t pid, int *status, int options, struct rusage *rusage) {
+pid_t wait4(pid_t pid, int *status, int options, struct rusage *rusage)
+{
     return (pid_t)syscall(SYS_wait4, (long)pid, (long)status, (long)options, (long)rusage);
 }

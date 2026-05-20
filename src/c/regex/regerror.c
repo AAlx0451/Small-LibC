@@ -1,8 +1,9 @@
 #include "regex_internal.h"
 
-size_t regerror(int errcode, __unused const regex_t *preg, char *errbuf, size_t errbuf_size) {
+size_t regerror(int errcode, __unused const regex_t *preg, char *errbuf, size_t errbuf_size)
+{
     const char *msg = "Unknown error";
-    switch(errcode) {
+    switch (errcode) {
     case REG_NOMATCH:
         msg = "No match";
         break;
@@ -45,12 +46,12 @@ size_t regerror(int errcode, __unused const regex_t *preg, char *errbuf, size_t 
     }
 
     size_t len = 0;
-    while(msg[len])
+    while (msg[len])
         len++;
 
-    if(errbuf_size > 0 && errbuf) {
+    if (errbuf_size > 0 && errbuf) {
         size_t copy_len = len < errbuf_size - 1 ? len : errbuf_size - 1;
-        for(size_t i = 0; i < copy_len; i++)
+        for (size_t i = 0; i < copy_len; i++)
             errbuf[i] = msg[i];
         errbuf[copy_len] = '\0';
     }

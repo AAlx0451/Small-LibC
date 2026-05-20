@@ -3,43 +3,44 @@
 #include <unistd.h> // for write()
 #include <wchar.h>
 
-int fputs(const char *s, FILE *stream) {
+int fputs(const char *s, FILE *stream)
+{
     size_t len, chunk_len, remaining_in_string, space_in_buffer, to_copy;
     int ret = 0;
     const unsigned char *p;
 
-    if(s == NULL || stream == NULL) {
+    if (s == NULL || stream == NULL) {
         return EOF;
     }
     len = strlen(s);
-    if(len == 0) {
+    if (len == 0) {
         return 0;
     }
 
     int mode = fwide(stream, 0);
-    if(mode > 0)
+    if (mode > 0)
         return EOF;
-    else if(mode == 0)
+    else if (mode == 0)
         fwide(stream, -1);
 
     _spin_lock(&stream->_lock);
 
     /* Ensure stream is in write mode */
-    if(stream->_flags & __S_RD) {
+    if (stream->_flags & __S_RD) {
         stream->_flags &= ~__S_RD;
         stream->_flags |= __S_WR;
         stream->_cnt = stream->_bsize;
         stream->_ptr = stream->_base;
-    } else if(!(stream->_flags & __S_WR)) {
+    } else if (!(stream->_flags & __S_WR)) {
         stream->_flags |= __S_WR;
-        if(stream->_cnt == 0 && stream->_ptr == stream->_base) {
+        if (stream->_cnt == 0 && stream->_ptr == stream->_base) {
             stream->_cnt = stream->_bsize;
         }
     }
 
     /* If stream is unbuffered, use a single syscall for the whole string. */
-    if(stream->_flags & __S_NBF) {
-        if(write(stream->_fd, s, len) != (ssize_t)len) {
+    if (stream->_flags & __S_NBF) {
+        if (write(stream->_fd, s, len) != (ssize_t)len) {
             stream->_flags |= __S_ERR;
             ret = EOF;
         }
@@ -48,9 +49,9 @@ int fputs(const char *s, FILE *stream) {
 
     /* Logic for buffered streams */
     p = (const unsigned char *)s;
-    while(*p) {
-        if(stream->_cnt == 0) {
-            if(__stdio_flush_impl(stream) != 0) {
+    while (*p) {
+        if (stream->_cnt == 0) {
+            if (__stdio_flush_impl(stream) != 0) {
                 ret = EOF;
                 goto cleanup;
             }
@@ -68,8 +69,8 @@ int fputs(const char *s, FILE *stream) {
         p += to_copy;
         stream->_flags |= __S_DIRTY;
 
-        if((stream->_flags & __S_LBF) && memchr(p - to_copy, '\n', to_copy)) {
-            if(__stdio_flush_impl(stream) != 0) {
+        if ((stream->_flags & __S_LBF) && memchr(p - to_copy, '\n', to_copy)) {
+            if (__stdio_flush_impl(stream) != 0) {
                 ret = EOF;
                 goto cleanup;
             }
@@ -77,8 +78,8 @@ int fputs(const char *s, FILE *stream) {
     }
 
     /* If buffer became full, flush it */
-    if(stream->_cnt == 0) {
-        if(__stdio_flush_impl(stream) != 0) {
+    if (stream->_cnt == 0) {
+        if (__stdio_flush_impl(stream) != 0) {
             ret = EOF;
         }
     }

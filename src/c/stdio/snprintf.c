@@ -1,12 +1,13 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-int snprintf(char *str, size_t size, const char *format, ...) {
+int snprintf(char *str, size_t size, const char *format, ...)
+{
     FILE f;
     va_list ap;
     int ret;
 
-    if(size == 0)
+    if (size == 0)
         return 0;
 
     f._flags = __S_WR | __S_STR;
@@ -22,7 +23,7 @@ int snprintf(char *str, size_t size, const char *format, ...) {
     ret = vfprintf(&f, format, ap);
     va_end(ap);
 
-    if(f._ptr < f._base + size) {
+    if (f._ptr < f._base + size) {
         *f._ptr = '\0';
     } else {
         str[size - 1] = '\0';

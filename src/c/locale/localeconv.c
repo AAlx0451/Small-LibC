@@ -14,12 +14,13 @@ static char last_mon_loc[256] = "";
 static char grouping_bin[16];
 static char mon_grouping_bin[16];
 
-static char *parse_grouping(char *src, char *dest) {
+static char *parse_grouping(char *src, char *dest)
+{
     int i = 0;
     char *token = strtok(src, ";");
-    while(token && i < 15) {
+    while (token && i < 15) {
         int val = atoi(token);
-        if(val <= 0)
+        if (val <= 0)
             break;
         dest[i++] = (char)val;
         token = strtok(NULL, ";");
@@ -28,33 +29,36 @@ static char *parse_grouping(char *src, char *dest) {
     return dest;
 }
 
-static char *get_str_val(char **ptr, char *end) {
+static char *get_str_val(char **ptr, char *end)
+{
     char *p = *ptr;
-    if(p >= end)
+    if (p >= end)
         return "";
     *ptr = p + strlen(p) + 1;
     return p;
 }
 
-static char get_int_val(char **ptr, char *end) {
+static char get_int_val(char **ptr, char *end)
+{
     char *p = get_str_val(ptr, end);
-    if(*p == '\0' || strcmp(p, "-1") == 0)
+    if (*p == '\0' || strcmp(p, "-1") == 0)
         return CHAR_MAX;
     return (char)atoi(p);
 }
 
-static char *load_file(const char *loc, const char *cat, long *out_sz) {
+static char *load_file(const char *loc, const char *cat, long *out_sz)
+{
     char path[512];
     FILE *f;
     long sz, i;
     char *buf;
 
-    if(strcmp(loc, "C") == 0 || strcmp(loc, "POSIX") == 0)
+    if (strcmp(loc, "C") == 0 || strcmp(loc, "POSIX") == 0)
         return NULL;
 
     snprintf(path, sizeof(path), "%s/%s/%s", PATH, loc, cat);
     f = fopen(path, "rb");
-    if(!f)
+    if (!f)
         return NULL;
 
     fseek(f, 0, SEEK_END);
@@ -62,11 +66,11 @@ static char *load_file(const char *loc, const char *cat, long *out_sz) {
     fseek(f, 0, SEEK_SET);
 
     buf = malloc(((size_t)(sz)) + 1);
-    if(buf) {
+    if (buf) {
         fread(buf, 1, ((size_t)(sz)), f);
         buf[sz] = '\0';
-        for(i = 0; i < sz; i++) {
-            if(buf[i] == '\n')
+        for (i = 0; i < sz; i++) {
+            if (buf[i] == '\n')
                 buf[i] = '\0';
         }
         *out_sz = sz;
@@ -75,13 +79,15 @@ static char *load_file(const char *loc, const char *cat, long *out_sz) {
     return buf;
 }
 
-static void reset_numeric(void) {
+static void reset_numeric(void)
+{
     current_lconv.decimal_point = ".";
     current_lconv.thousands_sep = "";
     current_lconv.grouping = "";
 }
 
-static void reset_monetary(void) {
+static void reset_monetary(void)
+{
     current_lconv.int_curr_symbol = "";
     current_lconv.currency_symbol = "";
     current_lconv.mon_decimal_point = "";
@@ -99,23 +105,24 @@ static void reset_monetary(void) {
     current_lconv.n_sign_posn = CHAR_MAX;
 }
 
-struct lconv *localeconv(void) {
+struct lconv *localeconv(void)
+{
     char *loc_num = setlocale(LC_NUMERIC, NULL);
     char *loc_mon = setlocale(LC_MONETARY, NULL);
     long sz = 0;
     char *p, *end;
 
-    if(!loc_num)
+    if (!loc_num)
         loc_num = "C";
-    if(!loc_mon)
+    if (!loc_mon)
         loc_mon = "C";
 
-    if(strcmp(loc_num, last_num_loc) != 0) {
+    if (strcmp(loc_num, last_num_loc) != 0) {
         strncpy(last_num_loc, loc_num, sizeof(last_num_loc) - 1);
-        if(num_buf)
+        if (num_buf)
             free(num_buf);
         num_buf = load_file(loc_num, "LC_NUMERIC", &sz);
-        if(num_buf) {
+        if (num_buf) {
             p = num_buf;
             end = num_buf + sz;
             current_lconv.decimal_point = get_str_val(&p, end);
@@ -127,12 +134,12 @@ struct lconv *localeconv(void) {
         }
     }
 
-    if(strcmp(loc_mon, last_mon_loc) != 0) {
+    if (strcmp(loc_mon, last_mon_loc) != 0) {
         strncpy(last_mon_loc, loc_mon, sizeof(last_mon_loc) - 1);
-        if(mon_buf)
+        if (mon_buf)
             free(mon_buf);
         mon_buf = load_file(loc_mon, "LC_MONETARY", &sz);
-        if(mon_buf) {
+        if (mon_buf) {
             p = mon_buf;
             end = mon_buf + sz;
             current_lconv.int_curr_symbol = get_str_val(&p, end);

@@ -1,12 +1,13 @@
 #include "runtime.h"
 #include <limits.h>
 
-long long __divdi3(long long n, long long d) {
+long long __divdi3(long long n, long long d)
+{
     int sign, i;
     unsigned long long un, ud, quotient, remainder;
-    if(d == 0)
+    if (d == 0)
         return 0; // Division by zero undefined
-    if(n == LLONG_MIN && d == -1)
+    if (n == LLONG_MIN && d == -1)
         return LLONG_MIN;
 
     sign = (n < 0) ^ (d < 0) ? -1 : 1;
@@ -15,9 +16,9 @@ long long __divdi3(long long n, long long d) {
     quotient = 0;
     remainder = 0;
 
-    for(i = 63; i >= 0; i--) {
+    for (i = 63; i >= 0; i--) {
         remainder = (remainder << 1) | ((un >> i) & 1);
-        if(remainder >= ud) {
+        if (remainder >= ud) {
             remainder -= ud;
             quotient |= (1ULL << i);
         }

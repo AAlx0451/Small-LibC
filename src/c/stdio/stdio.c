@@ -21,35 +21,36 @@ FILE *stdin;
 FILE *stdout;
 FILE *stderr;
 
-void _spin_lock(volatile int *lock) {
-    while(__atomic_test_and_set(lock, __ATOMIC_ACQUIRE)) {
-        while(*lock) {
+void _spin_lock(volatile int *lock)
+{
+    while (__atomic_test_and_set(lock, __ATOMIC_ACQUIRE)) {
+        while (*lock) {
             sched_yield();
         }
     }
 }
 
-void _spin_unlock(volatile int *lock) {
-    __atomic_clear(lock, __ATOMIC_RELEASE);
-}
+void _spin_unlock(volatile int *lock) { __atomic_clear(lock, __ATOMIC_RELEASE); }
 
-void __stdio_add_file(FILE *f) {
+void __stdio_add_file(FILE *f)
+{
     _spin_lock(&__stdio_list_lock);
     f->_next = __s_file_list_head;
     __s_file_list_head = f;
     _spin_unlock(&__stdio_list_lock);
 }
 
-void __stdio_remove_file(FILE *f) {
+void __stdio_remove_file(FILE *f)
+{
     _spin_lock(&__stdio_list_lock);
-    if(__s_file_list_head == f) {
+    if (__s_file_list_head == f) {
         __s_file_list_head = f->_next;
     } else {
         FILE *p = __s_file_list_head;
-        while(p && p->_next != f) {
+        while (p && p->_next != f) {
             p = p->_next;
         }
-        if(p) {
+        if (p) {
             p->_next = f->_next;
         }
     }
@@ -57,12 +58,13 @@ void __stdio_remove_file(FILE *f) {
 }
 
 // Centralized buffer freeing logic
-void __stdio_free_buffer(FILE *f) {
-    if(f->_flags & __S_FREEBUF) {
+void __stdio_free_buffer(FILE *f)
+{
+    if (f->_flags & __S_FREEBUF) {
         // If __S_RESERVE is set, the actual pointer returned by malloc was
         // f->_base - 1. See fopen.c
         unsigned char *real_ptr = f->_base;
-        if(f->_flags & __S_RESERVE) {
+        if (f->_flags & __S_RESERVE) {
             real_ptr--;
         }
         free(real_ptr);
@@ -71,13 +73,14 @@ void __stdio_free_buffer(FILE *f) {
     }
 }
 
-void __stdio_flush_all(void) {
+void __stdio_flush_all(void)
+{
     FILE *p;
     _spin_lock(&__stdio_list_lock);
     p = __s_file_list_head;
-    while(p) {
+    while (p) {
         _spin_lock(&p->_lock);
-        if(p->_flags & __S_WR) {
+        if (p->_flags & __S_WR) {
             __stdio_flush_impl(p);
         }
         _spin_unlock(&p->_lock);
@@ -86,24 +89,25 @@ void __stdio_flush_all(void) {
     _spin_unlock(&__stdio_list_lock);
 }
 
-int __stdio_flush_impl(FILE *f) {
-    if(!f || !f->_base)
+int __stdio_flush_impl(FILE *f)
+{
+    if (!f || !f->_base)
         return 0;
 
-    if((f->_flags & __S_DIRTY) && (f->_flags & __S_WR)) {
+    if ((f->_flags & __S_DIRTY) && (f->_flags & __S_WR)) {
         size_t size = (size_t)(f->_ptr - f->_base);
         unsigned char *p = f->_base;
 
-        while(size > 0) {
+        while (size > 0) {
             ssize_t written = write(f->_fd, p, size);
 
-            if(written < 0) {
-                if(errno == EINTR)
+            if (written < 0) {
+                if (errno == EINTR)
                     continue;
                 f->_flags |= __S_ERR;
                 return EOF;
             }
-            if(written == 0) {
+            if (written == 0) {
                 f->_flags |= __S_ERR;
                 return EOF;
             }
@@ -119,20 +123,21 @@ int __stdio_flush_impl(FILE *f) {
     return 0;
 }
 
-int __stdio_fill_impl(FILE *f) {
+int __stdio_fill_impl(FILE *f)
+{
     ssize_t n;
 
-    if(f == stdin && isatty(f->_fd)) { // if writing from stdin AND from a tty...
-        if((stdout->_flags & __S_LBF) && (stdout->_flags & __S_DIRTY) && isatty(stdout->_fd)) {
+    if (f == stdin && isatty(f->_fd)) { // if writing from stdin AND from a tty...
+        if ((stdout->_flags & __S_LBF) && (stdout->_flags & __S_DIRTY) && isatty(stdout->_fd)) {
             __stdio_flush_impl(stdout); // ...flush stdout
         }
     }
 
-    if(f->_flags & (__S_EOF | __S_ERR))
+    if (f->_flags & (__S_EOF | __S_ERR))
         return EOF;
 
-    if((f->_flags & __S_WR) && (f->_flags & __S_DIRTY)) {
-        if(__stdio_flush_impl(f) != 0)
+    if ((f->_flags & __S_WR) && (f->_flags & __S_DIRTY)) {
+        if (__stdio_flush_impl(f) != 0)
             return EOF;
     }
     f->_flags &= ~__S_WR;
@@ -140,10 +145,10 @@ int __stdio_fill_impl(FILE *f) {
 
     do {
         n = read(f->_fd, f->_base, f->_bsize);
-    } while(n < 0 && errno == EINTR);
+    } while (n < 0 && errno == EINTR);
 
-    if(n <= 0) {
-        if(n == 0)
+    if (n <= 0) {
+        if (n == 0)
             f->_flags |= __S_EOF;
         else
             f->_flags |= __S_ERR;
@@ -156,7 +161,8 @@ int __stdio_fill_impl(FILE *f) {
     return 0;
 }
 
-void __stdio_init(void) {
+void __stdio_init(void)
+{
     _f_stdin._fd = 0;
     _f_stdin._base = _buf_stdin;
     _f_stdin._ptr = _buf_stdin;
@@ -187,10 +193,10 @@ void __stdio_init(void) {
     _f_stderr._mode = 0;
     stderr = &_f_stderr;
 
-    if(isatty(fileno(stdin))) {
+    if (isatty(fileno(stdin))) {
         setvbuf(stdin, NULL, _IOLBF, BUFSIZ);
     }
-    if(isatty(fileno(stdout))) {
+    if (isatty(fileno(stdout))) {
         setvbuf(stdout, NULL, _IOLBF, BUFSIZ);
     }
 

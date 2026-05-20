@@ -4,8 +4,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-int open(const char *pathname, int flags, ...) {
-    if(flags & O_CREAT) {
+int open(const char *pathname, int flags, ...)
+{
+    if (flags & O_CREAT) {
         va_list args;
         mode_t mode;
         va_start(args, flags);

@@ -2,41 +2,44 @@
 #include <string.h>
 
 // Count Leading Zeros
-static int clz64(unsigned long long x) {
+static int clz64(unsigned long long x)
+{
     int n = 0;
-    if(x == 0)
+    if (x == 0)
         return 64;
-    if(!(x & 0xFFFFFFFF00000000ULL)) {
+    if (!(x & 0xFFFFFFFF00000000ULL)) {
         n += 32;
         x <<= 32;
     }
-    if(!(x & 0xFFFF000000000000ULL)) {
+    if (!(x & 0xFFFF000000000000ULL)) {
         n += 16;
         x <<= 16;
     }
-    if(!(x & 0xFF00000000000000ULL)) {
+    if (!(x & 0xFF00000000000000ULL)) {
         n += 8;
         x <<= 8;
     }
-    if(!(x & 0xF000000000000000ULL)) {
+    if (!(x & 0xF000000000000000ULL)) {
         n += 4;
         x <<= 4;
     }
-    if(!(x & 0xC000000000000000ULL)) {
+    if (!(x & 0xC000000000000000ULL)) {
         n += 2;
         x <<= 2;
     }
-    if(!(x & 0x8000000000000000ULL)) {
+    if (!(x & 0x8000000000000000ULL)) {
         n += 1;
     }
     return n;
 }
 
-double __floatdidf(long long a) {
-    unsigned long long sign_bit, ua, round_mask, sticky_mask, guard, sticky, lsb, mantissa, result_bits;
+double __floatdidf(long long a)
+{
+    unsigned long long sign_bit, ua, round_mask, sticky_mask, guard, sticky, lsb, mantissa,
+        result_bits;
     int shift, exponent, shift_diff;
     double result;
-    if(a == 0)
+    if (a == 0)
         return 0.0;
 
     sign_bit = (a < 0) ? 1 : 0;
@@ -46,7 +49,7 @@ double __floatdidf(long long a) {
     exponent = 1023 + (63 - shift);
     shift_diff = 63 - shift - 52;
 
-    if(shift_diff > 0) {
+    if (shift_diff > 0) {
         // Round to Nearest, ties to Even
         round_mask = (1ULL << (shift_diff - 1));
         sticky_mask = round_mask - 1;
@@ -55,9 +58,9 @@ double __floatdidf(long long a) {
         lsb = (ua >> shift_diff) & 1;
 
         mantissa = ua >> shift_diff;
-        if(guard && (sticky || lsb)) {
+        if (guard && (sticky || lsb)) {
             mantissa++;
-            if(mantissa & (1ULL << 53)) { // Handle overflow from rounding
+            if (mantissa & (1ULL << 53)) { // Handle overflow from rounding
                 mantissa >>= 1;
                 exponent++;
             }

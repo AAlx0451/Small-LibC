@@ -1,7 +1,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-int scanf(const char *format, ...) {
+int scanf(const char *format, ...)
+{
     int ret;
     va_list ap;
     va_start(ap, format);

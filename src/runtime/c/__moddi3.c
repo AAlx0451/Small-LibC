@@ -1,12 +1,13 @@
 #include "runtime.h"
 #include <limits.h>
 
-long long __moddi3(long long n, long long d) {
+long long __moddi3(long long n, long long d)
+{
     unsigned long long un, ud, remainder;
     int n_sign, i;
-    if(d == 0)
+    if (d == 0)
         return 0; // Undefined
-    if(n == LLONG_MIN && d == -1)
+    if (n == LLONG_MIN && d == -1)
         return 0;
 
     n_sign = (n < 0) ? -1 : 1;
@@ -14,9 +15,9 @@ long long __moddi3(long long n, long long d) {
     ud = (d < 0) ? -(unsigned long long)d : (unsigned long long)d;
     remainder = 0;
 
-    for(i = 63; i >= 0; i--) {
+    for (i = 63; i >= 0; i--) {
         remainder = (remainder << 1) | ((un >> i) & 1);
-        if(remainder >= ud) {
+        if (remainder >= ud) {
             remainder -= ud;
         }
     }

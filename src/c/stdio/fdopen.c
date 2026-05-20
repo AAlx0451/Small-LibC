@@ -5,21 +5,22 @@
 #include <string.h>
 #include <unistd.h>
 
-FILE *fdopen(int fildes, const char *mode) {
+FILE *fdopen(int fildes, const char *mode)
+{
     unsigned int stdio_flags = 0;
     int fd_flags, access_mode;
     unsigned char *alloc_buf;
     FILE *f;
     fd_flags = fcntl(fildes, F_GETFL);
-    if(fd_flags == -1) {
+    if (fd_flags == -1) {
         return NULL;
     }
 
-    if(strchr(mode, '+')) {
+    if (strchr(mode, '+')) {
         stdio_flags |= __S_RW;
-    } else if(*mode == 'r') {
+    } else if (*mode == 'r') {
         stdio_flags |= __S_RD;
-    } else if(*mode == 'w' || *mode == 'a') {
+    } else if (*mode == 'w' || *mode == 'a') {
         stdio_flags |= __S_WR;
     } else {
         errno = EINVAL;
@@ -28,24 +29,24 @@ FILE *fdopen(int fildes, const char *mode) {
 
     access_mode = fd_flags & O_ACCMODE;
 
-    if((stdio_flags & __S_RD) && (access_mode != O_RDONLY && access_mode != O_RDWR)) {
+    if ((stdio_flags & __S_RD) && (access_mode != O_RDONLY && access_mode != O_RDWR)) {
         errno = EINVAL;
         return NULL;
     }
-    if((stdio_flags & __S_WR) && (access_mode != O_WRONLY && access_mode != O_RDWR)) {
+    if ((stdio_flags & __S_WR) && (access_mode != O_WRONLY && access_mode != O_RDWR)) {
         errno = EINVAL;
         return NULL;
     }
 
     f = (FILE *)malloc(sizeof(FILE));
-    if(!f) {
+    if (!f) {
         errno = ENOMEM;
         return NULL;
     }
 
     // Allocate +MB_LEN_MAX byte for ungetc reserve
     alloc_buf = (unsigned char *)malloc(BUFSIZ + MB_LEN_MAX);
-    if(!alloc_buf) {
+    if (!alloc_buf) {
         free(f);
         errno = ENOMEM;
         return NULL;
@@ -66,13 +67,13 @@ FILE *fdopen(int fildes, const char *mode) {
     f->_mode = 0;
     memset(&f->_mbstate, 0, sizeof(f->_mbstate));
 
-    if(stdio_flags & __S_RD) {
+    if (stdio_flags & __S_RD) {
         f->_cnt = 0;
     } else {
         f->_cnt = BUFSIZ;
     }
 
-    if(*mode == 'a') {
+    if (*mode == 'a') {
         lseek(fildes, 0, SEEK_END);
     }
 

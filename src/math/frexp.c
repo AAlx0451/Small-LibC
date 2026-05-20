@@ -5,19 +5,20 @@
 #include <stdint.h>
 #include <string.h>
 
-double frexp(double num, int *ex) {
+double frexp(double num, int *ex)
+{
     uint64_t bits;
     int e;
     *ex = 0;
 
-    switch(fpclassify(num)) {
+    switch (fpclassify(num)) {
     case FP_NAN:
     case FP_INFINITE:
     case FP_ZERO:
         return num;
     case FP_SUBNORMAL:
         /* normalize */
-        while(fpclassify(num) == FP_SUBNORMAL) {
+        while (fpclassify(num) == FP_SUBNORMAL) {
             *ex -= 30;
             num *= 1073741824.0;
         }

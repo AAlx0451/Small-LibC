@@ -3,7 +3,8 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
-int fcntl(int fd, int cmd, ...) {
+int fcntl(int fd, int cmd, ...)
+{
     va_list args;
     long arg;
 

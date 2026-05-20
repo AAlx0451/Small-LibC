@@ -1,16 +1,17 @@
 /* This file has been put into the public domain by its author. */
 
-#include <math.h>
 #include <errno.h>
 #include <fenv.h>
+#include <math.h>
 
-static const double PI_HI     = 0x1.921fb54442d18p+1;  /* 3.1415926535897931160e+00 */
-static const double PI_LO     = 0x1.1a62633145c07p-53; /* 1.2246467991473532072e-16 */
-static const double PIO2_HI   = 0x1.921fb54442d18p+0;
-static const double PI_3O4_HI = 0x1.2d97c7f3321d2p+1;  /* 3*pi/4 */
-static const double PIO4_HI   = 0x1.921fb54442d18p-1;
+static const double PI_HI = 0x1.921fb54442d18p+1;  /* 3.1415926535897931160e+00 */
+static const double PI_LO = 0x1.1a62633145c07p-53; /* 1.2246467991473532072e-16 */
+static const double PIO2_HI = 0x1.921fb54442d18p+0;
+static const double PI_3O4_HI = 0x1.2d97c7f3321d2p+1; /* 3*pi/4 */
+static const double PIO4_HI = 0x1.921fb54442d18p-1;
 
-double atan2(double y, double x) {
+double atan2(double y, double x)
+{
     /* Special cases and Error Handling */
 
     /* If either x or y is NaN, a NaN shall be returned. */
@@ -61,7 +62,7 @@ double atan2(double y, double x) {
 
     double ax = fabs(x);
     double ay = fabs(y);
-    
+
     /* General evaluation */
     double z = atan(ay / ax);
 
@@ -77,8 +78,10 @@ double atan2(double y, double x) {
 
     /* Range Error: The result underflows. */
     if (fpclassify(res) == FP_SUBNORMAL) {
-        if (math_errhandling & MATH_ERRNO) errno = ERANGE;
-        if (math_errhandling & MATH_ERREXCEPT) feraiseexcept(FE_UNDERFLOW);
+        if (math_errhandling & MATH_ERRNO)
+            errno = ERANGE;
+        if (math_errhandling & MATH_ERREXCEPT)
+            feraiseexcept(FE_UNDERFLOW);
     }
 
     return res;

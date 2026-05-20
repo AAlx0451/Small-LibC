@@ -4,7 +4,8 @@
 #include <string.h>
 #include <wchar.h>
 
-int vswscanf(const wchar_t *restrict ws, const wchar_t *restrict format, va_list arg) {
+int vswscanf(const wchar_t *restrict ws, const wchar_t *restrict format, va_list arg)
+{
     FILE f;
     memset(&f, 0, sizeof(FILE)); // clears _mode and _mbstate
     f._flags = __S_RD | __S_STR;
@@ -16,7 +17,7 @@ int vswscanf(const wchar_t *restrict ws, const wchar_t *restrict format, va_list
 
     /* length in wide characters */
     size_t len = 0;
-    while(ws[len])
+    while (ws[len])
         len++;
 
     f._cnt = len;

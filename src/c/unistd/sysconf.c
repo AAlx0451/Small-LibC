@@ -31,26 +31,33 @@ struct clockinfo {
     int profhz;
 };
 
-long sysconf(int name) {
+long sysconf(int name)
+{
     int mib[2];
     size_t len;
     int int_val;
     struct clockinfo clk_info;
     struct rlimit rl;
 
-    switch(name) {
+    switch (name) {
     case _SC_ARG_MAX:
         mib[0] = CTL_KERN;
         mib[1] = KERN_ARGMAX;
         len = sizeof(int_val);
-        if(syscall(SYS___sysctl, (long)mib, (long)2, (long)&int_val, (long)&len, (long)NULL, (long)0) == -1)
+        if (syscall(SYS___sysctl,
+                    (long)mib,
+                    (long)2,
+                    (long)&int_val,
+                    (long)&len,
+                    (long)NULL,
+                    (long)0) == -1)
             return -1;
         return (long)int_val;
 
     case _SC_CHILD_MAX:
-        if(syscall(SYS_getrlimit, (long)RLIMIT_NPROC, (long)&rl) == -1)
+        if (syscall(SYS_getrlimit, (long)RLIMIT_NPROC, (long)&rl) == -1)
             return -1;
-        if(rl.rlim_cur == 0x7FFFFFFFFFFFFFFFLL)
+        if (rl.rlim_cur == 0x7FFFFFFFFFFFFFFFLL)
             return -1;
         return (long)rl.rlim_cur;
 
@@ -58,7 +65,13 @@ long sysconf(int name) {
         mib[0] = CTL_KERN;
         mib[1] = KERN_CLOCKRATE;
         len = sizeof(clk_info);
-        if(syscall(SYS___sysctl, (long)mib, (long)2, (long)&clk_info, (long)&len, (long)NULL, (long)0) == -1)
+        if (syscall(SYS___sysctl,
+                    (long)mib,
+                    (long)2,
+                    (long)&clk_info,
+                    (long)&len,
+                    (long)NULL,
+                    (long)0) == -1)
             return 100;
         return (long)clk_info.hz;
 
@@ -66,14 +79,20 @@ long sysconf(int name) {
         mib[0] = CTL_KERN;
         mib[1] = KERN_NGROUPS;
         len = sizeof(int_val);
-        if(syscall(SYS___sysctl, (long)mib, (long)2, (long)&int_val, (long)&len, (long)NULL, (long)0) == -1)
+        if (syscall(SYS___sysctl,
+                    (long)mib,
+                    (long)2,
+                    (long)&int_val,
+                    (long)&len,
+                    (long)NULL,
+                    (long)0) == -1)
             return -1;
         return (long)int_val;
 
     case _SC_OPEN_MAX:
-        if(syscall(SYS_getrlimit, (long)RLIMIT_NOFILE, (long)&rl) == -1)
+        if (syscall(SYS_getrlimit, (long)RLIMIT_NOFILE, (long)&rl) == -1)
             return 256;
-        if(rl.rlim_cur == 0x7FFFFFFFFFFFFFFFLL)
+        if (rl.rlim_cur == 0x7FFFFFFFFFFFFFFFLL)
             return -1;
         return (long)rl.rlim_cur;
 
@@ -150,7 +169,13 @@ long sysconf(int name) {
         mib[0] = CTL_HW;
         mib[1] = HW_PAGESIZE;
         len = sizeof(int_val);
-        if(syscall(SYS___sysctl, (long)mib, (long)2, (long)&int_val, (long)&len, (long)NULL, (long)0) == -1)
+        if (syscall(SYS___sysctl,
+                    (long)mib,
+                    (long)2,
+                    (long)&int_val,
+                    (long)&len,
+                    (long)NULL,
+                    (long)0) == -1)
             return 4096;
         return (long)int_val;
 

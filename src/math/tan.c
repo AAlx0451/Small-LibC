@@ -1,21 +1,16 @@
 /* This file has been put into the public domain by its author. */
 
+#include <errno.h>
+#include <fenv.h>
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
-#include <errno.h>
-#include <fenv.h>
 
 static const uint32_t TwoOverPi32[] = {
-    0xA2F9836E, 0x4E441529, 0xFC2757D1, 0xF534DDC0,
-    0xDB629599, 0x3C439041, 0xFE5163AB, 0xDEBBC561,
-    0xB7246E3A, 0x424DD2E0, 0x06492EEA, 0x09D1921C,
-    0xFE1DEB1C, 0xB129A73E, 0xE88235F5, 0x2EBB4484,
-    0xE99C7026, 0xB45F7E41, 0x3991D639, 0x835339F4,
-    0x9C845F8B, 0xBDF9283B, 0x1FF897FF, 0xDE05980F,
-    0xEF2F118B, 0x5A0A6D1F, 0x6D367ECF, 0x27CB09B7,
-    0x4F463F66, 0x9E5FEA2D, 0x7527BAC7, 0xEBE5F17C
-};
+    0xA2F9836E, 0x4E441529, 0xFC2757D1, 0xF534DDC0, 0xDB629599, 0x3C439041, 0xFE5163AB, 0xDEBBC561,
+    0xB7246E3A, 0x424DD2E0, 0x06492EEA, 0x09D1921C, 0xFE1DEB1C, 0xB129A73E, 0xE88235F5, 0x2EBB4484,
+    0xE99C7026, 0xB45F7E41, 0x3991D639, 0x835339F4, 0x9C845F8B, 0xBDF9283B, 0x1FF897FF, 0xDE05980F,
+    0xEF2F118B, 0x5A0A6D1F, 0x6D367ECF, 0x27CB09B7, 0x4F463F66, 0x9E5FEA2D, 0x7527BAC7, 0xEBE5F17C};
 
 /* Full precision pi/2 chunks for Payne-Hanek */
 static const double PIO2_1 = 0x1.921fb54442d18p+0;
@@ -27,24 +22,24 @@ static const double CW_PIO2_1 = 0x1.921fb54400000p+0;
 static const double CW_PIO2_2 = 0x1.0b4611a626331p-34;
 static const double CW_PIO2_3 = 0x1.3198a2e037073p-69;
 
-static const double INV_PIO2  = 0x1.45f306dc9c883p-1; /* 2/pi */
+static const double INV_PIO2 = 0x1.45f306dc9c883p-1; /* 2/pi */
 
 /* Polynomial coefficients for tan(r) = r + r^3 * Q(r^2) */
-static const double C0  =  0x1.5555555555555p-2;
-static const double C1  =  0x1.111111111114bp-3;
-static const double C2  =  0x1.ba1ba1ba1eae3p-5;
-static const double C3  =  0x1.664f488018e08p-6;
-static const double C4  =  0x1.226e360ae16c5p-7;
-static const double C5  =  0x1.d6d3a2f58150ap-9;
-static const double C6  =  0x1.7da7282c5eb51p-10;
-static const double C7  =  0x1.3523ae40610b1p-11;
-static const double C8  =  0x1.f96fe3d4aac8bp-13;
-static const double C9  =  0x1.7bb3294d0a2f4p-14;
-static const double C10 =  0x1.ca2c40b9d2b1bp-15;
+static const double C0 = 0x1.5555555555555p-2;
+static const double C1 = 0x1.111111111114bp-3;
+static const double C2 = 0x1.ba1ba1ba1eae3p-5;
+static const double C3 = 0x1.664f488018e08p-6;
+static const double C4 = 0x1.226e360ae16c5p-7;
+static const double C5 = 0x1.d6d3a2f58150ap-9;
+static const double C6 = 0x1.7da7282c5eb51p-10;
+static const double C7 = 0x1.3523ae40610b1p-11;
+static const double C8 = 0x1.f96fe3d4aac8bp-13;
+static const double C9 = 0x1.7bb3294d0a2f4p-14;
+static const double C10 = 0x1.ca2c40b9d2b1bp-15;
 static const double C11 = -0x1.4946197edc81ep-17;
-static const double C12 =  0x1.2a1abbf8dd9fep-15;
+static const double C12 = 0x1.2a1abbf8dd9fep-15;
 static const double C13 = -0x1.2b568f1bb38fbp-16;
-static const double C14 =  0x1.1935262e16c74p-17;
+static const double C14 = 0x1.1935262e16c74p-17;
 
 static int rem_pio2_large(double x, double *r_hi, double *r_lo)
 {
@@ -80,8 +75,11 @@ static int rem_pio2_large(double x, double *r_hi, double *r_lo)
 
     M[0] = (uint32_t)(m & 0xFFFFFFFF);
     M[1] = (uint32_t)(m >> 32);
-    F[0] = f3; F[1] = f2; F[2] = f1; F[3] = f0;
-    
+    F[0] = f3;
+    F[1] = f2;
+    F[2] = f1;
+    F[3] = f0;
+
     memset(R, 0, sizeof(R));
 
     for (i = 0; i < 2; i++) {
@@ -95,20 +93,19 @@ static int rem_pio2_large(double x, double *r_hi, double *r_lo)
     }
 
     quad = ((R[4] & 1) << 1) | (R[3] >> 31);
-    frac_bits = ((uint64_t)(R[3] & 0x7FFFFFFF) << 33) 
-              | ((uint64_t)R[2] << 1) 
-              | ((uint64_t)R[1] >> 31);
+    frac_bits =
+        ((uint64_t)(R[3] & 0x7FFFFFFF) << 33) | ((uint64_t)R[2] << 1) | ((uint64_t)R[1] >> 31);
 
     f_hi = (double)(frac_bits >> 32) * 0x1.0p-32;
     f_lo = (double)(frac_bits & 0xFFFFFFFF) * 0x1.0p-64;
 
     if (f_hi >= 0x1.0p-1) {
-        f_hi -= 0x1.0p+0; 
+        f_hi -= 0x1.0p+0;
         quad++;
     }
 
     rhi = f_hi * PIO2_1;
-    err1 = fma(f_hi, PIO2_1, -rhi); 
+    err1 = fma(f_hi, PIO2_1, -rhi);
     rlo = f_lo * PIO2_1 + f_hi * PIO2_2;
 
     rhi_final = rhi + rlo;
@@ -133,15 +130,19 @@ double tan(double x)
 
     /* Domain Error: The x argument is +/-Inf. */
     if (isinf(x)) {
-        if (math_errhandling & MATH_ERRNO) errno = EDOM;
-        if (math_errhandling & MATH_ERREXCEPT) feraiseexcept(FE_INVALID);
+        if (math_errhandling & MATH_ERRNO)
+            errno = EDOM;
+        if (math_errhandling & MATH_ERREXCEPT)
+            feraiseexcept(FE_INVALID);
         return nan("");
     }
 
     /* Range Error: The value of x is subnormal. */
     if (fpclassify(x) == FP_SUBNORMAL) {
-        if (math_errhandling & MATH_ERRNO) errno = ERANGE;
-        if (math_errhandling & MATH_ERREXCEPT) feraiseexcept(FE_UNDERFLOW);
+        if (math_errhandling & MATH_ERRNO)
+            errno = ERANGE;
+        if (math_errhandling & MATH_ERREXCEPT)
+            feraiseexcept(FE_UNDERFLOW);
         return x;
     }
 
@@ -161,14 +162,14 @@ double tan(double x)
     if (ax <= 0x1.921fb54442d18p-1) { /* 0.7853981633974483 */
         r_hi = ax;
         r_lo = 0x0.0p+0;
-    } else if (ax < 0x1.0p+20) {      /* 1048576.0 */
+    } else if (ax < 0x1.0p+20) { /* 1048576.0 */
         qd = round(ax * INV_PIO2);
         quad = (int)qd;
-        
+
         /* CW_PIO2_1 has 21 trailing zeros, meaning ax - qd*CW_PIO2_1 is exact for qd < 2^21 */
         r_hi = ax - qd * CW_PIO2_1;
         r_lo = -qd * CW_PIO2_2 - qd * CW_PIO2_3;
-        
+
         r_hi_new = r_hi + r_lo;
         r_lo = r_lo - (r_hi_new - r_hi);
         r_hi = r_hi_new;

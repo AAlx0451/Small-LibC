@@ -1,7 +1,8 @@
 #include "impl.h"
 #include <fenv.h>
 
-int feholdexcept(fenv_t *envp) {
+int feholdexcept(fenv_t *envp)
+{
     fegetenv(envp);
     feclearexcept(FE_ALL_EXCEPT);
     uint32_t cw = _get_fp_control();

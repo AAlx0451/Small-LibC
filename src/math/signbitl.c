@@ -5,7 +5,8 @@
 #include <stdint.h>
 #include <string.h>
 
-int _Signbitl(long double l) {
+int _Signbitl(long double l)
+{
 #if LDBL_MANT_DIG == 53
     /* 64-bit long double (MSVC, ARM) */
     return _Signbit((double)l);
@@ -16,7 +17,7 @@ int _Signbitl(long double l) {
     int is_little = (*(const uint8_t *)&endian_check == 1);
 
     uint16_t sign_exp;
-    if(is_little) {
+    if (is_little) {
         /* x86: last 2 bytes are sign */
         memcpy(&sign_exp, (const unsigned char *)&l + 8, 2);
     } else {

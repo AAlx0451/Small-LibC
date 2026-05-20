@@ -1,8 +1,9 @@
+#include <math.h>
 #include <stdint.h>
 #include <string.h>
-#include <math.h>
 
-double trunc(double x) {
+double trunc(double x)
+{
     uint64_t i;
     int exponent;
     uint64_t mask;

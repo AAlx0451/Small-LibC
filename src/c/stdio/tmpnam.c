@@ -9,14 +9,15 @@ static volatile int _tmpnam_lock = 0;
 static unsigned int _tmpnam_counter = 0;
 static char _tmpnam_static_buf[L_tmpnam];
 
-char *tmpnam(char *s) {
+char *tmpnam(char *s)
+{
     char *p;
     unsigned int count;
     pid_t pid;
     int attempts;
 
     /* determine buffer (user-provided or internal static) */
-    if(s == NULL) {
+    if (s == NULL) {
         p = _tmpnam_static_buf;
     } else {
         p = s;
@@ -25,7 +26,7 @@ char *tmpnam(char *s) {
     pid = getpid();
 
     /* generation loop */
-    for(attempts = 0; attempts < TMP_MAX; attempts++) {
+    for (attempts = 0; attempts < TMP_MAX; attempts++) {
 
         /* get unique counter value atomically */
         /* we lock ONLY the increment to ensure scalability */
@@ -38,9 +39,9 @@ char *tmpnam(char *s) {
         sprintf(p, "/tmp/t%u.%u", (unsigned int)pid, count);
 
         /* check for existence using access() */
-        if(access(p, F_OK) == -1) {
+        if (access(p, F_OK) == -1) {
             /* ENOENT - name is free */
-            if(errno == ENOENT) {
+            if (errno == ENOENT) {
                 return p;
             }
         }

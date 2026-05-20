@@ -7,8 +7,9 @@ static char *active_locales[7] = {NULL};
 static const char c_locale_name[] = "C";
 static char ret_buf[256];
 
-static const char *get_env_name(int category) {
-    switch(category) {
+static const char *get_env_name(int category)
+{
+    switch (category) {
     case LC_ALL:
         return "LC_ALL";
     case LC_CTYPE:
@@ -28,60 +29,62 @@ static const char *get_env_name(int category) {
     }
 }
 
-char *setlocale(int category, const char *locale) {
+char *setlocale(int category, const char *locale)
+{
     const char *target;
     int i, start, end;
 
-    if(category < 0 || category > 6) {
+    if (category < 0 || category > 6) {
         return NULL;
     }
 
-    if(locale == NULL) {
-        if(category == LC_ALL) {
-            for(i = 0; i <= 6; i++) {
-                if(i != LC_ALL && active_locales[i]) {
+    if (locale == NULL) {
+        if (category == LC_ALL) {
+            for (i = 0; i <= 6; i++) {
+                if (i != LC_ALL && active_locales[i]) {
                     return active_locales[i];
                 }
             }
             return __deconst(char *, c_locale_name);
         }
-        return active_locales[category] ? active_locales[category] : __deconst(char *, c_locale_name);
+        return active_locales[category] ? active_locales[category]
+                                        : __deconst(char *, c_locale_name);
     }
 
     target = locale;
-    if(locale[0] == '\0') {
+    if (locale[0] == '\0') {
         target = getenv("LC_ALL");
-        if(!target || target[0] == '\0') {
+        if (!target || target[0] == '\0') {
             target = getenv(get_env_name(category));
         }
-        if(!target || target[0] == '\0') {
+        if (!target || target[0] == '\0') {
             target = getenv("LANG");
         }
-        if(!target || target[0] == '\0') {
+        if (!target || target[0] == '\0') {
             target = c_locale_name;
         }
     }
 
-    if(strcmp(target, "C") == 0 || strcmp(target, "POSIX") == 0) {
+    if (strcmp(target, "C") == 0 || strcmp(target, "POSIX") == 0) {
         target = c_locale_name;
     }
 
     start = (category == LC_ALL) ? 0 : category;
     end = (category == LC_ALL) ? 6 : category;
 
-    for(i = start; i <= end; i++) {
-        if(i == LC_ALL && category == LC_ALL)
+    for (i = start; i <= end; i++) {
+        if (i == LC_ALL && category == LC_ALL)
             continue;
 
-        if(i == LC_CTYPE) {
-            if(setrlocale(target) != 0)
+        if (i == LC_CTYPE) {
+            if (setrlocale(target) != 0)
                 return NULL;
         }
-        if(active_locales[i] && active_locales[i] != c_locale_name) {
+        if (active_locales[i] && active_locales[i] != c_locale_name) {
             free(active_locales[i]);
         }
 
-        if(target == c_locale_name) {
+        if (target == c_locale_name) {
             active_locales[i] = __deconst(char *, c_locale_name);
         } else {
             active_locales[i] = strdup(target);

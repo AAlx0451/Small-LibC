@@ -5,13 +5,14 @@
 #include <string.h>
 #include <unistd.h>
 
-FILE *freopen(const char *pathname, const char *mode, FILE *stream) {
+FILE *freopen(const char *pathname, const char *mode, FILE *stream)
+{
     int open_flags = 0;
     unsigned int stdio_flags = 0;
     int fd;
     unsigned int preserve_flags;
 
-    if(stream == NULL) {
+    if (stream == NULL) {
         return NULL;
     }
 
@@ -22,14 +23,14 @@ FILE *freopen(const char *pathname, const char *mode, FILE *stream) {
 
     /* close the old file descriptor */
     /* even if open fails later, the original stream is closed */
-    if(stream->_fd >= 0) {
+    if (stream->_fd >= 0) {
         close(stream->_fd);
     }
     stream->_fd = -1;
-    if(strchr(mode, '+')) {
+    if (strchr(mode, '+')) {
         open_flags |= O_RDWR;
         stdio_flags |= __S_RW;
-    } else if(*mode == 'r') {
+    } else if (*mode == 'r') {
         open_flags |= O_RDONLY;
         stdio_flags |= __S_RD;
     } else {
@@ -37,14 +38,14 @@ FILE *freopen(const char *pathname, const char *mode, FILE *stream) {
         stdio_flags |= __S_WR;
     }
 
-    if(*mode == 'w') {
+    if (*mode == 'w') {
         open_flags |= O_CREAT | O_TRUNC;
-    } else if(*mode == 'a') {
+    } else if (*mode == 'a') {
         open_flags |= O_CREAT | O_APPEND;
-    } else if(*mode == 'r' && !(stdio_flags & __S_RW)) {
+    } else if (*mode == 'r' && !(stdio_flags & __S_RW)) {
         /* 'r' or 'rb' - nothing extra */
-    } else if(strchr(mode, '+')) {
-        if(*mode != 'r') {
+    } else if (strchr(mode, '+')) {
+        if (*mode != 'r') {
             open_flags |= O_CREAT;
         }
     } else {
@@ -57,7 +58,7 @@ FILE *freopen(const char *pathname, const char *mode, FILE *stream) {
 
     /* open new file descriptor */
     fd = open(pathname, open_flags, 0666);
-    if(fd < 0) {
+    if (fd < 0) {
         _spin_unlock(&stream->_lock);
         fclose(stream); /* fclose will get the lock */
         return NULL;
@@ -79,7 +80,7 @@ FILE *freopen(const char *pathname, const char *mode, FILE *stream) {
     /* reset mbstate */
     memset(&stream->_mbstate, 0, sizeof(stream->_mbstate));
 
-    if(stdio_flags & __S_RD) {
+    if (stdio_flags & __S_RD) {
         stream->_cnt = 0;
     } else {
         stream->_cnt = stream->_bsize;

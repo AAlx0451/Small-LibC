@@ -3,9 +3,10 @@
 #include <sys/ioctl.h>
 #include <termios.h>
 
-int tcsetattr(int fd, int opt, const struct termios *t) {
+int tcsetattr(int fd, int opt, const struct termios *t)
+{
     unsigned long request;
-    switch(opt) {
+    switch (opt) {
     case TCSANOW:
         request = TIOCSETA;
         break;

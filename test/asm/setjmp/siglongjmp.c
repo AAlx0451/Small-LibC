@@ -1,3 +1,1 @@
-void siglongjmp_test() {
-    return; /* see sigsetjmp_test */
-}
+void siglongjmp_test() { return; /* see sigsetjmp_test */ }

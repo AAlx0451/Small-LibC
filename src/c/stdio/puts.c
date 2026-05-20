@@ -3,21 +3,22 @@
 #include <stdlib.h>
 #include <wchar.h>
 
-int puts(const char *s) {
+int puts(const char *s)
+{
     int result = 0;
 
     int mode = fwide(stdout, 0);
-    if(mode > 0)
+    if (mode > 0)
         return EOF;
-    else if(mode == 0)
+    else if (mode == 0)
         fwide(stdout, -1);
 
     _spin_lock(&stdout->_lock);
 
-    if(stdout->_base == NULL) {
+    if (stdout->_base == NULL) {
         size_t size = (stdout->_flags & __S_NBF) ? 1 : BUFSIZ;
         stdout->_base = (unsigned char *)malloc(size);
-        if(stdout->_base == NULL) {
+        if (stdout->_base == NULL) {
             result = EOF;
             goto done;
         }
@@ -27,23 +28,23 @@ int puts(const char *s) {
         stdout->_cnt = size;
     }
 
-    if(stdout->_flags & __S_RD) {
+    if (stdout->_flags & __S_RD) {
         stdout->_flags &= ~__S_RD;
         stdout->_flags |= __S_WR;
         stdout->_cnt = stdout->_bsize;
         stdout->_ptr = stdout->_base;
-    } else if(!(stdout->_flags & __S_WR)) {
+    } else if (!(stdout->_flags & __S_WR)) {
         stdout->_flags |= __S_WR;
-        if(stdout->_cnt == 0 && stdout->_ptr == stdout->_base) {
+        if (stdout->_cnt == 0 && stdout->_ptr == stdout->_base) {
             stdout->_cnt = stdout->_bsize;
         }
     }
 
     stdout->_flags |= __S_DIRTY;
 
-    while(*s) {
-        if(stdout->_cnt <= 0) {
-            if(__stdio_flush_impl(stdout) == EOF) {
+    while (*s) {
+        if (stdout->_cnt <= 0) {
+            if (__stdio_flush_impl(stdout) == EOF) {
                 result = EOF;
                 goto done;
             }
@@ -54,8 +55,8 @@ int puts(const char *s) {
         stdout->_cnt--;
     }
 
-    if(stdout->_cnt <= 0) {
-        if(__stdio_flush_impl(stdout) == EOF) {
+    if (stdout->_cnt <= 0) {
+        if (__stdio_flush_impl(stdout) == EOF) {
             result = EOF;
             goto done;
         }
@@ -65,8 +66,8 @@ int puts(const char *s) {
     *stdout->_ptr++ = '\n';
     stdout->_cnt--;
 
-    if((stdout->_flags & __S_LBF) || (stdout->_flags & __S_NBF)) {
-        if(__stdio_flush_impl(stdout) == EOF) {
+    if ((stdout->_flags & __S_LBF) || (stdout->_flags & __S_NBF)) {
+        if (__stdio_flush_impl(stdout) == EOF) {
             result = EOF;
         }
     }

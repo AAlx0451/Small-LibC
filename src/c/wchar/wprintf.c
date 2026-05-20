@@ -2,7 +2,8 @@
 #include <stdio.h>
 #include <wchar.h>
 
-int wprintf(const wchar_t *format, ...) {
+int wprintf(const wchar_t *format, ...)
+{
     va_list args;
     int done;
 

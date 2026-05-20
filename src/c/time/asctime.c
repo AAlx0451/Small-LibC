@@ -2,19 +2,19 @@
 
 static char asctime_buf[26];
 
-static const char *wday_name[7] = {
-    "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
+static const char *wday_name[7] = {"Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-static const char *mon_name[12] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+static const char *mon_name[12] =
+    {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 
-static void format_2d(char *dest, int value) {
+static void format_2d(char *dest, int value)
+{
     dest[0] = ((char)(value / 10)) + '0';
     dest[1] = ((char)(value % 10)) + '0';
 }
 
-char *asctime(const struct tm *timeptr) {
+char *asctime(const struct tm *timeptr)
+{
     int year;
     asctime_buf[0] = wday_name[timeptr->tm_wday][0];
     asctime_buf[1] = wday_name[timeptr->tm_wday][1];
@@ -26,7 +26,7 @@ char *asctime(const struct tm *timeptr) {
     asctime_buf[6] = mon_name[timeptr->tm_mon][2];
     asctime_buf[7] = ' ';
 
-    if(timeptr->tm_mday < 10) {
+    if (timeptr->tm_mday < 10) {
         asctime_buf[8] = ' ';
         asctime_buf[9] = ((char)(timeptr->tm_mday)) + '0';
     } else {
