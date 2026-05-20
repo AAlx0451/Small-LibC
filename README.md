@@ -15,10 +15,6 @@ If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile 
 * POSIX.1-1990
 * POSIX.2-1992
 
-... are implemented
-
-Note math is not fully implemented, but WIP. It's mostly faithfully rounded, but no guarantees.
-
 ## License
 This project is a Public Domain and licensed under The Unlicense. Note that 570161d commit and older are MIT-licensed
  
@@ -30,6 +26,6 @@ This project is a Public Domain and licensed under The Unlicense. Note that 5701
 4. `./src/asm` -- Code written in asm
 5. `./src/runtime/asm` -- C Startup code and UBSan runtime
 6. `./src/runtime/c` -- stack canary, arm compiler runtime routines
-7. `./src/math` -- libM
+7. `./src/math` -- libM (mostly faithfully rounded)
 8. `./test` -- Tests
 9. `./doc` -- Documentation
