@@ -6,28 +6,28 @@
 
 /* Sollya coefficients from asin */
 /* Infinity norm absolute error: 0x1.48e8eade6df16c93c36685fe2a6b754db19e4730fb88c5443p-62 */
-#define POLY_C3_HI   0x1.55555555555cbp-3
-#define POLY_C3_LO  -0x1.b12762b7206cp-62
-#define POLY_C5_HI   0x1.33333333258dap-4
-#define POLY_C5_LO   0x1.fa67b515bfd94p-60
-#define POLY_C7_HI   0x1.6db6db774e7bdp-5
-#define POLY_C7_LO  -0x1.e8ad36345bec8p-59
-#define POLY_C9      0x1.f1c718e444517p-6
-#define POLY_C11     0x1.6e8c09101cba6p-6
-#define POLY_C13     0x1.1c4743e2598a1p-6
-#define POLY_C15     0x1.ca5a48a988944p-7
-#define POLY_C17     0x1.73c871cdd8476p-7
-#define POLY_C19     0x1.6a5764f0b3a76p-7
-#define POLY_C21     0x1.648438f282542p-9
-#define POLY_C23     0x1.88dfa941e5e64p-6
-#define POLY_C25    -0x1.8a267bcc1fd33p-6
-#define POLY_C27     0x1.1a42423792acfp-5
+static const double POLY_C3_HI =  0x1.55555555555cbp-3;
+static const double POLY_C3_LO = -0x1.b12762b7206cp-62;
+static const double POLY_C5_HI =  0x1.33333333258dap-4;
+static const double POLY_C5_LO =  0x1.fa67b515bfd94p-60;
+static const double POLY_C7_HI =  0x1.6db6db774e7bdp-5;
+static const double POLY_C7_LO = -0x1.e8ad36345bec8p-59;
+static const double POLY_C9    =  0x1.f1c718e444517p-6;
+static const double POLY_C11   =  0x1.6e8c09101cba6p-6;
+static const double POLY_C13   =  0x1.1c4743e2598a1p-6;
+static const double POLY_C15   =  0x1.ca5a48a988944p-7;
+static const double POLY_C17   =  0x1.73c871cdd8476p-7;
+static const double POLY_C19   =  0x1.6a5764f0b3a76p-7;
+static const double POLY_C21   =  0x1.648438f282542p-9;
+static const double POLY_C23   =  0x1.88dfa941e5e64p-6;
+static const double POLY_C25   = -0x1.8a267bcc1fd33p-6;
+static const double POLY_C27   =  0x1.1a42423792acfp-5;
 
 /* Pi and Pi/2 precise Double-Double representations */
-#define PI_O_2_HI    0x1.921fb54442d18p+0
-#define PI_O_2_LO    0x1.1a62633145c07p-54
-#define PI_HI        0x1.921fb54442d18p+1
-#define PI_LO        0x1.1a62633145c07p-53
+static const double PI_O_2_HI =  0x1.921fb54442d18p+0;
+static const double PI_O_2_LO =  0x1.1a62633145c07p-54;
+static const double PI_HI     =  0x1.921fb54442d18p+1;
+static const double PI_LO     =  0x1.1a62633145c07p-53;
 
 double acos(double x) {
     /* acos(NaN) is NaN */
