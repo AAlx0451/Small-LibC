@@ -169,32 +169,72 @@ double sin(double x)
      * The threshold 2^20 ensures that kd doesn't obscure the precision of PIO2_1.
      */
     if (abs_x <= 0x1.0p+20) { /* 2^20 */
-        double y = x * InvPi2;
+        /* Always compute using positive x to ensure logic symmetry */
+        double y = abs_x * InvPi2;
         double kd = round(y);
         int64_t k = (int64_t)kd;
         quad = k & 3;
 
-        r_hi = fma(-kd, PIO2_1, x);
-        r_hi = fma(-kd, PIO2_2, r_hi);
-        r_hi = fma(-kd, PIO2_3, r_hi);
-        r_lo = -kd * PIO2_4;
+        /* First chunk is exact via Sterbenz Lemma */
+        double kh = kd * PIO2_1;
+        double kl = fma(kd, PIO2_1, -kh);
+        
+        double rh = abs_x - kh;
+        double rl = -kl;
+
+        /* Robust TwoSum algorithm for subtracting PIO2_2.
+           Guarantees 100% accurate double-double error tracking
+           regardless of relative operand magnitude. */
+        double kh2 = kd * PIO2_2;
+        double kl2 = fma(kd, PIO2_2, -kh2);
+        
+        double rh2 = rh - kh2;
+        double a_virt2 = rh2 + kh2;
+        double b_virt2 = rh2 - a_virt2;
+        double rh2_err = (rh - a_virt2) - (kh2 + b_virt2);
+        
+        double rl2 = rl - kl2 + rh2_err;
+
+        /* Robust TwoSum for subtracting PIO2_3 */
+        double kh3 = kd * PIO2_3;
+        double kl3 = fma(kd, PIO2_3, -kh3);
+        
+        double rh3 = rh2 - kh3;
+        double a_virt3 = rh3 + kh3;
+        double b_virt3 = rh3 - a_virt3;
+        double rh3_err = (rh2 - a_virt3) - (kh3 + b_virt3);
+        
+        double rl3 = rl2 - kl3 + rh3_err;
+
+        /* Subtract final minimal tail */
+        rl3 -= kd * PIO2_4;
+
+        /* Final highly accurate normalization */
+        r_hi = rh3 + rl3;
+        double a_virt_f = r_hi - rl3;
+        double b_virt_f = r_hi - a_virt_f;
+        r_lo = (rh3 - a_virt_f) + (rl3 - b_virt_f);
+
     } else {
         /* Payne-Hanek reduction for huge numbers */
         quad = rem_pio2_large(abs_x, &r_hi, &r_lo);
-        if (x < 0x0.0p+0) {
-            r_hi = -r_hi;
-            r_lo = -r_lo;
-            quad = (-quad) & 3;
-        }
     }
 
-    /*
-     * Core function evaluations.
-     * The logic for calculating the polynomial is explicitly inlined here.
-     */
+    /* Apply symmetry rules for original negative input */
+    if (x < 0x0.0p+0) {
+        r_hi = -r_hi;
+        r_lo = -r_lo;
+        quad = (-quad) & 3;
+    }
+
+    /* Core function evaluations */
     double r2 = r_hi * r_hi;
     if ((quad & 1) == 0) {
         /* Core sine approximation: sin(r) ~ r + r^3 * P(r^2) */
+        
+        /* Compute r2_err to compensate precision in cubic calculations */
+        double r2_err = fma(r_hi, r_hi, -r2);
+        
         double p = S6;
         p = fma(p, r2, S5);
         p = fma(p, r2, S4);
@@ -204,12 +244,28 @@ double sin(double x)
         p = fma(p, r2, S0);
 
         double r3 = r2 * r_hi;
-        double res = r_hi + (r_lo + r3 * p);
+        double poly = r3 * p;
+
+        /*
+         * Correctly compensate for the missing Taylor expansion cross term:
+         * sin(hi + lo) approx sin(hi) + cos(hi)*lo approx sin(hi) + (1 - r2/2)*lo.
+         */
+        double r_lo_adj = fma(-0x1.0p-1 * r2, r_lo, r_lo);
+        
+        /* Add correction for r2_err in r3 evaluation.
+           Missing term from poly is r_hi * r2_err * S0 */
+        r_lo_adj += r_hi * r2_err * S0;
+
+        /* Fast2Sum to add r_hi and poly flawlessly, preventing intermediate rounding loss */
+        double s = r_hi + poly;
+        double virt = s - r_hi;
+        double poly_err = poly - virt;
+        
+        double res = s + (poly_err + r_lo_adj);
 
         return (quad == 0) ? res : -res;
     } else {
         /* Core cosine approximation: cos(r) ~ 1 - r^2/2 + r^4 * P(r^2) */
-        /* Capture the bits lost during the squaring of r_hi using FMA */
         double r2_err = fma(r_hi, r_hi, -r2);
 
         double p = C6;
@@ -224,11 +280,28 @@ double sin(double x)
         double poly = r4 * p;
 
         /*
-         * Approximation: cos(hi + lo) approx cos(hi) - hi*lo.
-         * Combine the square error (r2_err) and the argument tail (r_lo).
+         * Extremely accurate subtraction 1.0 - r_hi^2 / 2.
+         * We compute `w = 1.0 - hz`, then use Fast2Sum to strictly 
+         * recover the least significant bits of `hz` that were shifted out.
          */
-        double comp = fma(-r_hi, r_lo, 0x1.0p-1 * r2_err);
-        double res = 0x1.0p+0 - (0x1.0p-1 * r2 - (poly - comp));
+        double hz = 0x1.0p-1 * r2;
+        double w = 0x1.0p+0 - hz;
+        double err = (0x1.0p+0 - w) - hz;
+
+        /* Compensation term: r_hi * r_lo + 0.5 * r2_err */
+        double comp = fma(r_hi, r_lo, 0x1.0p-1 * r2_err);
+
+        /* Add Taylor series correction for sin(r_hi) * r_lo ≈ (r_hi + r_hi^3 * S0) * r_lo */
+        double r3 = r_hi * r2;
+        comp += r3 * r_lo * S0;
+
+        /* Fast2Sum to combine w and poly perfectly without truncating poly bits */
+        double s = w + poly;
+        double virt = s - w;
+        double poly_err = poly - virt;
+
+        /* Evaluate final response rigorously: combine ultra-small errors together first */
+        double res = s + (poly_err + (err - comp));
 
         return (quad == 1) ? res : -res;
     }
