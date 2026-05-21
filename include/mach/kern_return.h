@@ -1,4 +1,4 @@
-#ifndef	MACH_KERN_RETURN_H
+#ifndef MACH_KERN_RETURN_H
 #define MACH_KERN_RETURN_H
 
 #include <features.h>
