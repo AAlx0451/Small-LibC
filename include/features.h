@@ -31,6 +31,13 @@
 #else
 # define __fallthrough ((void)0)
 #endif /* __slibc_has_attribute(fallthrough) */
+#if defined(__ASSEMBLER__) || defined(ASSEMBLER) || defined(_ASM_SOURCE)
+# ifndef _ASM_SOURCE
+#  define _ASM_SOURCE
+# endif /* !_ASM_SOURCE */
+#else
+# define _C_SOURCE /* used at mach only */
+#endif /* __ASSEMBLER__ || ASSEMBLER || _ASM_SOURCE */
 #if defined(_ANSI_SOURCE) || defined(__STRICT_ANSI__)
 # undef _POSIX_C_SOURCE
 # undef _POSIX_SOURCE
@@ -55,6 +62,7 @@
 #  define _POSIX_C_SOURCE 200809L
 #  define _XOPEN_SOURCE 700
 #  define SMALL_LIBC
+#  define _MACH_SOURCE
 #  define __deconst(type, val) ((type)(uintptr_t)(const void *)(val))
 # elif defined(_XOPEN_SOURCE) 
 #  if _XOPEN_SOURCE < 500 && (_POSIX_C_SOURCE < 2L)
