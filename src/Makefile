@@ -1,16 +1,18 @@
-CC = clang
+CC ?= clang
 INCDIR = ../include
 OBJDIR = obj
 CFLAGS := -Os
 
-TARGET_LIBC = libc.a
-TARGET_LIBRT = librt.a
-TARGET_LIBM = libm.a
+TARGET_LIBC       = libc.a
+TARGET_LIBRT      = librt.a
+TARGET_LIBM       = libm.a
+TARGET_LIBMACH    = libmach.a
+TARGET_LIBM_DYLIB = libm.dylib
 
-GENERIC_SRCS := $(wildcard c/*/*.c c/*/*/*.c)
-SYSDEP_SRCS  := asm/syscall.c $(wildcard asm/*/*.c asm/*.c)
-RT_SRCS      := $(wildcard runtime/*/*.c)
-MATH_SRCS    := $(wildcard math/*.c)
+C_SRCS    := $(shell find c asm -name '*.c' 2>/dev/null)
+RT_SRCS   := $(shell find runtime -name '*.c' 2>/dev/null)
+MATH_SRCS := $(shell find math -name '*.c' 2>/dev/null)
+MACH_SRCS := $(shell find mach -name '*.c' 2>/dev/null)
 
 MATHERR_WORDS := $(subst |, ,$(MATHERR))
 HAS_ERRNO := $(filter errno,$(MATHERR_WORDS))
@@ -33,11 +35,11 @@ Q = $(if $(filter 1,$(VERBOSE)),,@)
 
 .PHONY: all clean install uninstall
 
-all: $(TARGET_LIBC) $(TARGET_LIBRT) $(TARGET_LIBM)
+all: $(TARGET_LIBC) $(TARGET_LIBRT) $(TARGET_LIBM) $(TARGET_LIBMACH)
 
 ifeq ($(CROSS), 1)
   ifndef SDK
-    $(error SDK path must be set for cross-compilation)
+    $(error SDK path must be set for cross-compilation when CROSS=1)
   endif
 
   AR = llvm-ar
@@ -46,44 +48,50 @@ ifeq ($(CROSS), 1)
   ARCH_LIST = $(subst $(comma), ,$(ARCHES))
   ARCHES ?= armv7
 
-  BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -isystem $(INCDIR) -fPIC -std=gnu11
+  BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -isystem $(INCDIR) -fPIC -std=gnu11 -isysroot $(SDK)
 
   define BUILD_ARCH
-    OBJS_$(1) := $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(GENERIC_SRCS) $(SYSDEP_SRCS) $(RT_SRCS) $(MATH_SRCS))
+    OBJS_$(1) := $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(C_SRCS) $(RT_SRCS) $(MATH_SRCS) $(MACH_SRCS))
     
     $(OBJDIR)/$(1)/math/%.o: BASE_CFLAGS += $(MATH_CFLAGS)
 
     $(OBJDIR)/$(1)/%.o: %.c
-	@echo -e "\tCC\t[$(1)] $$<"
-	@mkdir -p $$(dir $$@)
-	$(Q)$(CC) $$(BASE_CFLAGS) -target $(1)-apple-ios6.1 -c $$< -o $$@
+		@printf "\tCC\t[$(1)] %%s\n" "$$<"
+		@mkdir -p $$(dir $$@)
+		$(Q)$(CC) $$(BASE_CFLAGS) -target $(1)-apple-ios6.1 -c $$< -o $$@
 
-    $(OBJDIR)/$(1)/libc.a: $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(GENERIC_SRCS) $(SYSDEP_SRCS))
+    $(OBJDIR)/$(1)/libc.a: $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(C_SRCS))
     $(OBJDIR)/$(1)/librt.a: $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(RT_SRCS))
     $(OBJDIR)/$(1)/libm.a: $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(MATH_SRCS))
+    $(OBJDIR)/$(1)/libmach.a: $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(MACH_SRCS))
 
     $(OBJDIR)/$(1)/%.a:
-	@echo -e "\tAR\t[$(1)] $$@"
-	@mkdir -p $$(dir $$@)
-	$(Q)$(AR) rcs $$@ $$^
+		@printf "\tAR\t[$(1)] %%s\n" "$$@"
+		@mkdir -p $$(dir $$@)
+		$(Q)$(AR) rcs $$@ $$^
 
-    ARCH_LIBS_C  += $(OBJDIR)/$(1)/libc.a
-    ARCH_LIBS_RT += $(OBJDIR)/$(1)/librt.a
-    ARCH_LIBS_M  += $(OBJDIR)/$(1)/libm.a
+    ARCH_LIBS_C    += $(OBJDIR)/$(1)/libc.a
+    ARCH_LIBS_RT   += $(OBJDIR)/$(1)/librt.a
+    ARCH_LIBS_M    += $(OBJDIR)/$(1)/libm.a
+    ARCH_LIBS_MACH += $(OBJDIR)/$(1)/libmach.a
   endef
 
   $(foreach arch,$(ARCH_LIST),$(eval $(call BUILD_ARCH,$(arch))))
 
   $(TARGET_LIBC): $(ARCH_LIBS_C)
-	@echo -e "\tLIPO\t$@"
+	@printf "\tLIPO\t%s\n" "$@"
 	$(Q)$(LIPO) -create -output $@ $^
 
   $(TARGET_LIBRT): $(ARCH_LIBS_RT)
-	@echo -e "\tLIPO\t$@"
+	@printf "\tLIPO\t%s\n" "$@"
 	$(Q)$(LIPO) -create -output $@ $^
 
   $(TARGET_LIBM): $(ARCH_LIBS_M)
-	@echo -e "\tLIPO\t$@"
+	@printf "\tLIPO\t%s\n" "$@"
+	$(Q)$(LIPO) -create -output $@ $^
+
+  $(TARGET_LIBMACH): $(ARCH_LIBS_MACH)
+	@printf "\tLIPO\t%s\n" "$@"
 	$(Q)$(LIPO) -create -output $@ $^
 
 else
@@ -92,33 +100,42 @@ else
 		-isystem /usr/share/llvm/lib/clang/7.1.0/include \
 		-isystem /usr/share/llvm/lib/clang/6.0.1/include
 
-  OBJS_C  = $(patsubst %.c,$(OBJDIR)/%.o,$(GENERIC_SRCS) $(SYSDEP_SRCS))
-  OBJS_RT = $(patsubst %.c,$(OBJDIR)/%.o,$(RT_SRCS))
-  OBJS_M  = $(patsubst %.c,$(OBJDIR)/%.o,$(MATH_SRCS))
+  OBJS_C    = $(patsubst %.c,$(OBJDIR)/%.o,$(C_SRCS))
+  OBJS_RT   = $(patsubst %.c,$(OBJDIR)/%.o,$(RT_SRCS))
+  OBJS_M    = $(patsubst %.c,$(OBJDIR)/%.o,$(MATH_SRCS))
+  OBJS_MACH = $(patsubst %.c,$(OBJDIR)/%.o,$(MACH_SRCS))
 
   $(OBJDIR)/math/%.o: BASE_CFLAGS += $(MATH_CFLAGS)
 
   $(OBJDIR)/%.o: %.c
-	@echo -e "\tCC\t$<"
+	@printf "\tCC\t%s\n" "$<"
 	@mkdir -p $(dir $@)
 	$(Q)$(CC) $(BASE_CFLAGS) -c $< -o $@
 
   $(TARGET_LIBC): $(OBJS_C)
-	@echo -e "\tAR\t$@"
+	@printf "\tAR\t%s\n" "$@"
 	$(Q)$(AR) rcs $@ $^
 
   $(TARGET_LIBRT): $(OBJS_RT)
-	@echo -e "\tAR\t$@"
+	@printf "\tAR\t%s\n" "$@"
 	$(Q)$(AR) rcs $@ $^
 
   $(TARGET_LIBM): $(OBJS_M)
-	@echo -e "\tAR\t$@"
+	@printf "\tAR\t%s\n" "$@"
+	$(Q)$(AR) rcs $@ $^
+
+  $(TARGET_LIBM_DYLIB): $(OBJS_M)
+	@printf "\tLD\t%s\n" "$@"
+	$(Q)$(CC) -dynamiclib -o $@ $^
+
+  $(TARGET_LIBMACH): $(OBJS_MACH)
+	@printf "\tAR\t%s\n" "$@"
 	$(Q)$(AR) rcs $@ $^
 endif
 
 clean:
-	@echo -e "\tCLEAN"
-	$(Q)rm -rf $(TARGET_LIBC) $(TARGET_LIBRT) $(TARGET_LIBM) $(OBJDIR)
+	@printf "\tCLEAN\n"
+	$(Q)rm -rf $(TARGET_LIBC) $(TARGET_LIBRT) $(TARGET_LIBM) $(TARGET_LIBMACH) $(TARGET_LIBM_DYLIB) $(OBJDIR)
 
 install: all
 	@echo "This lib can't be installed..."

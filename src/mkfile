@@ -1,31 +1,33 @@
-CC = clang
-INCDIR = ../include
-OBJDIR = obj
-CFLAGS = -Os
+INCDIR            = ../include
+OBJDIR            = obj
+CFLAGS            = -Os
 
-TARGET_LIBC = libc.a
-TARGET_LIBRT = librt.a
-TARGET_LIBM = libm.a
+TARGET_LIBC       = libc.a
+TARGET_LIBRT      = librt.a
+TARGET_LIBM       = libm.a
 TARGET_LIBM_DYLIB = libm.dylib
+TARGET_LIBMACH    = libmach.a
 
-AR = ar
+AR                = ar
+CC                = clang
 
 BASE_CFLAGS = $CPPFLAGS $CFLAGS -isystem $INCDIR -fPIC -std=gnu11 -nostdinc \
         -isystem /usr/share/llvm/lib/clang/7.1.0/include \
         -isystem /usr/share/llvm/lib/clang/6.0.1/include
 
-GENERIC_SRCS = `ls c/*/*.c c/*/*/*.c 2>/dev/null || true`
-SYSDEP_SRCS  = asm/syscall.c `ls asm/*/*.c asm/*.c 2>/dev/null || true`
-RT_SRCS      = `ls runtime/*/*.c 2>/dev/null || true`
-MATH_SRCS    = `ls math/*.c 2>/dev/null || true`
+C_SRCS            = `find c asm   -name '*.c' 2>/dev/null`
+RT_SRCS           = `find runtime -name '*.c' 2>/dev/null`
+MATH_SRCS         = `find math    -name '*.c' 2>/dev/null`
+MACH_SRCS         = `find mach    -name '*.c' 2>/dev/null`
 
-OBJS_C  = ${GENERIC_SRCS:%.c=$OBJDIR/%.o} ${SYSDEP_SRCS:%.c=$OBJDIR/%.o}
-OBJS_RT = ${RT_SRCS:%.c=$OBJDIR/%.o}
-OBJS_M  = ${MATH_SRCS:%.c=$OBJDIR/%.o}
+OBJS_C            = ${C_SRCS:%.c=$OBJDIR/%.o}
+OBJS_RT           = ${RT_SRCS:%.c=$OBJDIR/%.o}
+OBJS_M            = ${MATH_SRCS:%.c=$OBJDIR/%.o}
+OBJS_MACH         = ${MACH_SRCS:%.c=$OBJDIR/%.o}
 
-NPROC=4
+NPROC             = 4
 
-all:V: $TARGET_LIBC $TARGET_LIBRT $TARGET_LIBM
+all:V: $TARGET_LIBC $TARGET_LIBRT $TARGET_LIBM $TARGET_LIBMACH
 
 $OBJDIR/%.o:Q: %.c
     printf '\tCC\t%s\n' "$prereq"
@@ -57,8 +59,12 @@ $TARGET_LIBM_DYLIB:Q: $OBJS_M
     printf '\tLD\t%s\n' "$target"
     $CC -dynamiclib -o $target $prereq
 
+$TARGET_LIBMACH:Q: $OBJS_MACH
+    printf '\tAR\t%s\n' "$target"
+    $AR rcs $target $prereq
+
 clean:VQ:
     printf '\tCLEAN\n'
-    rm -rf $TARGET_LIBC $TARGET_LIBRT $TARGET_LIBM $TARGET_LIBM_DYLIB $OBJDIR
+    rm -rf $TARGET_LIBC $TARGET_LIBRT $TARGET_LIBM $TARGET_LIBM_DYLIB $TARGET_LIBMACH $OBJDIR
 
 uninstall:VQ: clean
