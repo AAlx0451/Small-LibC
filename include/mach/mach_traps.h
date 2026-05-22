@@ -8,7 +8,6 @@
 #define TODO 0
 
 #include <stdint.h>
-
 #include <mach/std_types.h>
 
 #if TODO
@@ -20,6 +19,8 @@
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <mach/vm_types.h>
+
+#if defined(_C_SOURCE)
 
 #if TODO
 extern kern_return_t clock_sleep_trap(
@@ -134,7 +135,7 @@ extern kern_return_t thread_switch(
 				mach_port_name_t thread_name,
 				int option,
 				mach_msg_timeout_t option_time);
-/* TODO */
+#endif /* TODO */
 
 extern mach_port_name_t task_self_trap(void);
 
@@ -151,5 +152,9 @@ extern kern_return_t task_name_for_pid(
 extern kern_return_t pid_for_task(
 				mach_port_name_t t,
 				int *x);
+
+#endif /* _C_SOURCE */
+
+#endif /* _MACH_SOURCE */
 
 #endif	/* !MACH_MACH_TRAPS_H */
