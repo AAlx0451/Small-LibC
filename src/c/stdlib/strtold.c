@@ -5,6 +5,7 @@
 #include <locale.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <math.h>
 
 long double strtold(const char *restrict nptr, char **restrict endptr)
 {
@@ -37,7 +38,7 @@ long double strtold(const char *restrict nptr, char **restrict endptr)
         }
         if (endptr)
             *endptr = __deconst(char *, p);
-        return sign * (1.0L / 0.0L);
+        return sign * HUGE_VALL;
     }
 
     if ((tolower((unsigned char)p[0]) == 'n') && (tolower((unsigned char)p[1]) == 'a') &&
@@ -45,7 +46,7 @@ long double strtold(const char *restrict nptr, char **restrict endptr)
         p += 3;
         if (endptr)
             *endptr = __deconst(char *, p);
-        return 0.0L / 0.0L;
+        return (long double)NAN;
     }
 
     if (p[0] == '0' && tolower((unsigned char)p[1]) == 'x') {
@@ -164,7 +165,7 @@ long double strtold(const char *restrict nptr, char **restrict endptr)
             if (abs_exp > 5000) {
                 if (exp10 > 0) {
                     errno = ERANGE;
-                    value = 1.0L / 0.0L;
+                    value = HUGE_VALL;
                 } else {
                     errno = ERANGE;
                     value = 0.0L;
