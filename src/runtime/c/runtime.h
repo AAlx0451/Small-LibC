@@ -1,4 +1,6 @@
+#include <stddef.h>
 #include <stdint.h>
+
 #pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 
@@ -14,6 +16,9 @@ unsigned int __umodsi3(unsigned int n, unsigned int d);
 unsigned long long __fixunsdfdi(double a);
 unsigned long long __udivdi3(unsigned long long n, unsigned long long d);
 unsigned long long __umoddi3(unsigned long long n, unsigned long long d);
+long long __mulodi4(long long a, long long b, int *overflow);
 void __stack_chk_fail(void);
 void __stack_chk_guard_init(void);
 extern uintptr_t __stack_chk_guard;
+void *__memcpy_chk(void *dest, const void *src, size_t len, size_t destlen);
+void __noreturn __chk_fail(void);
