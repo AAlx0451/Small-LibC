@@ -178,7 +178,7 @@ double sin(double x)
         /* First chunk is exact via Sterbenz Lemma */
         double kh = kd * PIO2_1;
         double kl = fma(kd, PIO2_1, -kh);
-        
+
         double rh = abs_x - kh;
         double rl = -kl;
 
@@ -187,23 +187,23 @@ double sin(double x)
            regardless of relative operand magnitude. */
         double kh2 = kd * PIO2_2;
         double kl2 = fma(kd, PIO2_2, -kh2);
-        
+
         double rh2 = rh - kh2;
         double a_virt2 = rh2 + kh2;
         double b_virt2 = rh2 - a_virt2;
         double rh2_err = (rh - a_virt2) - (kh2 + b_virt2);
-        
+
         double rl2 = rl - kl2 + rh2_err;
 
         /* Robust TwoSum for subtracting PIO2_3 */
         double kh3 = kd * PIO2_3;
         double kl3 = fma(kd, PIO2_3, -kh3);
-        
+
         double rh3 = rh2 - kh3;
         double a_virt3 = rh3 + kh3;
         double b_virt3 = rh3 - a_virt3;
         double rh3_err = (rh2 - a_virt3) - (kh3 + b_virt3);
-        
+
         double rl3 = rl2 - kl3 + rh3_err;
 
         /* Subtract final minimal tail */
@@ -231,10 +231,10 @@ double sin(double x)
     double r2 = r_hi * r_hi;
     if ((quad & 1) == 0) {
         /* Core sine approximation: sin(r) ~ r + r^3 * P(r^2) */
-        
+
         /* Compute r2_err to compensate precision in cubic calculations */
         double r2_err = fma(r_hi, r_hi, -r2);
-        
+
         double p = S6;
         p = fma(p, r2, S5);
         p = fma(p, r2, S4);
@@ -251,7 +251,7 @@ double sin(double x)
          * sin(hi + lo) approx sin(hi) + cos(hi)*lo approx sin(hi) + (1 - r2/2)*lo.
          */
         double r_lo_adj = fma(-0x1.0p-1 * r2, r_lo, r_lo);
-        
+
         /* Add correction for r2_err in r3 evaluation.
            Missing term from poly is r_hi * r2_err * S0 */
         r_lo_adj += r_hi * r2_err * S0;
@@ -260,7 +260,7 @@ double sin(double x)
         double s = r_hi + poly;
         double virt = s - r_hi;
         double poly_err = poly - virt;
-        
+
         double res = s + (poly_err + r_lo_adj);
 
         return (quad == 0) ? res : -res;
@@ -281,7 +281,7 @@ double sin(double x)
 
         /*
          * Extremely accurate subtraction 1.0 - r_hi^2 / 2.
-         * We compute `w = 1.0 - hz`, then use Fast2Sum to strictly 
+         * We compute `w = 1.0 - hz`, then use Fast2Sum to strictly
          * recover the least significant bits of `hz` that were shifted out.
          */
         double hz = 0x1.0p-1 * r2;

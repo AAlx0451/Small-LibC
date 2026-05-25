@@ -1,6 +1,6 @@
+#include <mach/mach_syscalls.h>
 #include <stdarg.h>
 #include <unistd.h>
-#include <mach/mach_syscalls.h>
 
 #define REG(name, val) register long name __asm__(#name) = (long)(val)
 
@@ -9,7 +9,7 @@
 #define _MSYS_CONCAT_IMPL(name, count) name##count
 #define _MSYS_CONCAT(name, count) _MSYS_CONCAT_IMPL(name, count)
 
-#define mach_syscall(number, ...) \
+#define mach_syscall(number, ...)                                                                  \
     _MSYS_CONCAT(_mach_syscall, _MSYS_COUNT_ARGS(__VA_ARGS__))(number, ##__VA_ARGS__)
 
 /*
@@ -42,10 +42,7 @@ static __naked __noinline __used void do_mach_syscall(void)
     {                                                                                              \
         regs                                                                                       \
                                                                                                    \
-        __asm__ volatile(asm_code                                                                  \
-                         : "+r"(r0)                                                                \
-                         : __VA_ARGS__                                                             \
-                         : "memory", "lr");                                                        \
+            __asm__ volatile(asm_code : "+r"(r0) : __VA_ARGS__ : "memory", "lr");                  \
                                                                                                    \
         return r0;                                                                                 \
     }
@@ -53,70 +50,70 @@ static __naked __noinline __used void do_mach_syscall(void)
 DEFINE_MACH_SYSCALL(0, (long number), REG(r0, 0); REG(r12, number);, "svc #0x80\n\t", "r"(r12))
 
 DEFINE_MACH_SYSCALL(1, (long number, long arg1), REG(r0, arg1); REG(r12, number);
-               , "svc #0x80\n\t", "r"(r12))
+                    , "svc #0x80\n\t", "r"(r12))
 
 DEFINE_MACH_SYSCALL(2, (long number, long arg1, long arg2), REG(r0, arg1); REG(r1, arg2);
-               REG(r12, number);
-               , "svc #0x80\n\t", "r"(r1), "r"(r12))
+                    REG(r12, number);
+                    , "svc #0x80\n\t", "r"(r1), "r"(r12))
 
 DEFINE_MACH_SYSCALL(3, (long number, long arg1, long arg2, long arg3), REG(r0, arg1); REG(r1, arg2);
-               REG(r2, arg3);
-               REG(r12, number);
-               , "svc #0x80\n\t", "r"(r1), "r"(r2), "r"(r12))
+                    REG(r2, arg3);
+                    REG(r12, number);
+                    , "svc #0x80\n\t", "r"(r1), "r"(r2), "r"(r12))
 
 DEFINE_MACH_SYSCALL(4, (long number, long arg1, long arg2, long arg3, long arg4), REG(r0, arg1);
-               REG(r1, arg2);
-               REG(r2, arg3);
-               REG(r3, arg4);
-               REG(r12, number);
-               , "svc #0x80\n\t", "r"(r1), "r"(r2), "r"(r3), "r"(r12))
+                    REG(r1, arg2);
+                    REG(r2, arg3);
+                    REG(r3, arg4);
+                    REG(r12, number);
+                    , "svc #0x80\n\t", "r"(r1), "r"(r2), "r"(r3), "r"(r12))
 
 // for 5+ args we use _do_mach_syscall
 // we always fill r4, r5, r6, r8 to for alignment
 
 DEFINE_MACH_SYSCALL(5,
-               (long number, long arg1, long arg2, long arg3, long arg4, long arg5),
-               REG(r0, arg1);
-               REG(r1, arg2);
-               REG(r2, arg3);
-               REG(r3, arg4);
-               REG(r12, number);
-               REG(r4, arg5);
-               REG(r5, 0);
-               REG(r6, 0);
-               REG(r8, 0);
-               , // r5, r6, r8 are for padding
-               "bl _do_mach_syscall\n\t",
-               "r"(r1),
-               "r"(r2),
-               "r"(r3),
-               "r"(r12),
-               "r"(r4),
-               "r"(r5),
-               "r"(r6),
-               "r"(r8))
+                    (long number, long arg1, long arg2, long arg3, long arg4, long arg5),
+                    REG(r0, arg1);
+                    REG(r1, arg2);
+                    REG(r2, arg3);
+                    REG(r3, arg4);
+                    REG(r12, number);
+                    REG(r4, arg5);
+                    REG(r5, 0);
+                    REG(r6, 0);
+                    REG(r8, 0);
+                    , // r5, r6, r8 are for padding
+                    "bl _do_mach_syscall\n\t",
+                    "r"(r1),
+                    "r"(r2),
+                    "r"(r3),
+                    "r"(r12),
+                    "r"(r4),
+                    "r"(r5),
+                    "r"(r6),
+                    "r"(r8))
 
 DEFINE_MACH_SYSCALL(6,
-               (long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6),
-               REG(r0, arg1);
-               REG(r1, arg2);
-               REG(r2, arg3);
-               REG(r3, arg4);
-               REG(r12, number);
-               REG(r4, arg5);
-               REG(r5, arg6);
-               REG(r6, 0);
-               REG(r8, 0);
-               , // r6, r8 are for padding
-               "bl _do_mach_syscall\n\t",
-               "r"(r1),
-               "r"(r2),
-               "r"(r3),
-               "r"(r12),
-               "r"(r4),
-               "r"(r5),
-               "r"(r6),
-               "r"(r8))
+                    (long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6),
+                    REG(r0, arg1);
+                    REG(r1, arg2);
+                    REG(r2, arg3);
+                    REG(r3, arg4);
+                    REG(r12, number);
+                    REG(r4, arg5);
+                    REG(r5, arg6);
+                    REG(r6, 0);
+                    REG(r8, 0);
+                    , // r6, r8 are for padding
+                    "bl _do_mach_syscall\n\t",
+                    "r"(r1),
+                    "r"(r2),
+                    "r"(r3),
+                    "r"(r12),
+                    "r"(r4),
+                    "r"(r5),
+                    "r"(r6),
+                    "r"(r8))
 
 DEFINE_MACH_SYSCALL(
     7,
@@ -141,24 +138,32 @@ DEFINE_MACH_SYSCALL(
     "r"(r6),
     "r"(r8))
 
-DEFINE_MACH_SYSCALL(
-    8,
-    (long number,
-     long arg1,
-     long arg2,
-     long arg3,
-     long arg4,
-     long arg5,
-     long arg6,
-     long arg7,
-     long arg8),
-    REG(r0, arg1);
-    REG(r1, arg2);
-    REG(r2, arg3);
-    REG(r3, arg4);
-    REG(r12, number);
-    REG(r4, arg5);
-    REG(r5, arg6);
-    REG(r6, arg7);
-    REG(r8, arg8);
-    , "bl _do_mach_syscall\n\t", "r"(r1), "r"(r2), "r"(r3), "r"(r12), "r"(r4), "r"(r5), "r"(r6), "r"(r8))
+DEFINE_MACH_SYSCALL(8,
+                    (long number,
+                     long arg1,
+                     long arg2,
+                     long arg3,
+                     long arg4,
+                     long arg5,
+                     long arg6,
+                     long arg7,
+                     long arg8),
+                    REG(r0, arg1);
+                    REG(r1, arg2);
+                    REG(r2, arg3);
+                    REG(r3, arg4);
+                    REG(r12, number);
+                    REG(r4, arg5);
+                    REG(r5, arg6);
+                    REG(r6, arg7);
+                    REG(r8, arg8);
+                    ,
+                    "bl _do_mach_syscall\n\t",
+                    "r"(r1),
+                    "r"(r2),
+                    "r"(r3),
+                    "r"(r12),
+                    "r"(r4),
+                    "r"(r5),
+                    "r"(r6),
+                    "r"(r8))

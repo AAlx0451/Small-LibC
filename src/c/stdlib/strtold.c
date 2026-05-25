@@ -3,9 +3,9 @@
 #include <float.h>
 #include <limits.h>
 #include <locale.h>
+#include <math.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <math.h>
 
 long double strtold(const char *restrict nptr, char **restrict endptr)
 {

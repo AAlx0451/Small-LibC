@@ -1,7 +1,8 @@
-#include <stddef.h>
 #include "runtime.h"
+#include <stddef.h>
 
-void *__memcpy_chk(void *dest, const void *src, size_t len, size_t destlen) {
+void *__memcpy_chk(void *dest, const void *src, size_t len, size_t destlen)
+{
     if (len > destlen) {
         __chk_fail();
     }
