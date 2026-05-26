@@ -11,9 +11,8 @@ TARGET_LIBMACH    = libmach.a
 AR                = ar
 CC                = clang
 
-BASE_CFLAGS = $CPPFLAGS $CFLAGS -isystem $INCDIR -fPIC -std=gnu11 -nostdinc \
-        -isystem /usr/share/llvm/lib/clang/7.1.0/include \
-        -isystem /usr/share/llvm/lib/clang/6.0.1/include
+BASE_CFLAGS = $CPPFLAGS $CFLAGS -isystem $INCDIR -fPIC -std=gnu23 -nostdinc \
+        -isystem /usr/share/llvm-21/lib/clang/21/include \
 
 C_SRCS            = `find c asm   -name '*.c' 2>/dev/null`
 RT_SRCS           = `find runtime -name '*.c' 2>/dev/null`
