@@ -4,29 +4,35 @@
 
 #define REG(name, val) register long name __asm__(#name) = (long)(val)
 
-#define _MSYS_GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
-#define _MSYS_COUNT_ARGS(...)                                         _MSYS_GET_NTH_ARG(0, ##__VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1, 0)
-#define _MSYS_CONCAT_IMPL(name, count)                                name##count
-#define _MSYS_CONCAT(name, count)                                     _MSYS_CONCAT_IMPL(name, count)
+#define _MSYS_GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N, ...) N
+#define _MSYS_COUNT_ARGS(...)                                              _MSYS_GET_NTH_ARG(0, ##__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
+#define _MSYS_CONCAT_IMPL(name, count)                                     name##count
+#define _MSYS_CONCAT(name, count)                                          _MSYS_CONCAT_IMPL(name, count)
 
 #define mach_syscall(number, ...)                                                                  \
     _MSYS_CONCAT(_mach_syscall, _MSYS_COUNT_ARGS(__VA_ARGS__))(number, ##__VA_ARGS__)
 
 /*
  * simple helper
- * aligns stack by 16 bytes (pushing 4 regs) and marks stack changes for CFI
+ * aligns stack by 32 bytes (pushing 8 regs) and marks stack changes for CFI.
+ * This accommodates up to 9 arguments (5 on the stack: r4, r5, r6, r8, r10).
+ * r11, r12, and lr act as padding to maintain 16-byte alignment.
  */
 static __naked __noinline __used void do_mach_syscall(void)
 {
     __asm__ volatile(".cfi_startproc\n\t"
-                     "push {r4, r5, r6, r8}\n\t" // r7 is a frame pointer
-                     ".cfi_def_cfa_offset 16\n\t"
-                     ".cfi_offset r4, -16\n\t"
-                     ".cfi_offset r5, -12\n\t"
-                     ".cfi_offset r6, -8\n\t"
-                     ".cfi_offset r8, -4\n\t"
+                     "push {r4, r5, r6, r8, r10, r11, r12, lr}\n\t" // r7 is a frame pointer
+                     ".cfi_def_cfa_offset 32\n\t"
+                     ".cfi_offset r4, -32\n\t"
+                     ".cfi_offset r5, -28\n\t"
+                     ".cfi_offset r6, -24\n\t"
+                     ".cfi_offset r8, -20\n\t"
+                     ".cfi_offset r10, -16\n\t"
+                     ".cfi_offset r11, -12\n\t"
+                     ".cfi_offset r12, -8\n\t"
+                     ".cfi_offset lr, -4\n\t"
                      "svc #0x80\n\t"
-                     "pop {r4, r5, r6, r8}\n\t"
+                     "pop {r4, r5, r6, r8, r10, r11, r12, lr}\n\t"
                      ".cfi_def_cfa_offset 0\n\t"
                      "bx lr\n\t"
                      ".cfi_endproc\n\t");
@@ -167,3 +173,36 @@ DEFINE_MACH_SYSCALL(8,
                     "r"(r5),
                     "r"(r6),
                     "r"(r8))
+
+DEFINE_MACH_SYSCALL(9,
+                    (long number,
+                     long arg1,
+                     long arg2,
+                     long arg3,
+                     long arg4,
+                     long arg5,
+                     long arg6,
+                     long arg7,
+                     long arg8,
+                     long arg9),
+                    REG(r0, arg1);
+                    REG(r1, arg2);
+                    REG(r2, arg3);
+                    REG(r3, arg4);
+                    REG(r12, number);
+                    REG(r4, arg5);
+                    REG(r5, arg6);
+                    REG(r6, arg7);
+                    REG(r8, arg8);
+                    REG(r10, arg9);
+                    ,
+                    "bl _do_mach_syscall\n\t",
+                    "r"(r1),
+                    "r"(r2),
+                    "r"(r3),
+                    "r"(r12),
+                    "r"(r4),
+                    "r"(r5),
+                    "r"(r6),
+                    "r"(r8),
+                    "r"(r10))
