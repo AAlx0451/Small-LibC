@@ -48,7 +48,7 @@ typedef typeof(nullptr) nullptr_t;
 #  else
 #   define unreachable() ((void)0)
 #  endif /* __GNUC__ || __clang__ */
-# endif /* !unreachable */
-#endif /* __STDC_VERSION__ && __STDC_VERSION__ >= 202311L */
+# endif  /* !unreachable */
+#endif   /* __STDC_VERSION__ && __STDC_VERSION__ >= 202311L */
 
 #endif /* _STDDEF_H */
