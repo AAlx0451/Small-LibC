@@ -6,11 +6,14 @@
 
 DIR *opendir(const char *name)
 {
-    DIR *dir = (DIR *)malloc(sizeof(DIR));
     int fd = open(name, O_RDONLY | O_DIRECTORY);
-    if (fd == -1)
-        return NULL;
+    DIR *dir;
 
+    if (fd == -1) {
+        return NULL;
+    }
+
+    dir = (DIR *)malloc(sizeof(DIR));
     if (!dir) {
         close(fd);
         return NULL;
