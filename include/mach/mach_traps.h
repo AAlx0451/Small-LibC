@@ -15,6 +15,7 @@
 #  include <machine/endian.h>
 # endif /* __TODO */
 # include <mach/kern_return.h>
+# include <mach/message.h>
 # include <mach/port.h>
 # include <mach/vm_types.h>
 
@@ -26,7 +27,6 @@ extern mach_port_name_t thread_self_trap(void);
 
 extern mach_port_name_t host_self_trap(void);
 
-#  if __TODO
 extern mach_msg_return_t mach_msg_trap(mach_msg_header_t *msg,
                                        mach_msg_option_t option,
                                        mach_msg_size_t send_size,
@@ -44,7 +44,6 @@ extern mach_msg_return_t mach_msg_overwrite_trap(mach_msg_header_t *msg,
                                                  mach_port_name_t notify,
                                                  mach_msg_header_t *rcv_msg,
                                                  mach_msg_size_t rcv_limit);
-#  endif /* __TODO */
 
 extern kern_return_t semaphore_signal_trap(mach_port_name_t signal_name);
 
