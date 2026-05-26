@@ -4,10 +4,10 @@
 #include <stdio.h>
 
 #define GREEN(txt) "\033[0;32m" txt "\033[0m"
-#define RED(txt) "\033[0;31m" txt "\033[0m"
-#define dfdi(a) __fixdfdi(a)
-#define LLNGMXFLT 9223372036854775807.0
-#define LLNGMNFLT -9223372036854775808.0
+#define RED(txt)   "\033[0;31m" txt "\033[0m"
+#define dfdi(a)    __fixdfdi(a)
+#define LLNGMXFLT  9223372036854775807.0
+#define LLNGMNFLT  -9223372036854775808.0
 
 void __fixdfdi_test()
 {

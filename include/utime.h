@@ -4,8 +4,9 @@
 
 #include <features.h>
 
-#if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_DARWIN_C_SOURCE))
-#include <sys/types.h>
+#if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE) ||                      \
+                        defined(_GNU_SOURCE) || defined(_DARWIN_C_SOURCE))
+# include <sys/types.h>
 
 struct utimbuf {
     time_t actime;

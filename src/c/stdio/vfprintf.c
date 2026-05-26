@@ -13,18 +13,18 @@
 #pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 
-#define PAD_RIGHT 1
-#define PAD_ZERO 2
-#define PRINT_SGN 4
-#define PRINT_SPC 8
+#define PAD_RIGHT    1
+#define PAD_ZERO     2
+#define PRINT_SGN    4
+#define PRINT_SPC    8
 #define PRINT_HEX_LO 16
 #define PRINT_HEX_UP 32
-#define PRINT_OCT 64
-#define PRINT_ALT 128
-#define PRINT_GROUP 256
+#define PRINT_OCT    64
+#define PRINT_ALT    128
+#define PRINT_GROUP  256
 
 #define MAX_PRECISION 256
-#define MAX_WIDTH 256
+#define MAX_WIDTH     256
 
 /* Core output function: writes a character to the stream buffer or fd */
 static int _out_char(FILE *f, int c)

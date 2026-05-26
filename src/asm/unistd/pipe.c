@@ -1,5 +1,3 @@
-#if defined(__APPLE__) && defined(__arm__)
-
 #include <errno.h>
 #include <sys/syscall.h>
 #include <unistd.h>
@@ -16,15 +14,15 @@ int pipe(int fildes[2])
     long err;
 
     __asm__ volatile("svc #0x80\n\t"
-                     "bcc 1f\n\t" // Branch if Carry Clear (Success)
+                     "bcc 1f\n\t" // branch if success
 
-                     // Error path (Carry Set)
+                     // error path
                      "mov %[err], r0\n\t" // r0 contains errno
                      "mov %[fd0], #0\n\t" // dummy cleanup
                      "mov %[fd1], #0\n\t" // dummy cleanup
                      "b 2f\n\t"
 
-                     // Success path
+                     // success path
                      "1:\n\t"
                      "mov %[err], #0\n\t"
                      "mov %[fd0], r0\n\t" // r0 contains fildes[0]
@@ -47,5 +45,3 @@ int pipe(int fildes[2])
 
     return 0;
 }
-
-#endif

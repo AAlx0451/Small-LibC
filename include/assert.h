@@ -9,23 +9,31 @@
 # define assert(expr) ((void)0)
 #else
 
-#include <features.h>
-#include <unistd.h>
-#include <stdlib.h>
+# include <features.h>
+# include <stdlib.h>
+# include <unistd.h>
 
-void static __always_inline write_str(const char* s) {
+void static __always_inline write_str(const char *s)
+{
     size_t len = 0;
-    while (s[len]) len++;
+    while (s[len])
+        len++;
     write(STDERR_FILENO, s, len);
 }
 
-static __noreturn __cold void __assert_fail_internal(const char *expr, const char *file, int line, const char *func) {
+static __noreturn __cold void __assert_fail_internal(const char *expr,
+                                                     const char *file,
+                                                     int line,
+                                                     const char *func)
+{
     char buf[12];
     char *p = buf + sizeof(buf) - 1;
     *p = '\0';
-    if (line == 0) *--p = '0';
+    if (line == 0)
+        *--p = '0';
     else {
-        for (; line > 0; line /= 10) *--p = (char)('0' + (line % 10));
+        for (; line > 0; line /= 10)
+            *--p = (char)('0' + (line % 10));
     }
 
     write_str("Assertion failed: ");
@@ -37,13 +45,13 @@ static __noreturn __cold void __assert_fail_internal(const char *expr, const cha
     write_str(", function: ");
     write_str(func);
     write_str(")\n");
-    
+
     abort();
 }
 
-#define assert(expr) \
-    ((void)((expr) ? (void)0 : __assert_fail_internal(#expr, __FILE__, __LINE__, __func__)))
+# define assert(expr)                                                                              \
+     ((void)((expr) ? (void)0 : __assert_fail_internal(#expr, __FILE__, __LINE__, __func__)))
 
 #endif /* NDEBUG */
- 
+
 #endif /* ASSERT_H */

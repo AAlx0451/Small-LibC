@@ -5,16 +5,16 @@
 
 #if defined(_MACH_SOURCE)
 
-#if defined(_C_SOURCE)
+# if defined(_C_SOURCE)
 
-#include <mach/arm/vm_param.h>
-#include <stdint.h>
+#  include <mach/arm/vm_param.h>
+#  include <stdint.h>
 
 typedef unsigned natural_t; /* XXX: natural_t and integer_t are deprecated */
 typedef int integer_t;      /* signed natural_t */
 
 typedef natural_t vm_offset_t; /* offset or non-typed pointer */
-typedef natural_t vm_size_t; /* memory size */
+typedef natural_t vm_size_t;   /* memory size */
 
 typedef uint64_t mach_vm_address_t; /* 64 bit virtual address */
 typedef uint64_t mach_vm_offset_t;  /* 64-bit offset or non-typed pointer */
@@ -30,13 +30,13 @@ typedef uint32_t vm32_size_t;    /* 32-bit virtual memory size */
 
 typedef vm_offset_t mach_port_context_t; /* pointer-sized token for port association/guarding */
 
-#define VM_MAP_MIN_ADDRESS VM_MIN_ADDRESS
-#define VM_MAP_MAX_ADDRESS VM_MAX_ADDRESS
+#  define VM_MAP_MIN_ADDRESS VM_MIN_ADDRESS
+#  define VM_MAP_MAX_ADDRESS VM_MAX_ADDRESS
 
-#endif /*_C_SOURCE */
+# endif /*_C_SOURCE */
 
-#define MACH_MSG_TYPE_INTEGER_T MACH_MSG_TYPE_INTEGER_32
+# define MACH_MSG_TYPE_INTEGER_T MACH_MSG_TYPE_INTEGER_32
 
 #endif /* _MACH_SOURCE */
 
-#endif  /* !MACH_ARM_VM_TYPES_H */
+#endif /* !MACH_ARM_VM_TYPES_H */

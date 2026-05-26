@@ -4,130 +4,133 @@
 #include <features.h>
 
 #if !defined(_ANSI) && defined(_POSIX_C_SOURCE)
-#include <stddef.h> /* size_t */
-#include <stdio.h> /* SEEK_SET, SEEK_END, SEEK_CUR */
-#include <sys/types.h> /* NULL, types */
+# include <stddef.h>    /* size_t */
+# include <stdio.h>     /* SEEK_SET, SEEK_END, SEEK_CUR */
+# include <sys/types.h> /* NULL, types */
 
 /* CONSTANTS */
 
-#define _POSIX_VERSION 199009L
-#define _POSIX_JOB_CONTROL 1
-#define _POSIX_SAVED_IDS 1
-#define _POSIX_CHOWN_RESTRICTED 1
-#define _POSIX_NO_TRUNC 1
-#define _POSIX_VDISABLE ((unsigned char)'\377')
+# define _POSIX_VERSION          199009L
+# define _POSIX_JOB_CONTROL      1
+# define _POSIX_SAVED_IDS        1
+# define _POSIX_CHOWN_RESTRICTED 1
+# define _POSIX_NO_TRUNC         1
+# define _POSIX_VDISABLE         ((unsigned char)'\377')
 
-#if _POSIX_C_SOURCE >= 2
-#define _POSIX2_C_VERSION 199209L
-#define _POSIX2_C_DEV -1
-#define _POSIX2_CHAR_TERM 1
-#define _POSIX2_FORT_DEV -1
-#define _POSIX2_FORT_RUN -1
-#define _POSIX2_LOCALEDEF -1
-#define _POSIX2_SW_DEV -1
-#define _POSIX2_UPE -1
-#endif /* _POSIX_C_SOURCE >= 2 */
+# if _POSIX_C_SOURCE >= 2
+#  define _POSIX2_C_VERSION 199209L
+#  define _POSIX2_C_DEV     -1
+#  define _POSIX2_CHAR_TERM 1
+#  define _POSIX2_FORT_DEV  -1
+#  define _POSIX2_FORT_RUN  -1
+#  define _POSIX2_LOCALEDEF -1
+#  define _POSIX2_SW_DEV    -1
+#  define _POSIX2_UPE       -1
+# endif /* _POSIX_C_SOURCE >= 2 */
 
-#if _POSIX_C_SOURCE >= 199309L
-#define _POSIX_SYNCHRONIZED_IO 1
-#endif /* _POSIX_C_SOURCE >= 199309L */
+# if _POSIX_C_SOURCE >= 199309L
+#  define _POSIX_SYNCHRONIZED_IO 1
+# endif /* _POSIX_C_SOURCE >= 199309L */
 
-#define STDIN_FILENO 0
-#define STDOUT_FILENO 1
-#define STDERR_FILENO 2
+# define STDIN_FILENO  0
+# define STDOUT_FILENO 1
+# define STDERR_FILENO 2
 
-#define F_OK 0
-#define X_OK 1
-#define W_OK 2
-#define R_OK 4
+# define F_OK 0
+# define X_OK 1
+# define W_OK 2
+# define R_OK 4
 
-#define _PC_LINK_MAX 1
-#define _PC_MAX_CANON 2
-#define _PC_MAX_INPUT 3
-#define _PC_NAME_MAX 4
-#define _PC_PATH_MAX 5
-#define _PC_PIPE_BUF 6
-#define _PC_CHOWN_RESTRICTED 7
-#define _PC_NO_TRUNC 8
-#define _PC_VDISABLE 9
+# define _PC_LINK_MAX         1
+# define _PC_MAX_CANON        2
+# define _PC_MAX_INPUT        3
+# define _PC_NAME_MAX         4
+# define _PC_PATH_MAX         5
+# define _PC_PIPE_BUF         6
+# define _PC_CHOWN_RESTRICTED 7
+# define _PC_NO_TRUNC         8
+# define _PC_VDISABLE         9
 
-#if _POSIX_C_SOURCE >= 199309L || defined(_XOPEN_SOURCE)
-#define _PC_ASYNC_IO 17
-#define _PC_PRIO_IO 19
-#define _PC_SYNC_IO 25
-#endif /* _POSIX_C_SOURCE >= 199309L || _XOPEN_SOURCE */
+# if _POSIX_C_SOURCE >= 199309L || defined(_XOPEN_SOURCE)
+#  define _PC_ASYNC_IO 17
+#  define _PC_PRIO_IO  19
+#  define _PC_SYNC_IO  25
+# endif /* _POSIX_C_SOURCE >= 199309L || _XOPEN_SOURCE */
 
-#if _POSIX_C_SOURCE >= 200112L || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600)
-#define _PC_2_SYMLINKS 15
-#define _PC_ALLOC_SIZE_MIN 16
-#define _PC_FILESIZEBITS 18
-#define _PC_REC_INCR_XFER_SIZE 20
-#define _PC_REC_MAX_XFER_SIZE 21
-#define _PC_REC_MIN_XFER_SIZE 22
-#define _PC_REC_XFER_ALIGN 23
-#define _PC_SYMLINK_MAX 24
-#endif /* _POSIX_C_SOURCE >= 200112L || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 600) */
+# if _POSIX_C_SOURCE >= 200112L || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600)
+#  define _PC_2_SYMLINKS         15
+#  define _PC_ALLOC_SIZE_MIN     16
+#  define _PC_FILESIZEBITS       18
+#  define _PC_REC_INCR_XFER_SIZE 20
+#  define _PC_REC_MAX_XFER_SIZE  21
+#  define _PC_REC_MIN_XFER_SIZE  22
+#  define _PC_REC_XFER_ALIGN     23
+#  define _PC_SYMLINK_MAX        24
+# endif /* _POSIX_C_SOURCE >= 200112L || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 600) */
 
-#if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE)
-#define _PC_NAME_CHARS_MAX 10
-#define _PC_CASE_SENSITIVE 11
-#define _PC_CASE_PRESERVING 12
-#define _PC_EXTENDED_SECURITY_NP 13
-#define _PC_AUTH_OPAQUE_NP 14
-#define _PC_XATTR_SIZE_BITS 26
-#endif /* _DARWIN_C_SOURCE || _GNU_SOURCE */
+# if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE)
+#  define _PC_NAME_CHARS_MAX       10
+#  define _PC_CASE_SENSITIVE       11
+#  define _PC_CASE_PRESERVING      12
+#  define _PC_EXTENDED_SECURITY_NP 13
+#  define _PC_AUTH_OPAQUE_NP       14
+#  define _PC_XATTR_SIZE_BITS      26
+# endif /* _DARWIN_C_SOURCE || _GNU_SOURCE */
 
-#define _SC_ARG_MAX 1
-#define _SC_CHILD_MAX 2
-#define _SC_CLK_TCK 3
-#define _SC_NGROUPS_MAX 4
-#define _SC_OPEN_MAX 5
-#define _SC_STREAM_MAX 26
-#define _SC_TZNAME_MAX 27
-#define _SC_JOB_CONTROL 6
-#define _SC_SAVED_IDS 7
-#define _SC_VERSION 8
+# define _SC_ARG_MAX     1
+# define _SC_CHILD_MAX   2
+# define _SC_CLK_TCK     3
+# define _SC_NGROUPS_MAX 4
+# define _SC_OPEN_MAX    5
+# define _SC_STREAM_MAX  26
+# define _SC_TZNAME_MAX  27
+# define _SC_JOB_CONTROL 6
+# define _SC_SAVED_IDS   7
+# define _SC_VERSION     8
 
-#if _POSIX_C_SOURCE >= 2 || defined(_XOPEN_SOURCE)
-#define _SC_BC_BASE_MAX 9
-#define _SC_BC_DIM_MAX 10
-#define _SC_BC_SCALE_MAX 11
-#define _SC_BC_STRING_MAX 12
-#define _SC_COLL_WEIGHTS_MAX 13
-#define _SC_EXPR_NEST_MAX 14
-#define _SC_LINE_MAX 15
-#define _SC_RE_DUP_MAX 16
-#define _SC_2_VERSION 17
-#define _SC_2_C_BIND 18
-#define _SC_2_C_DEV 19
-#define _SC_2_CHAR_TERM 20
-#define _SC_2_FORT_DEV 21
-#define _SC_2_FORT_RUN 22
-#define _SC_2_LOCALEDEF 23
-#define _SC_2_SW_DEV 24
-#define _SC_2_UPE 25
-#endif /* _POSIX_C_SOURCE >= 2 || _XOPEN_SOURCE */
+# if _POSIX_C_SOURCE >= 2 || defined(_XOPEN_SOURCE)
+#  define _SC_BC_BASE_MAX      9
+#  define _SC_BC_DIM_MAX       10
+#  define _SC_BC_SCALE_MAX     11
+#  define _SC_BC_STRING_MAX    12
+#  define _SC_COLL_WEIGHTS_MAX 13
+#  define _SC_EXPR_NEST_MAX    14
+#  define _SC_LINE_MAX         15
+#  define _SC_RE_DUP_MAX       16
+#  define _SC_2_VERSION        17
+#  define _SC_2_C_BIND         18
+#  define _SC_2_C_DEV          19
+#  define _SC_2_CHAR_TERM      20
+#  define _SC_2_FORT_DEV       21
+#  define _SC_2_FORT_RUN       22
+#  define _SC_2_LOCALEDEF      23
+#  define _SC_2_SW_DEV         24
+#  define _SC_2_UPE            25
+# endif /* _POSIX_C_SOURCE >= 2 || _XOPEN_SOURCE */
 
-#if _POSIX_C_SOURCE >= 199309L || defined(_XOPEN_SOURCE)
-#define _SC_ASYNCHRONOUS_IO 28
-#define _SC_PAGESIZE 29
-#endif /* _POSIX_C_SOURCE >= 199309L || _XOPEN_SOURCE */
+# if _POSIX_C_SOURCE >= 199309L || defined(_XOPEN_SOURCE)
+#  define _SC_ASYNCHRONOUS_IO 28
+#  define _SC_PAGESIZE        29
+# endif /* _POSIX_C_SOURCE >= 199309L || _XOPEN_SOURCE */
 
-#if _POSIX_C_SOURCE >= 2 || defined(_XOPEN_SOURCE)
-#define _CS_PATH 1
-#endif /* _POSIX_C_SOURCE >= 2 || _XOPEN_SOURCE */
+# if _POSIX_C_SOURCE >= 2 || defined(_XOPEN_SOURCE)
+#  define _CS_PATH 1
+# endif /* _POSIX_C_SOURCE >= 2 || _XOPEN_SOURCE */
 
 /* VARIABLES */
-#if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 2) || defined(_XOPEN_SOURCE)
+# if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) ||                                          \
+     (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 2) || defined(_XOPEN_SOURCE)
 extern char *optarg;
 extern int optind, opterr, optopt;
-#endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2) || _XOPEN_SOURCE */
+# endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2) ||         \
+           _XOPEN_SOURCE */
 
 extern char **environ;
 
 /* FUNCTIONS */
 
-#if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 1) || defined(_XOPEN_SOURCE)
+# if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) ||                                          \
+     (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 1) || defined(_XOPEN_SOURCE)
 __noreturn void _exit(int status);
 pid_t fork(void);
 ssize_t read(int fd, void *buf, size_t count);
@@ -174,18 +177,24 @@ int tcsetpgrp(int fd, pid_t pgrp);
 long sysconf(int name);
 char *getcwd(char *buf, size_t size);
 char *ttyname(int fd);
-#endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 1) || _XOPEN_SOURCE */
+# endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 1) ||         \
+           _XOPEN_SOURCE */
 
-#if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 2) || defined(_XOPEN_SOURCE)
+# if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) ||                                          \
+     (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 2) || defined(_XOPEN_SOURCE)
 int getopt(int argc, char *const argv[], const char *optstring);
 size_t confstr(int name, char *buf, size_t len);
-#endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2) || _XOPEN_SOURCE */
+# endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2) ||         \
+           _XOPEN_SOURCE */
 
-#if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L) || defined(_XOPEN_SOURCE)
+# if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) ||                                          \
+     (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L) || defined(_XOPEN_SOURCE)
 int fsync(int fd);
-#endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 199309L) || _XOPEN_SOURCE */
+# endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 199309L) ||   \
+           _XOPEN_SOURCE */
 
-#if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) || (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || defined(_XOPEN_SOURCE)
+# if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) ||                                          \
+     (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || defined(_XOPEN_SOURCE)
 int fchown(int fd, uid_t owner, gid_t group);
 int usleep(unsigned long);
 int seteuid(uid_t euid);
@@ -193,26 +202,25 @@ int setpgrp(void);
 int nice(int incr);
 void sync(void);
 int fchdir(int fd);
-#endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _XOPEN_SOURCE */
+# endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) ||   \
+           _XOPEN_SOURCE */
 
-#if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) || defined(_XOPEN_SOURCE)
+# if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE) || defined(_XOPEN_SOURCE)
 int acct(const char *path);
 int chroot(const char *path);
 int brk(void *x);
 void *sbrk(intptr_t size);
-#endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || _XOPEN_SOURCE */
+# endif /* _DARWIN_C_SOURCE || _GNU_SOURCE || _XOPEN_SOURCE */
 
-#if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE)
+# if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE)
 
 /* Internal */
-#define _SYSCALL_GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
-#define _SYSCALL_COUNT_ARGS(...) \
-	    _SYSCALL_GET_NTH_ARG(__VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0)
-#define _SYSCALL_CONCAT_IMPL(name, count) name##count
-#define _SYSCALL_CONCAT(name, count) _SYSCALL_CONCAT_IMPL(name, count)
+#  define _SYSCALL_GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, _8, _9, N, ...) N
+#  define _SYSCALL_COUNT_ARGS(...)                                         _SYSCALL_GET_NTH_ARG(__VA_ARGS__, 8, 7, 6, 5, 4, 3, 2, 1, 0, 0)
+#  define _SYSCALL_CONCAT_IMPL(name, count)                                name##count
+#  define _SYSCALL_CONCAT(name, count)                                     _SYSCALL_CONCAT_IMPL(name, count)
 
-#define syscall(...) \
-	    _SYSCALL_CONCAT(syscall, _SYSCALL_COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
+#  define syscall(...) _SYSCALL_CONCAT(syscall, _SYSCALL_COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
 
 long syscall0(long number);
 long syscall1(long number, long arg1);
@@ -221,9 +229,24 @@ long syscall3(long number, long arg1, long arg2, long arg3);
 long syscall4(long number, long arg1, long arg2, long arg3, long arg4);
 long syscall5(long number, long arg1, long arg2, long arg3, long arg4, long arg5);
 long syscall6(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6);
-long syscall7(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7);
-long syscall8(long number, long arg1, long arg2, long arg3, long arg4, long arg5, long arg6, long arg7, long arg8);
-#endif /* _DARWIN_C_SOURCE || _GNU_SOURCE */
+long syscall7(long number,
+              long arg1,
+              long arg2,
+              long arg3,
+              long arg4,
+              long arg5,
+              long arg6,
+              long arg7);
+long syscall8(long number,
+              long arg1,
+              long arg2,
+              long arg3,
+              long arg4,
+              long arg5,
+              long arg6,
+              long arg7,
+              long arg8);
+# endif /* _DARWIN_C_SOURCE || _GNU_SOURCE */
 
 #endif /* !_ANSI && _POSIX_C_SOURCE */
 

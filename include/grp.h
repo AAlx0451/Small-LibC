@@ -1,12 +1,12 @@
 #ifndef GRP_H
-#define	GRP_H
+#define GRP_H
 
 #include <features.h>
 
 #if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
 
-#include <sys/types.h>
-#include <stddef.h>
+# include <stddef.h>
+# include <sys/types.h>
 
 struct group {
     char *gr_name;

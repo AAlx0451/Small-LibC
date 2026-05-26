@@ -3,8 +3,8 @@
 
 #include <features.h>
 
-#if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L )
-#include <sys/time.h>
+#if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L)
+# include <sys/time.h>
 
 struct rusage {
     struct timeval ru_utime;
@@ -25,7 +25,7 @@ struct rusage {
     long ru_nivcsw;
 };
 
-# define RUSAGE_SELF 0
+# define RUSAGE_SELF     0
 # define RUSAGE_CHILDREN -1
 
 int getrusage(int who, struct rusage *usage);

@@ -1,12 +1,12 @@
 #ifndef SYSINDEP_GRP__GRP_H
 #define SYSINDEP_GRP__GRP_H
 
-#include <stdio.h>
 #include <grp.h>
+#include <stdio.h>
 
-#define GROUP_FILE "/etc/group"
+#define GROUP_FILE   "/etc/group"
 #define MAX_LINE_LEN 1024
-#define MAX_MEMBERS 256
+#define MAX_MEMBERS  256
 
 extern FILE *g_group_fp;
 extern struct group g_group_entry;

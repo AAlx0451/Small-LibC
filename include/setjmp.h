@@ -4,10 +4,10 @@
 #include <features.h>
 
 #if defined(__GNUC__) || defined(__clang__)
-#pragma GCC diagnostic ignored "-Wbuiltin-requires-header"
+# pragma GCC diagnostic ignored "-Wbuiltin-requires-header"
 #endif /* __GNUC__ || __clang__ */
 
-typedef int jmp_buf[32]; 
+typedef int jmp_buf[32];
 
 int setjmp(jmp_buf env);
 void longjmp(jmp_buf env, int val);
@@ -19,7 +19,8 @@ void _longjmp(jmp_buf env, int val);
 
 #endif /* _DARWIN_C_SOURCE */
 
-#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
+#if !defined(_ANSI) &&                                                                             \
+    (defined(_DARWIN_C_SOURCE) || defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
 
 typedef int sigjmp_buf[32];
 int sigsetjmp(sigjmp_buf env, int savemask);

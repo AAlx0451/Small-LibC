@@ -1,15 +1,7 @@
-#if defined(__APPLE__) && defined(__arm__)
-
 #include <errno.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
-
-#if !defined(SYS_fork) && defined(__NR_fork)
-#define SYS_fork __NR_fork
-#elif !defined(SYS_fork)
-#error "See syscall.h"
-#endif
 
 pid_t fork(void)
 {
@@ -37,9 +29,3 @@ pid_t fork(void)
 
     return (pid_t)r0;
 }
-
-#else
-
-#error "Sorry, fork for non-iOS not implemented yet. Yes, it's machine dependent..."
-
-#endif

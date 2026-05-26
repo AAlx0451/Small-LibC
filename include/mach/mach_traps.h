@@ -1,160 +1,118 @@
-#ifndef	MACH_MACH_TRAPS_H
+#ifndef MACH_MACH_TRAPS_H
 #define MACH_MACH_TRAPS_H
 
 #include <features.h>
 
 #if defined(_MACH_SOURCE)
 
-#define TODO 0
+# define TODO 0
 
-#include <stdint.h>
-#include <mach/std_types.h>
+# include <mach/std_types.h>
+# include <stdint.h>
 
-#if TODO
-#include <mach/mach_types.h>
-#include <mach/clock_types.h>
-#include <machine/endian.h>
-#endif /* TODO */
+# if TODO
+#  include <mach/clock_types.h>
+#  include <mach/mach_types.h>
+#  include <machine/endian.h>
+# endif /* TODO */
 
-#include <mach/kern_return.h>
-#include <mach/port.h>
-#include <mach/vm_types.h>
+# include <mach/kern_return.h>
+# include <mach/port.h>
+# include <mach/vm_types.h>
 
-#if defined(_C_SOURCE)
+# if defined(_C_SOURCE)
 
-#if TODO
-extern kern_return_t clock_sleep_trap(
-				mach_port_name_t clock_name,
-				sleep_type_t sleep_type,
-				int sleep_sec,
-				int sleep_nsec,
-				mach_timespec_t	*wakeup_time);
-#endif /* TODO */
+#  if TODO
+extern kern_return_t clock_sleep_trap(mach_port_name_t clock_name,
+                                      sleep_type_t sleep_type,
+                                      int sleep_sec,
+                                      int sleep_nsec,
+                                      mach_timespec_t *wakeup_time);
+#  endif /* TODO */
 
-extern kern_return_t _kernelrpc_mach_vm_allocate_trap(
-				mach_port_name_t target,
-				mach_vm_offset_t *addr,
-				mach_vm_size_t size,
-				int flags);
+extern kern_return_t _kernelrpc_mach_vm_allocate_trap(mach_port_name_t target,
+                                                      mach_vm_offset_t *addr,
+                                                      mach_vm_size_t size,
+                                                      int flags);
 
-extern kern_return_t _kernelrpc_mach_vm_deallocate_trap(
-				mach_port_name_t target,
-				mach_vm_address_t address,
-				mach_vm_size_t size
-);
+extern kern_return_t _kernelrpc_mach_vm_deallocate_trap(mach_port_name_t target,
+                                                        mach_vm_address_t address,
+                                                        mach_vm_size_t size);
 
-#if TODO
-extern kern_return_t _kernelrpc_mach_vm_protect_trap(
-				mach_port_name_t target,
-				mach_vm_address_t address,
-				mach_vm_size_t size,
-				boolean_t set_maximum,
-				vm_prot_t new_protection
-);
-#endif /* TODO */
+#  if TODO
+extern kern_return_t _kernelrpc_mach_vm_protect_trap(mach_port_name_t target,
+                                                     mach_vm_address_t address,
+                                                     mach_vm_size_t size,
+                                                     boolean_t set_maximum,
+                                                     vm_prot_t new_protection);
+#  endif /* TODO */
 
-extern kern_return_t _kernelrpc_mach_port_allocate_trap(
-				mach_port_name_t target,
-				mach_port_right_t right,
-				mach_port_name_t *name
-);
+extern kern_return_t _kernelrpc_mach_port_allocate_trap(mach_port_name_t target,
+                                                        mach_port_right_t right,
+                                                        mach_port_name_t *name);
 
+extern kern_return_t _kernelrpc_mach_port_destroy_trap(mach_port_name_t target,
+                                                       mach_port_name_t name);
 
-extern kern_return_t _kernelrpc_mach_port_destroy_trap(
-				mach_port_name_t target,
-				mach_port_name_t name
-);
+extern kern_return_t _kernelrpc_mach_port_deallocate_trap(mach_port_name_t target,
+                                                          mach_port_name_t name);
 
-extern kern_return_t _kernelrpc_mach_port_deallocate_trap(
-				mach_port_name_t target,
-				mach_port_name_t name
-);
+extern kern_return_t _kernelrpc_mach_port_mod_refs_trap(mach_port_name_t target,
+                                                        mach_port_name_t name,
+                                                        mach_port_right_t right,
+                                                        mach_port_delta_t delta);
 
-extern kern_return_t _kernelrpc_mach_port_mod_refs_trap(
-				mach_port_name_t target,
-				mach_port_name_t name,
-				mach_port_right_t right,
-				mach_port_delta_t delta
-);
+extern kern_return_t _kernelrpc_mach_port_move_member_trap(mach_port_name_t target,
+                                                           mach_port_name_t member,
+                                                           mach_port_name_t after);
 
-extern kern_return_t _kernelrpc_mach_port_move_member_trap(
-				mach_port_name_t target,
-				mach_port_name_t member,
-				mach_port_name_t after
-);
+#  if TODO
+extern kern_return_t _kernelrpc_mach_port_insert_right_trap(mach_port_name_t target,
+                                                            mach_port_name_t name,
+                                                            mach_port_name_t poly,
+                                                            mach_msg_type_name_t polyPoly);
+#  endif /* TODO */
 
-#if TODO
-extern kern_return_t _kernelrpc_mach_port_insert_right_trap(
-				mach_port_name_t target,
-				mach_port_name_t name,
-				mach_port_name_t poly,
-				mach_msg_type_name_t polyPoly
-);
-#endif /* TODO */
+extern kern_return_t _kernelrpc_mach_port_insert_member_trap(mach_port_name_t target,
+                                                             mach_port_name_t name,
+                                                             mach_port_name_t pset);
 
-extern kern_return_t _kernelrpc_mach_port_insert_member_trap(
-				mach_port_name_t target,
-				mach_port_name_t name,
-				mach_port_name_t pset
-);
+extern kern_return_t _kernelrpc_mach_port_extract_member_trap(mach_port_name_t target,
+                                                              mach_port_name_t name,
+                                                              mach_port_name_t pset);
 
-extern kern_return_t _kernelrpc_mach_port_extract_member_trap(
-				mach_port_name_t target,
-				mach_port_name_t name,
-				mach_port_name_t pset
-);
+extern kern_return_t macx_swapon(uint64_t filename, int flags, int size, int priority);
 
-extern kern_return_t macx_swapon(
-				uint64_t filename,
-				int flags,
-				int size,
-				int priority);
+extern kern_return_t macx_swapoff(uint64_t filename, int flags);
 
-extern kern_return_t macx_swapoff(
-				uint64_t filename,
-				int flags);
+extern kern_return_t macx_triggers(int hi_water, int low_water, int flags, mach_port_t alert_port);
 
-extern kern_return_t macx_triggers(
-				int hi_water,
-				int low_water,
-				int flags,
-				mach_port_t alert_port);
+extern kern_return_t macx_backing_store_suspend(boolean_t suspend);
 
-extern kern_return_t macx_backing_store_suspend(
-				boolean_t suspend);
-
-extern kern_return_t macx_backing_store_recovery(
-				int pid);
+extern kern_return_t macx_backing_store_recovery(int pid);
 
 extern boolean_t swtch_pri(int pri);
 
 extern boolean_t swtch(void);
 
-#if TODO
-extern kern_return_t thread_switch(
-				mach_port_name_t thread_name,
-				int option,
-				mach_msg_timeout_t option_time);
-#endif /* TODO */
+#  if TODO
+extern kern_return_t thread_switch(mach_port_name_t thread_name,
+                                   int option,
+                                   mach_msg_timeout_t option_time);
+#  endif /* TODO */
 
 extern mach_port_name_t task_self_trap(void);
 
-extern kern_return_t task_for_pid(
-				mach_port_name_t target_tport,
-				int pid,
-				mach_port_name_t *t);
+extern kern_return_t task_for_pid(mach_port_name_t target_tport, int pid, mach_port_name_t *t);
 
-extern kern_return_t task_name_for_pid(
-				mach_port_name_t target_tport,
-				int pid,
-				mach_port_name_t *tn);
+extern kern_return_t task_name_for_pid(mach_port_name_t target_tport,
+                                       int pid,
+                                       mach_port_name_t *tn);
 
-extern kern_return_t pid_for_task(
-				mach_port_name_t t,
-				int *x);
+extern kern_return_t pid_for_task(mach_port_name_t t, int *x);
 
-#endif /* _C_SOURCE */
+# endif /* _C_SOURCE */
 
 #endif /* _MACH_SOURCE */
 
-#endif	/* !MACH_MACH_TRAPS_H */
+#endif /* !MACH_MACH_TRAPS_H */

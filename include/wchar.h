@@ -3,18 +3,20 @@
 
 #include <features.h>
 
-#if !defined(_ANSI) && ((defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600) || (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199409LL))
+#if !defined(_ANSI) && ((defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) ||                \
+                        (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600) ||                        \
+                        (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199409LL))
 
-#include <stddef.h>
-#include <stdint.h>
-#include <limits.h>
-#include <_types.h>
-#include <stdio.h>
-#include <time.h>
+# include <_types.h>
+# include <limits.h>
+# include <stddef.h>
+# include <stdint.h>
+# include <stdio.h>
+# include <time.h>
 
 typedef int wint_t;
 
-#define WEOF ((wint_t)-1)
+# define WEOF ((wint_t) - 1)
 
 wchar_t *wcscat(wchar_t *dest, const wchar_t *src);
 wchar_t *wcsncat(wchar_t *dest, const wchar_t *src, size_t n);
@@ -77,9 +79,12 @@ int fwscanf(FILE *stream, const wchar_t *format, ...);
 int wscanf(const wchar_t *format, ...);
 int swscanf(const wchar_t *s, const wchar_t *format, ...);
 
-size_t wcsftime(wchar_t *restrict s, size_t maxsize, const wchar_t *restrict format, const struct tm *restrict timeptr);
+size_t wcsftime(wchar_t *restrict s,
+                size_t maxsize,
+                const wchar_t *restrict format,
+                const struct tm *restrict timeptr);
 
-#if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
+# if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 
 int vfwscanf(FILE *restrict stream, const wchar_t *restrict format, va_list arg);
 int vwscanf(const wchar_t *restrict format, va_list arg);
@@ -91,8 +96,9 @@ float wcstof(const wchar_t *restrict nptr, wchar_t **restrict endptr);
 long long wcstoll(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base);
 unsigned long long wcstoull(const wchar_t *restrict nptr, wchar_t **restrict endptr, int base);
 
-#endif /* __STDC_VERSION__ && __STDC_VERSION__ >= 199901L */
+# endif /* __STDC_VERSION__ && __STDC_VERSION__ >= 199901L */
 
-#endif /* !_ANSI && ((_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _XOPEN_SOURCE && _XOPEN_SOURCE >= 600) || (__STDC_VERSION__ && __STDC_VERSION__ >= 199409L)) */
+#endif /* !_ANSI && ((_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _XOPEN_SOURCE &&           \
+          _XOPEN_SOURCE >= 600) || (__STDC_VERSION__ && __STDC_VERSION__ >= 199409L)) */
 
 #endif /* !WCHAR_H */

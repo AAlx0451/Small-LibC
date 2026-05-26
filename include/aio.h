@@ -5,28 +5,28 @@
 
 #if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199309L)
 
-#include <sys/types.h>
-#include <signal.h>
-#include <time.h>
+# include <signal.h>
+# include <sys/types.h>
+# include <time.h>
 
 struct aiocb {
     int aio_fildes;
     off_t aio_offset;
     volatile void *aio_buf;
     size_t aio_nbytes;
-    int	aio_reqprio;
+    int aio_reqprio;
     struct sigevent aio_sigevent;
     int aio_lio_opcode;
 };
 
-#define AIO_CANCELED 0x2
-#define AIO_NOTCANCELED 0x4
-#define AIO_ALLDONE 0x1
-#define LIO_WAIT 0x2
-#define LIO_NOWAIT 0x1
-#define LIO_READ 0x1
-#define LIO_WRITE 0x2
-#define LIO_NOP 0x0
+# define AIO_CANCELED    0x2
+# define AIO_NOTCANCELED 0x4
+# define AIO_ALLDONE     0x1
+# define LIO_WAIT        0x2
+# define LIO_NOWAIT      0x1
+# define LIO_READ        0x1
+# define LIO_WRITE       0x2
+# define LIO_NOP         0x0
 
 int aio_read(struct aiocb *aiocbp);
 int aio_write(struct aiocb *aiocbp);

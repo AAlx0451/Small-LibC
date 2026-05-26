@@ -2,7 +2,7 @@
 #include <sys/ioctl.h>
 #include <termios.h>
 
-#define FREAD 0x0001
+#define FREAD  0x0001
 #define FWRITE 0x0002
 
 int tcflush(int fd, int queue_selector)

@@ -1,11 +1,11 @@
-#ifndef	SYS_IOCTL_H
-#define	SYS_IOCTL_H
+#ifndef SYS_IOCTL_H
+#define SYS_IOCTL_H
 
 #include <features.h>
 
 #if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || defined(_XOPEN_SOURCE))
 
-#include <sys/ttycom.h>
+# include <sys/ttycom.h>
 
 struct ttysize {
     unsigned short ts_lines;
@@ -14,11 +14,11 @@ struct ttysize {
     unsigned short ts_yyy;
 };
 
-#define TIOCGSIZE TIOCGWINSZ
-#define TIOCSSIZE TIOCSWINSZ
+# define TIOCGSIZE TIOCGWINSZ
+# define TIOCSSIZE TIOCSWINSZ
 
-#include <sys/ioccom.h>
-#include <sys/filio.h>
+# include <sys/filio.h>
+# include <sys/ioccom.h>
 
 int ioctl(int, unsigned long, ...);
 

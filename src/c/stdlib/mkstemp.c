@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 #define NUM_RETRIES 100
-#define XX_LEN 6
+#define XX_LEN      6
 
 int mkstemp(char *templat)
 {

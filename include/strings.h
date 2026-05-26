@@ -5,8 +5,8 @@
 
 #if !defined(_ANSI) && (defined(_GNU_SOURCE) || defined(_DARWIN_C_SOURCE) || defined(_XOPEN_SOURCE))
 
-#include <stddef.h>
-#include <string.h>
+# include <stddef.h>
+# include <string.h>
 
 int bcmp(const void *s1, const void *s2, size_t n);
 void bcopy(const void *src, void *dest, size_t n);

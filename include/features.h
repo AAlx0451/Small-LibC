@@ -2,17 +2,17 @@
 #define FEATURES_H
 
 #if defined(__GNUC__) || defined(__clang__)
-# define __always_inline __attribute__((always_inline))
-# define __cold __attribute__((cold))
+# define __always_inline          __attribute__((always_inline))
+# define __cold                   __attribute__((cold))
 # define __slibc_has_attribute(M) __has_attribute(M)
-# define __inline __inline__
-# define __naked __attribute__((naked))
-# define __noreturn __attribute__((noreturn))
-# define __noinline __attribute__((noinline))
-# define __restrict __restrict__
-# define __unreachable()  __builtin_unreachable()
-# define __unused __attribute__((unused))
-# define __used __attribute__((used))
+# define __inline                 __inline__
+# define __naked                  __attribute__((naked))
+# define __noreturn               __attribute__((noreturn))
+# define __noinline               __attribute__((noinline))
+# define __restrict               __restrict__
+# define __unreachable()          __builtin_unreachable()
+# define __unused                 __attribute__((unused))
+# define __used                   __attribute__((used))
 #else
 # define __always_inline
 # define __cold
@@ -37,7 +37,7 @@
 # endif /* !_ASM_SOURCE */
 #else
 # define _C_SOURCE /* used at mach only */
-#endif /* __ASSEMBLER__ || ASSEMBLER || _ASM_SOURCE */
+#endif             /* __ASSEMBLER__ || ASSEMBLER || _ASM_SOURCE */
 #if defined(_ANSI_SOURCE) || defined(__STRICT_ANSI__)
 # undef _POSIX_C_SOURCE
 # undef _POSIX_SOURCE
@@ -46,25 +46,26 @@
 # undef _DARWIN_C_SOURCE
 # define _ANSI
 # if defined(__GNUC__) || defined(__clang__)
-#  define inline __inline
+#  define inline   __inline
 #  define restrict __restrict
 # else
 #  define inline
 #  define restrict
 # endif /* __GNUC__ || __clang__ */
-#else 
-# if !defined(_XOPEN_SOURCE) && !defined(_POSIX_C_SOURCE) && !defined(_POSIX_SOURCE) \
-  && !defined(_GNU_SOURCE) && !defined(_DARWIN_C_SOURCE)
+#else
+# if !defined(_XOPEN_SOURCE) && !defined(_POSIX_C_SOURCE) && !defined(_POSIX_SOURCE) &&            \
+     !defined(_GNU_SOURCE) && !defined(_DARWIN_C_SOURCE)
 #  define _GNU_SOURCE
 #  define _DARWIN_C_SOURCE
-# endif /* !_XOPEN_SOURCE && !_POSIX_C_SOURCE && !_POSIX_SOURCE && !_GNU_SOURCE && !_DARWIN_C_SOURCE */
+# endif /* !_XOPEN_SOURCE && !_POSIX_C_SOURCE && !_POSIX_SOURCE && !_GNU_SOURCE &&                 \
+           !_DARWIN_C_SOURCE */
 # if defined(_DARWIN_C_SOURCE) || defined(_GNU_SOURCE)
 #  define _POSIX_C_SOURCE 200809L
-#  define _XOPEN_SOURCE 700
+#  define _XOPEN_SOURCE   700
 #  define SMALL_LIBC
 #  define _MACH_SOURCE
 #  define __deconst(type, val) ((type)(uintptr_t)(const void *)(val))
-# elif defined(_XOPEN_SOURCE) 
+# elif defined(_XOPEN_SOURCE)
 #  if _XOPEN_SOURCE < 500 && (_POSIX_C_SOURCE < 2L)
 #   ifndef _POSIX_SOURCE
 #    define _POSIX_SOURCE
@@ -77,10 +78,10 @@
 #  elif _XOPEN_SOURCE == 700 && (_POSIX_C_SOURCE <= 200809L || !defined(_POSIX_C_SOURCE))
 #   define _POSIX_C_SOURCE 200809L
 #  endif /* _XOPEN_SOURCE < 500 && (_POSIX_C_SOURCE < 2L)  */
-# endif /* _DARWIN_C_SOURCE || _GNU_SOURCE */
+# endif  /* _DARWIN_C_SOURCE || _GNU_SOURCE */
 # if defined(_POSIX_SOURCE) && !defined(_POSIX_C_SOURCE)
 #  define _POSIX_C_SOURCE 1L
 # endif /* _POSIX_SOURCE && !_POSIX_C_SOURCE */
-#endif /* _ANSI_SOURCE || __STRICT_ANSI__ */
+#endif  /* _ANSI_SOURCE || __STRICT_ANSI__ */
 
 #endif /* !FEATURES_H */

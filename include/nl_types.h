@@ -3,10 +3,11 @@
 
 #include <features.h>
 
-#if !defined(_ANSI) && ((defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || defined(_XOPEN_SOURCE))
+#if !defined(_ANSI) &&                                                                             \
+    ((defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) || defined(_XOPEN_SOURCE))
 
-#define NL_SETD 1
-#define NL_CAT_LOCALE 1
+# define NL_SETD       1
+# define NL_CAT_LOCALE 1
 
 typedef int nl_item;
 typedef void *nl_catd;

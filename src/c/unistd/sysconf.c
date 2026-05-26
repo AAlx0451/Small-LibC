@@ -2,18 +2,18 @@
 #include <unistd.h>
 
 #define SYS_getrlimit 194
-#define SYS___sysctl 202
+#define SYS___sysctl  202
 
 #define CTL_KERN 1
-#define CTL_HW 6
+#define CTL_HW   6
 
-#define KERN_ARGMAX 8
+#define KERN_ARGMAX    8
 #define KERN_CLOCKRATE 12
-#define KERN_NGROUPS 18
+#define KERN_NGROUPS   18
 
 #define HW_PAGESIZE 7
 
-#define RLIMIT_NPROC 7
+#define RLIMIT_NPROC  7
 #define RLIMIT_NOFILE 8
 
 typedef unsigned long long rlim_t;

@@ -15,12 +15,13 @@ int isspace(int c);
 int isupper(int c);
 int isxdigit(int c);
 int tolower(int c);
-int toupper(int c); 
+int toupper(int c);
 
-#if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || \
-     _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600
+#if (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L) || _POSIX_C_SOURCE >= 200112L ||    \
+    _XOPEN_SOURCE >= 600
 int isblank(int c);
-#endif /* (__STDC_VERSION__ && __STDC_VERSION__ >= 199001L) || _POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600 */
+#endif /* (__STDC_VERSION__ && __STDC_VERSION__ >= 199001L) || _POSIX_C_SOURCE >= 200112L ||       \
+          _XOPEN_SOURCE >= 600 */
 
 #if !defined(_ANSI) && (defined(_XOPEN_SOURCE) || defined(_GNU_SOURCE) || defined(_DARWIN_C_SOURCE))
 

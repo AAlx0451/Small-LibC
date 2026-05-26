@@ -5,12 +5,12 @@
 #include <unistd.h>
 
 #define CTL_KERN 1
-#define CTL_HW 6
+#define CTL_HW   6
 
-#define KERN_OSTYPE 1    /* sysname */
+#define KERN_OSTYPE    1 /* sysname */
 #define KERN_OSRELEASE 2 /* release */
-#define KERN_VERSION 4
-#define KERN_HOSTNAME 10 /* nodename */
+#define KERN_VERSION   4
+#define KERN_HOSTNAME  10 /* nodename */
 
 #define HW_MACHINE 1 /* machine */
 

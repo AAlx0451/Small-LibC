@@ -3,8 +3,8 @@
 #include <stdio.h>
 
 #define GREEN(txt) "\033[0;32m" txt "\033[0m"
-#define RED(txt) "\033[0;31m" txt "\033[0m"
-#define unfdi(a) __fixunsdfdi(a)
+#define RED(txt)   "\033[0;31m" txt "\033[0m"
+#define unfdi(a)   __fixunsdfdi(a)
 #define ULLNGMXFLT 18446744073709551615.0
 
 void __fixunsdfdi_test()

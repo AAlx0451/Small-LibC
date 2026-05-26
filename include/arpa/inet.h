@@ -5,7 +5,7 @@
 
 #if !defined(_ANSI) && _POSIX_C_SOURCE >= 200112L
 
-#include <stdint.h>
+# include <stdint.h>
 
 uint32_t htonl(uint32_t hostlong);
 uint16_t htons(uint16_t hostshort);

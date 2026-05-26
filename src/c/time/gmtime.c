@@ -3,10 +3,10 @@
 #pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 
-#define SECS_PER_MIN 60
+#define SECS_PER_MIN  60
 #define SECS_PER_HOUR 3600
-#define SECS_PER_DAY 86400
-#define EPOCH_YEAR 1970
+#define SECS_PER_DAY  86400
+#define EPOCH_YEAR    1970
 
 static int __is_leap(int year) { return (year % 4 == 0 && (year % 100 != 0 || year % 400 == 0)); }
 

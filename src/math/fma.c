@@ -7,7 +7,7 @@
 #include <string.h>
 
 #if defined(__clang__) || defined(__GNUC__)
-#pragma GCC diagnostic ignored "-Wunknown-pragmas"
+# pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #endif /* __clang__ || __GNUC__ */
 
 #pragma STDC FENV_ACCESS ON

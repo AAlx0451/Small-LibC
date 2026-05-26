@@ -9,6 +9,11 @@ UseTab: Never
 ColumnLimit: 100
 MaxEmptyLinesToKeep: 1
 
+AlignConsecutiveMacros: Consecutive
+
+IndentPPDirectives: AfterHash
+PPIndentWidth: 1
+
 AlignEscapedNewlines: Right
 AlignOperands: true
 AlignTrailingComments: true

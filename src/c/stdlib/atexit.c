@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 #if defined(__GNUC__) || defined(__clang__)
-#pragma clang diagnostic ignored "-Wunknown-warning-option"
-#pragma clang diagnostic ignored "-Wreserved-identifier"
+# pragma clang diagnostic ignored "-Wunknown-warning-option"
+# pragma clang diagnostic ignored "-Wreserved-identifier"
 #endif /* __GNUC__ || __clang__ */
 
 void _call_atexit_handlers(void);

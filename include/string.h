@@ -5,7 +5,7 @@
 #include <stddef.h>
 
 #ifndef MEMORY_H
-#define MEMORY_H
+# define MEMORY_H
 
 void *memchr(const void *s, int c, size_t n);
 int memcmp(const void *s1, const void *s2, size_t n);
@@ -28,19 +28,20 @@ int strcmp(const char *s1, const char *s2);
 int strcoll(const char *s1, const char *s2);
 size_t strcspn(const char *s, const char *reject);
 char *strerror(int errnum);
-size_t strlen(const char* s);
+size_t strlen(const char *s);
 int strncmp(const char *s1, const char *s2, size_t n);
 char *strpbrk(const char *s, const char *accept);
 char *strrchr(const char *s, int c);
 size_t strspn(const char *s, const char *accept);
 char *strstr(const char *haystack, const char *needle);
 
-#if !defined(_ANSI) && (defined(_DARWIN_C_SOURCE) || \
-    (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || \
-    (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L))
+#if !defined(_ANSI) &&                                                                             \
+    (defined(_DARWIN_C_SOURCE) || (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) ||              \
+     (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200809L))
 char *strdup(const char *s);
 void *memccpy(void *restrict dest, const void *restrict src, int c, size_t n);
-#endif /* !_ANSI && (_DARWIN_C_SOURCE || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 500) || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200809L)) */
+#endif /* !_ANSI && (_DARWIN_C_SOURCE || (_XOPEN_SOURCE && _XOPEN_SOURCE >= 500) ||                \
+          (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200809L)) */
 
 #if !defined(_ANSI) && defined(_DARWIN_C_SOURCE)
 void memset_pattern4(void *b, const void *pattern4, size_t len);

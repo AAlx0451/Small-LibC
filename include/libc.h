@@ -6,11 +6,12 @@
  * "entry point" to
  * ANSI C
  */
- 
+
 /* Small-LibC's */
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
+#include <locale.h>
 #include <math.h>
 #include <setjmp.h>
 #include <signal.h>
@@ -18,7 +19,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include <locale.h>
 
 /* Compiler-dependent */
 #include <float.h>

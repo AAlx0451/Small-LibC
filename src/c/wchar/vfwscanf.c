@@ -16,16 +16,16 @@
 
 #define MAX_SCAN_WIDTH 256
 
-#define FL_SPLAT 0x01
-#define FL_WIDTH 0x02
-#define FL_LONG 0x04
-#define FL_LONGLONG 0x08
-#define FL_SHORT 0x10
+#define FL_SPLAT      0x01
+#define FL_WIDTH      0x02
+#define FL_LONG       0x04
+#define FL_LONGLONG   0x08
+#define FL_SHORT      0x10
 #define FL_SHORTSHORT 0x20
 #define FL_LONGDOUBLE 0x40
-#define FL_INTMAX 0x80
-#define FL_SIZE 0x100
-#define FL_PTRDIFF 0x200
+#define FL_INTMAX     0x80
+#define FL_SIZE       0x100
+#define FL_PTRDIFF    0x200
 
 /* Read a single wide character atomically from stream without internal locks */
 static wint_t _in_wchar(FILE *f)

@@ -5,11 +5,11 @@
 
 #if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L)
 
-#include <sys/time.h>
+# include <sys/time.h>
 
-# define FD_SETSIZE 1024
-# define NBBY 8
-# define NFDBITS (sizeof(int) * NBBY)
+# define FD_SETSIZE    1024
+# define NBBY          8
+# define NFDBITS       (sizeof(int) * NBBY)
 # define howmany(x, y) ((((x) % (y)) == 0) ? ((x) / (y)) : (((x) / (y)) + 1))
 
 typedef struct fd_set {

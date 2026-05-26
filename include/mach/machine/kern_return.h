@@ -5,9 +5,9 @@
 
 #if defined(_MACH_SOURCE)
 
-#if defined(__arm__)
-# include <mach/arm/kern_return.h>
-#endif /* __arm__ */
+# if defined(__arm__)
+#  include <mach/arm/kern_return.h>
+# endif /* __arm__ */
 
 #endif /* _MACH_SOURCE */
 

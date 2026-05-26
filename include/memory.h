@@ -4,9 +4,9 @@
 #include <features.h>
 
 #if !defined(_ANSI) && (defined(_GNU_SOURCE) || defined(_XOPEN_SOURCE))
-#include <stddef.h>
+# include <stddef.h>
 
-#warning <memory.h> is deprecated, use <string.h>
+# warning <memory.h> is deprecated, use <string.h>
 
 void *memccpy(void *restrict dest, const void *restrict src, int c, size_t n);
 void *memchr(const void *s, int c, size_t n);

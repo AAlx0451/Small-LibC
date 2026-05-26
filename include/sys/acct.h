@@ -4,16 +4,16 @@
 #include <features.h>
 
 #if !defined(_ANSI) && defined(_XOPEN_SOURCE)
-#include <sys/types.h>
+# include <sys/types.h>
 
 typedef uint16_t comp_t;
 
-#define AFORK 0x01
-#define ASU 0x02
-#define ACOMPAT 0x04
-#define ACORE 0x08
-#define AXSIG 0x10
-#define AHZ 64
+# define AFORK   0x01
+# define ASU     0x02
+# define ACOMPAT 0x04
+# define ACORE   0x08
+# define AXSIG   0x10
+# define AHZ     64
 
 struct acct {
     char ac_comm[10];

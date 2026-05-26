@@ -5,11 +5,11 @@
 
 #if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) || defined(_XOPEN_SOURCE))
 
-#include <sys/types.h>
+# include <sys/types.h>
 
 struct tms {
-    clock_t tms_utime; 
-    clock_t tms_stime; 
+    clock_t tms_utime;
+    clock_t tms_stime;
     clock_t tms_cutime;
     clock_t tms_cstime;
 };

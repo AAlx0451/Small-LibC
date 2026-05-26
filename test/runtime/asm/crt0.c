@@ -1,7 +1,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define RED(txt) "\033[0;31m" txt "\033[0m"
+#define RED(txt)   "\033[0;31m" txt "\033[0m"
 #define GREEN(txt) "\033[0;32m" txt "\033[0m"
 
 extern char **NXArgv;

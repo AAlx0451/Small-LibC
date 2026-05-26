@@ -2,10 +2,10 @@
 #pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
 
-#define NO_UBSAN __attribute__((no_sanitize("undefined")))
+#define NO_UBSAN       __attribute__((no_sanitize("undefined")))
 #define COLOR_BOLD_RED "\x1b[1;31m"
-#define COLOR_BOLD "\x1b[1m"
-#define COLOR_RESET "\x1b[0m"
+#define COLOR_BOLD     "\x1b[1m"
+#define COLOR_RESET    "\x1b[0m"
 
 struct SourceLocation {
     const char *file;

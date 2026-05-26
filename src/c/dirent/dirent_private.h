@@ -6,10 +6,10 @@
 #include <dirent.h>
 
 struct DIR {
-    int           dd_fd;
-    char          *dd_buf;
-    long          dd_len;
-    long          dd_loc;
+    int dd_fd;
+    char *dd_buf;
+    long dd_len;
+    long dd_loc;
     struct dirent dd_ent;
 };
 
