@@ -9,7 +9,6 @@
 
 #  include <mach/boolean.h>
 #  include <mach/machine/vm_types.h>
-#  include <stdint.h>
 
 /* base types */
 typedef natural_t mach_port_name_t;               /* port id */
@@ -57,9 +56,9 @@ typedef struct mach_port_qos {
 } mach_port_qos_t;
 
 #  if !defined(_NO_PORT_T_FROM_MACH)
-typedef mach_port_t port_t;                  /* legacy port type */
-typedef mach_port_name_t port_name_t;        /* legacy port name */
-typedef mach_port_name_t *port_name_array_t; /* legacy names array */
+__deprecated typedef mach_port_t port_t;                  /* legacy port type */
+__deprecated typedef mach_port_name_t port_name_t;        /* legacy port name */
+__deprecated typedef mach_port_name_t *port_name_array_t; /* legacy names array */
 #  endif
 
 /* special port names */
