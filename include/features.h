@@ -4,6 +4,7 @@
 #if defined(__GNUC__) || defined(__clang__)
 # define __always_inline          __attribute__((always_inline))
 # define __cold                   __attribute__((cold))
+# define __deprecated             __attribute__((deprecated))
 # define __slibc_has_attribute(M) __has_attribute(M)
 # define __inline                 __inline__
 # define __naked                  __attribute__((naked))
@@ -16,6 +17,7 @@
 #else
 # define __always_inline
 # define __cold
+# define __deprecated
 # define __inline
 # define __slibc_has_attribute(M) 0
 # define __naked
