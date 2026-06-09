@@ -49,8 +49,8 @@ long sysconf(int name)
                     (long)2,
                     (long)&int_val,
                     (long)&len,
-                    (long)NULL,
-                    (long)0) == -1)
+                    0,
+                    0) == -1)
             return -1;
         return (long)int_val;
 
@@ -70,8 +70,8 @@ long sysconf(int name)
                     (long)2,
                     (long)&clk_info,
                     (long)&len,
-                    (long)NULL,
-                    (long)0) == -1)
+                    0,
+                    0) == -1)
             return 100;
         return (long)clk_info.hz;
 
@@ -84,8 +84,8 @@ long sysconf(int name)
                     (long)2,
                     (long)&int_val,
                     (long)&len,
-                    (long)NULL,
-                    (long)0) == -1)
+                    0,
+                    0) == -1)
             return -1;
         return (long)int_val;
 
@@ -174,8 +174,8 @@ long sysconf(int name)
                     (long)2,
                     (long)&int_val,
                     (long)&len,
-                    (long)NULL,
-                    (long)0) == -1)
+                    0,
+                    0) == -1)
             return 4096;
         return (long)int_val;
 
