@@ -28,7 +28,7 @@ static int get_sysctl_string(int major, int minor, char *buf, size_t maxlen)
      * sysctl(int *name, u_int namelen, void *oldp, size_t *oldlenp,
      *        void *newp, size_t newlen);
      */
-    ret = (int)syscall(SYS___sysctl, (long)mib, 2, (long)buf, (long)&len, (long)NULL, 0);
+    ret = (int)syscall(SYS___sysctl, (long)mib, 2, (long)buf, (long)&len, 0, 0);
 
     if (ret == 0) {
         if (len < maxlen) {
