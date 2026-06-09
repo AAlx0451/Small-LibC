@@ -44,13 +44,7 @@ long sysconf(int name)
         mib[0] = CTL_KERN;
         mib[1] = KERN_ARGMAX;
         len = sizeof(int_val);
-        if (syscall(SYS___sysctl,
-                    (long)mib,
-                    (long)2,
-                    (long)&int_val,
-                    (long)&len,
-                    0,
-                    0) == -1)
+        if (syscall(SYS___sysctl, (long)mib, (long)2, (long)&int_val, (long)&len, 0, 0) == -1)
             return -1;
         return (long)int_val;
 
@@ -65,13 +59,7 @@ long sysconf(int name)
         mib[0] = CTL_KERN;
         mib[1] = KERN_CLOCKRATE;
         len = sizeof(clk_info);
-        if (syscall(SYS___sysctl,
-                    (long)mib,
-                    (long)2,
-                    (long)&clk_info,
-                    (long)&len,
-                    0,
-                    0) == -1)
+        if (syscall(SYS___sysctl, (long)mib, (long)2, (long)&clk_info, (long)&len, 0, 0) == -1)
             return 100;
         return (long)clk_info.hz;
 
@@ -79,13 +67,7 @@ long sysconf(int name)
         mib[0] = CTL_KERN;
         mib[1] = KERN_NGROUPS;
         len = sizeof(int_val);
-        if (syscall(SYS___sysctl,
-                    (long)mib,
-                    (long)2,
-                    (long)&int_val,
-                    (long)&len,
-                    0,
-                    0) == -1)
+        if (syscall(SYS___sysctl, (long)mib, (long)2, (long)&int_val, (long)&len, 0, 0) == -1)
             return -1;
         return (long)int_val;
 
@@ -169,13 +151,7 @@ long sysconf(int name)
         mib[0] = CTL_HW;
         mib[1] = HW_PAGESIZE;
         len = sizeof(int_val);
-        if (syscall(SYS___sysctl,
-                    (long)mib,
-                    (long)2,
-                    (long)&int_val,
-                    (long)&len,
-                    0,
-                    0) == -1)
+        if (syscall(SYS___sysctl, (long)mib, (long)2, (long)&int_val, (long)&len, 0, 0) == -1)
             return 4096;
         return (long)int_val;
 
