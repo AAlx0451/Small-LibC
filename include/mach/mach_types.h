@@ -4,8 +4,9 @@
 
 #ifndef MACH_MACH_TYPES_H
 
-# include <mach/host_info.h>
 # include <mach/clock_types.h>
+# include <mach/host_info.h>
+# include <mach/host_notify.h>
 # include <mach/machine.h>
 # include <mach/machine/vm_types.h>
 # include <mach/message.h>
