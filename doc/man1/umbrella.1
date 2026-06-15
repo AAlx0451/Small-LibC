@@ -1,0 +1,76 @@
+.Dd June 15, 2026
+.Dt UMBRELLA 1
+.Os
+.Sh NAME
+.Nm umbrella
+.Nd generate a minimal C/C++ include set from a directory tree
+.Sh SYNOPSIS
+.Nm
+.Op Fl l
+.Op Fl p Ar prefix
+.Op Ar directory
+.Nm
+.Fl h
+.Sh DESCRIPTION
+The
+.Nm
+utility scans a directory recursively for C/C++ header files
+(files ending in
+.Pa .h ) ,
+analyzes their internal include dependencies, and identifies a minimal subset of
+headers that transitively include all other headers in the tree.
+The resulting list of include directives is printed to standard output.
+This output can be used to construct a single "umbrella" header for a library.
+.Pp
+If
+.Ar directory
+is not specified, the current directory is used.
+.Pp
+The options are as follows:
+.Bl -tag -width "-p prefix"
+.It Fl h
+Display a help message with usage information and exit.
+.It Fl l
+Format include directives using double quotes
+.Pq Qq ""
+instead of angle brackets
+.Pq Qq <> .
+.It Fl p Ar prefix
+Prepend the specified
+.Ar prefix
+path to the generated include paths.
+Trailing slashes in the prefix are normalized.
+.El
+.Sh RESOLUTION ALGORITHM
+To determine the dependency graph,
+.Nm
+attempts to resolve each
+.Li #include
+path found in the scanned headers using the following sequential strategies:
+.Bl -enum -compact
+.It
+As a path relative to the directory containing the file that has the include directive.
+.It
+As a path relative to the starting search directory.
+.It
+As a suffix match against known headers, provided the suffix uniquely identifies a single header.
+.It
+As a filename/basename match, provided the basename uniquely identifies a single header.
+.El
+.Pp
+If an include target cannot be resolved through these heuristics, it is ignored
+for dependency analysis.
+Once reachability is determined,
+.Nm
+uses a greedy set-cover heuristic to choose a minimal group of entry-point
+headers that cover all files.
+.Sh EXIT STATUS
+.Ex -std
+.Sh EXAMPLES
+Generate an umbrella header list for the current directory:
+.Pp
+.Dl $ umbrella
+.Pp
+Generate a list for a source directory with a custom path prefix, using quoted includes:
+.Pp
+.Dl $ umbrella -l -p my_project src/include
