@@ -1,0 +1,154 @@
+#!/usr/bin/perl
+use strict;
+use warnings;
+use File::Find;
+use File::Spec;
+use File::Basename;
+use Getopt::Long;
+
+my $prefix = '';
+my $local  = 0;
+my $help   = 0;
+my $ver    = 1.3;
+
+GetOptions(
+    'p=s' => \$prefix,
+    'l'   => \$local,
+    'h'   => \$help,
+);
+
+if ($help) {
+    my $script = basename($0);
+    print "$script v$ver\n";
+    print "Usage: $script [-p prefix] [-l] [-h] [directory]\n";
+    print "  -p prefix   Prefix for include paths\n";
+    print "  -l          Use \"\" instead of <>\n";
+    print "  -h          Show help\n";
+    exit;
+}
+
+if ($prefix) {
+    $prefix =~ s{/*$}{/};
+}
+
+my $start_dir = shift || '.';
+$start_dir = File::Spec->rel2abs($start_dir);
+
+exit unless -d $start_dir;
+
+my %all_headers;
+my %basename_to_path;
+
+find(sub {
+    if (-f && /\.h$/) {
+        my $abs_path = File::Spec->rel2abs($File::Find::name);
+        $all_headers{$abs_path} = 1;
+        push @{$basename_to_path{basename($abs_path)}}, $abs_path;
+    }
+}, $start_dir);
+
+my $total_files = scalar(keys %all_headers);
+exit if $total_files == 0;
+
+my %adj;
+foreach my $file (keys %all_headers) {
+    open my $fh, '<', $file or next;
+    my $dir = dirname($file);
+    
+    while (my $line = <$fh>) {
+        if ($line =~ /^\s*#\s*include\s+["<]([^">]+)[">]/) {
+            my $target = $1;
+            my $resolved = resolve_include($target, $dir);
+            if ($resolved && $resolved ne $file) {
+                $adj{$file}{$resolved} = 1;
+            }
+        }
+    }
+    close $fh;
+}
+
+my %reachability;
+foreach my $u (keys %all_headers) {
+    my %visited;
+    my @queue = ($u);
+    $visited{$u} = 1;
+    
+    while (@queue) {
+        my $curr = shift @queue;
+        if (exists $adj{$curr}) {
+            foreach my $neighbor (keys %{$adj{$curr}}) {
+                if (!$visited{$neighbor}) {
+                    $visited{$neighbor} = 1;
+                    push @queue, $neighbor;
+                }
+            }
+        }
+    }
+    $reachability{$u} = \%visited;
+}
+
+my %uncovered = map { $_ => 1 } keys %all_headers;
+my @selected;
+
+while (keys %uncovered) {
+    my $best_node = undef;
+    my $max_cover = -1;
+    
+    foreach my $u (keys %all_headers) {
+        my $cover_count = 0;
+        foreach my $v (keys %{$reachability{$u}}) {
+            $cover_count++ if exists $uncovered{$v};
+        }
+        
+        if ($cover_count > $max_cover) {
+            $max_cover = $cover_count;
+            $best_node = $u;
+        }
+    }
+    
+    last if $max_cover <= 0;
+    
+    push @selected, $best_node;
+    
+    foreach my $v (keys %{$reachability{$best_node}}) {
+        delete $uncovered{$v};
+    }
+}
+
+my ($q_open, $q_close) = $local ? ('"', '"') : ('<', '>');
+
+foreach my $file (sort @selected) {
+    my $rel = File::Spec->abs2rel($file, $start_dir);
+    $rel =~ s{\\}{/}g;
+    print "#include $q_open$prefix$rel$q_close\n";
+}
+
+sub resolve_include {
+    my ($target, $current_file_dir) = @_;
+    
+    $target = File::Spec->canonpath($target);
+
+    my $pathA = File::Spec->rel2abs($target, $current_file_dir);
+    return $pathA if $all_headers{$pathA};
+
+    my $pathB = File::Spec->rel2abs($target, $start_dir);
+    return $pathB if $all_headers{$pathB};
+
+    my $suffix = $target;
+    $suffix =~ s{/}{\\}g if $^O eq 'MSWin32';
+    
+    my @matches;
+    foreach my $h (keys %all_headers) {
+        if ($h =~ /\Q$suffix\E$/) {
+            push @matches, $h;
+        }
+    }
+    return $matches[0] if @matches == 1;
+
+    my $base = basename($target);
+    if (exists $basename_to_path{$base}) {
+        return $basename_to_path{$base}->[0] if @{$basename_to_path{$base}} == 1;
+    }
+    
+    return undef;
+}
