@@ -1,5 +1,5 @@
-#ifndef MATH_H
-#define MATH_H
+#ifndef _MATH_H
+#define _MATH_H
 
 #include <float.h>
 #include <limits.h>
@@ -504,4 +504,4 @@ extern int signgam;
    visible exceptional conditions.
 */
 
-#endif /* !MATH_H */
+#endif /* !_MATH_H */

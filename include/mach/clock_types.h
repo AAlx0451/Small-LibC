@@ -1,5 +1,5 @@
-#ifndef MACH_CLOCK_TYPES_H
-#define MACH_CLOCK_TYPES_H
+#ifndef _MACH_CLOCK_TYPES_H
+#define _MACH_CLOCK_TYPES_H
 
 #include <features.h>
 

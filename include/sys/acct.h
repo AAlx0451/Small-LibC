@@ -1,5 +1,5 @@
-#ifndef SYS_ACCT_H
-#define SYS_ACCT_H
+#ifndef _SYS_ACCT_H
+#define _SYS_ACCT_H
 
 #include <features.h>
 
@@ -30,4 +30,4 @@ struct acct {
 };
 #endif /* !_ANSI && _XOPEN_SOURCE */
 
-#endif /* !SYS_ACCT_H */
+#endif /* !_SYS_ACCT_H */

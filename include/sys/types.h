@@ -1,5 +1,5 @@
-#ifndef SYS_TYPES_H
-#define SYS_TYPES_H
+#ifndef _SYS_TYPES_H
+#define _SYS_TYPES_H
 
 #include <features.h>
 #include <stddef.h>
@@ -49,4 +49,4 @@ typedef uint32_t u_int32_t;
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !SYS_TYPES_H */
+#endif /* !_SYS_TYPES_H */

@@ -1,5 +1,5 @@
-#ifndef SETJMP_H
-#define SETJMP_H
+#ifndef _SETJMP_H
+#define _SETJMP_H
 
 #include <features.h>
 
@@ -28,4 +28,4 @@ void siglongjmp(sigjmp_buf env, int val);
 
 #endif /* !_ANSI && (_DARWIN_C_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !SETJMP_H */
+#endif /* !_SETJMP_H */

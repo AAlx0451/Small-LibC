@@ -1,5 +1,5 @@
-#ifndef MACH_MACHINE_BOOLEAN_H
-#define MACH_MACHINE_BOOLEAN_H
+#ifndef _MACH_MACHINE_BOOLEAN_H
+#define _MACH_MACHINE_BOOLEAN_H
 
 #include <features.h>
 
@@ -11,4 +11,4 @@
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_MACHINE_BOOLEAN_H */
+#endif /* !_MACH_MACHINE_BOOLEAN_H */

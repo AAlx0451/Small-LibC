@@ -1,5 +1,5 @@
-#ifndef SYS_SYSCALL_H
-#define SYS_SYSCALL_H
+#ifndef _SYS_SYSCALL_H
+#define _SYS_SYSCALL_H
 
 #include <features.h>
 
@@ -98,4 +98,4 @@
 
 #endif /* _DARWIN_C_SOURCE */
 
-#endif /* SYS_SYSCALL_H */
+#endif /* _SYS_SYSCALL_H */

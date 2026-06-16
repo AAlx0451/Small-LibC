@@ -1,5 +1,5 @@
-#ifndef LANGINFO_H
-#define LANGINFO_H
+#ifndef _LANGINFO_H
+#define _LANGINFO_H
 
 #include <features.h>
 
@@ -70,4 +70,4 @@ char *nl_langinfo(nl_item);
 
 #endif /* !_ANSI && ((_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _XOPEN_SOURCE) */
 
-#endif /* !LANGINFO_H */
+#endif /* !_LANGINFO_H */

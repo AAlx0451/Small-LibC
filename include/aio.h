@@ -1,5 +1,5 @@
-#ifndef AIO_H
-#define AIO_H
+#ifndef _AIO_H
+#define _AIO_H
 
 #include <features.h>
 
@@ -39,4 +39,4 @@ int aio_fsync(int op, struct aiocb *aiocbp);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 199309L) */
 
-#endif /* !AIO_H */
+#endif /* !_AIO_H */

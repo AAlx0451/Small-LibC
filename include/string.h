@@ -1,18 +1,18 @@
-#ifndef STRING_H
-#define STRING_H
+#ifndef _STRING_H
+#define _STRING_H
 
 #include <features.h>
 #include <stddef.h>
 
-#ifndef MEMORY_H
-# define MEMORY_H
+#ifndef _MEMORY_H
+# define _MEMORY_H
 
 void *memchr(const void *s, int c, size_t n);
 int memcmp(const void *s1, const void *s2, size_t n);
 void *memset(void *s, int c, size_t n);
 void *memcpy(void *dest, const void *src, size_t n);
 
-#endif /* !MEMORY_H */
+#endif /* !_MEMORY_H */
 
 void *memmove(void *dest, const void *src, size_t count);
 
@@ -49,4 +49,4 @@ void memset_pattern8(void *b, const void *pattern8, size_t len);
 void memset_pattern16(void *b, const void *pattern16, size_t len);
 #endif /* !_ANSI && _DARWIN_C_SOURCE */
 
-#endif /* !STRING_H */
+#endif /* !_STRING_H */

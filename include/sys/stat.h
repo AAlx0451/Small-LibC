@@ -1,5 +1,5 @@
-#ifndef SYS_STAT_H
-#define SYS_STAT_H
+#ifndef _SYS_STAT_H
+#define _SYS_STAT_H
 
 #include <features.h>
 
@@ -107,4 +107,4 @@ int mknod(const char *path, mode_t mode, dev_t dev);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !SYS_STAT_H */
+#endif /* !_SYS_STAT_H */

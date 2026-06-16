@@ -1,5 +1,5 @@
-#ifndef FNMATCH_H
-#define FNMATCH_H
+#ifndef _FNMATCH_H
+#define _FNMATCH_H
 
 #include <features.h>
 
@@ -15,4 +15,4 @@ int fnmatch(const char *pattern, const char *string, int flags);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2) */
 
-#endif /* !FNMATCH_H */
+#endif /* !_FNMATCH_H */

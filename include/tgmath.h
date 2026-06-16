@@ -1,7 +1,7 @@
-#ifndef TGMATH_H
-#define TGMATH_H
+#ifndef _TGMATH_H
+#define _TGMATH_H
 
-//#include <complex.h> not implemented yet!
+// #include <complex.h> not implemented yet!
 #include <math.h>
 
 #define acos(x)                                                                                    \
@@ -439,4 +439,4 @@
         float: truncf(x),                                                                          \
         default: trunc((double)x))
 
-#endif /* !TGMATH_H */
+#endif /* !_TGMATH_H */

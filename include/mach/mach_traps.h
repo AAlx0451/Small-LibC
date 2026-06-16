@@ -1,5 +1,5 @@
-#ifndef MACH_MACH_TRAPS_H
-#define MACH_MACH_TRAPS_H
+#ifndef _MACH_MACH_TRAPS_H
+#define _MACH_MACH_TRAPS_H
 
 #include <features.h>
 
@@ -143,4 +143,4 @@ extern kern_return_t pid_for_task(mach_port_name_t t, int *x);
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_MACH_TRAPS_H */
+#endif /* !_MACH_MACH_TRAPS_H */

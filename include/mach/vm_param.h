@@ -1,5 +1,5 @@
-#ifndef MACH_VM_PARAM_H
-#define MACH_VM_PARAM_H
+#ifndef _MACH_VM_PARAM_H
+#define _MACH_VM_PARAM_H
 
 #include <features.h>
 
@@ -7,4 +7,4 @@
 # include <mach/machine/vm_param.h>
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_VM_PARAM_H */
+#endif /* !_MACH_VM_PARAM_H */

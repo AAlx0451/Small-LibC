@@ -1,5 +1,5 @@
-#ifndef ERRNO_H
-#define ERRNO_H
+#ifndef _ERRNO_H
+#define _ERRNO_H
 
 #include <features.h>
 
@@ -129,4 +129,4 @@ extern int errno;
 # endif /* _DARWIN_C_SOURCE */
 #endif  /* !_ANSI */
 
-#endif /* !ERRNO_H */
+#endif /* !_ERRNO_H */

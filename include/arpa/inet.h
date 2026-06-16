@@ -1,5 +1,5 @@
-#ifndef ARPA_INET_H
-#define ARPA_INET_H
+#ifndef _ARPA_INET_H
+#define _ARPA_INET_H
 
 #include <features.h>
 
@@ -14,4 +14,4 @@ uint16_t ntohs(uint16_t netshort);
 
 #endif /* !_ANSI && _POSIX_C_SOURCE >= 20112L */
 
-#endif /* !ARPA_INET_H */
+#endif /* !_ARPA_INET_H */

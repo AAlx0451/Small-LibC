@@ -1,5 +1,5 @@
-#ifndef ASSERT_H
-#define ASSERT_H
+#ifndef _ASSERT_H
+#define _ASSERT_H
 
 #ifdef assert
 # undef assert
@@ -54,4 +54,4 @@ static __noreturn __cold void __assert_fail_internal(const char *expr,
 
 #endif /* NDEBUG */
 
-#endif /* ASSERT_H */
+#endif /* _ASSERT_H */

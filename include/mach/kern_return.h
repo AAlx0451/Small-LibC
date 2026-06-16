@@ -1,5 +1,5 @@
-#ifndef MACH_KERN_RETURN_H
-#define MACH_KERN_RETURN_H
+#ifndef _MACH_KERN_RETURN_H
+#define _MACH_KERN_RETURN_H
 
 #include <features.h>
 #if defined(_MACH_SOURCE)
@@ -62,4 +62,4 @@
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_KERN_RETURN_H */
+#endif /* !_MACH_KERN_RETURN_H */

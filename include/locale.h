@@ -1,5 +1,5 @@
-#ifndef LOCALE_H
-#define LOCALE_H
+#ifndef _LOCALE_H
+#define _LOCALE_H
 
 #include <features.h>
 #include <limits.h>
@@ -113,4 +113,4 @@ int rl_isxdigit(RuneLocale *rl, int c);
 
 #endif /* _DARWIN_C_SOURCE */
 
-#endif /* !LOCALE_H */
+#endif /* !_LOCALE_H */

@@ -1,5 +1,5 @@
-#ifndef MACH_STD_TYPES_H
-#define MACH_STD_TYPES_H
+#ifndef _MACH_STD_TYPES_H
+#define _MACH_STD_TYPES_H
 
 #include <features.h>
 
@@ -13,4 +13,4 @@
 
 #endif /* !_MACH_SOURCE */
 
-#endif /* !MACH_STD_TYPES_H */
+#endif /* !_MACH_STD_TYPES_H */

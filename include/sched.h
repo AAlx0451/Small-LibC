@@ -1,5 +1,5 @@
-#ifndef SCHED_H
-#define SCHED_H
+#ifndef _SCHED_H
+#define _SCHED_H
 
 #include <features.h>
 
@@ -18,4 +18,4 @@ int sched_yield(void);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 199309L) */
 
-#endif /* !SCHED_H */
+#endif /* !_SCHED_H */

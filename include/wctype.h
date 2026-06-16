@@ -1,5 +1,5 @@
-#ifndef WCTYPE_H
-#define WCTYPE_H
+#ifndef _WCTYPE_H
+#define _WCTYPE_H
 
 #include <features.h>
 
@@ -43,4 +43,4 @@ wint_t towctrans(wint_t wc, wctrans_t desc);
 #endif /* !_ANSI && ((_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _XOPEN_SOURCE &&           \
           _XOPEN_SOURCE >= 600) || (__STDC_VERSION__ && __STDC_VERSION__ >= 199409L)) */
 
-#endif /* !WCTYPE_H */
+#endif /* !_WCTYPE_H */

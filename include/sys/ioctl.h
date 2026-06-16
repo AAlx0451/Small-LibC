@@ -1,5 +1,5 @@
-#ifndef SYS_IOCTL_H
-#define SYS_IOCTL_H
+#ifndef _SYS_IOCTL_H
+#define _SYS_IOCTL_H
 
 #include <features.h>
 
@@ -24,4 +24,4 @@ int ioctl(int, unsigned long, ...);
 
 #endif /* !_ANSI && (_DARWIN_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !SYS_IOCTL_H */
+#endif /* !_SYS_IOCTL_H */

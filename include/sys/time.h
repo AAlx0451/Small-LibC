@@ -1,5 +1,5 @@
-#ifndef SYS_TIME_H
-#define SYS_TIME_H
+#ifndef _SYS_TIME_H
+#define _SYS_TIME_H
 
 #include <features.h>
 
@@ -41,4 +41,4 @@ int settimeofday(const struct timeval *tv, const struct timezone *tz);
 #endif /* !_ANSI && (_XOPEN_SOURCE || _GNU_SOURCE || (_POSIX_C_SOURCE && _POSIX_C_SOURCE >=        \
           200112L) || _DARWIN_C_SOURCE */
 
-#endif /* !SYS_TIME_H */
+#endif /* !_SYS_TIME_H */

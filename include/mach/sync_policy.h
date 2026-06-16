@@ -1,5 +1,5 @@
-#ifndef MACH_SYNC_POLICY_H
-#define MACH_SYNC_POLICY_H
+#ifndef _MACH_SYNC_POLICY_H
+#define _MACH_SYNC_POLICY_H
 
 #include <features.h>
 
@@ -21,4 +21,4 @@ typedef int sync_policy_t;
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_SYNC_POLICY_H */
+#endif /* !_MACH_SYNC_POLICY_H */

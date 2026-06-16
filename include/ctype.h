@@ -1,5 +1,5 @@
-#ifndef CTYPE_H
-#define CTYPE_H
+#ifndef _CTYPE_H
+#define _CTYPE_H
 
 #include <features.h>
 
@@ -30,4 +30,4 @@ int isblank(int c);
 
 #endif /* !_ANSI && (_XOPEN_SOURCE || _GNU_SOURCE || _DARWIN_C_SOURCE) */
 
-#endif /* !CTYPE_H */
+#endif /* !_CTYPE_H */

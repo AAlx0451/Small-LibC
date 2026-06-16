@@ -1,5 +1,5 @@
-#ifndef MACH_TIME_VALUE_H
-#define MACH_TIME_VALUE_H
+#ifndef _MACH_TIME_VALUE_H
+#define _MACH_TIME_VALUE_H
 
 #include <features.h>
 
@@ -37,4 +37,4 @@ typedef struct time_value time_value_t;
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_TIME_VALUE_H */
+#endif /* !_MACH_TIME_VALUE_H */

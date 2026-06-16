@@ -1,5 +1,5 @@
-#ifndef MACH_VM_TYPES_H
-#define MACH_VM_TYPES_H
+#ifndef _MACH_VM_TYPES_H
+#define _MACH_VM_TYPES_H
 
 #include <features.h>
 
@@ -39,4 +39,4 @@ typedef mach_port_t vm_named_entry_t; /* named virtual memory entry port */
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_VM_TYPES_H */
+#endif /* !_MACH_VM_TYPES_H */

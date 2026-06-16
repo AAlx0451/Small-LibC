@@ -1,4 +1,5 @@
-#ifndef MACH_MACH_SYSCALLS_H
+#ifndef _MACH_MACH_SYSCALLS_H
+#define _MACH_MACH_SYSCALLS_H
 
 # include <features.h>
 
@@ -103,4 +104,4 @@ long _mach_syscall9(long number,
 
 # endif /* _MACH_SOURCE */
 
-#endif /* !MACH_MACH_SYSCALLS_H */
+#endif /* !_MACH_MACH_SYSCALLS_H */

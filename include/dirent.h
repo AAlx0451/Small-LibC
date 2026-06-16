@@ -1,5 +1,5 @@
-#ifndef DIRENT_H
-#define DIRENT_H
+#ifndef _DIRENT_H
+#define _DIRENT_H
 
 #include <features.h>
 
@@ -39,4 +39,4 @@ void rewinddir(DIR *);
 
 #endif /* !ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !DIRENT_H */
+#endif /* !_DIRENT_H */

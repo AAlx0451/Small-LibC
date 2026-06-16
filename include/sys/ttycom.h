@@ -1,5 +1,5 @@
-#ifndef SYS_TTYCOM_H
-#define SYS_TTYCOM_H
+#ifndef _SYS_TTYCOM_H
+#define _SYS_TTYCOM_H
 
 #include <features.h>
 
@@ -92,4 +92,4 @@ struct winsize {
 
 #endif /* !_ANSI && (_DARWIN_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !SYS_TTYCOM_H */
+#endif /* !_SYS_TTYCOM_H */

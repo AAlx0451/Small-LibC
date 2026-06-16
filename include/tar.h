@@ -1,5 +1,5 @@
-#ifndef TAR_H
-#define TAR_H
+#ifndef _TAR_H
+#define _TAR_H
 
 #include <features.h>
 
@@ -35,4 +35,4 @@
 
 #endif /* !_ANSI && _POSIX_C_SOURCE */
 
-#endif /* !TAR_H */
+#endif /* !_TAR_H */

@@ -1,5 +1,5 @@
-#ifndef MACH_MACHINE_H
-#define MACH_MACHINE_H
+#ifndef _MACH_MACHINE_H
+#define _MACH_MACHINE_H
 
 #include <features.h>
 
@@ -187,4 +187,4 @@ typedef integer_t cpu_threadtype_t;
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_MACHINE_H */
+#endif /* !_MACH_MACHINE_H */

@@ -1,5 +1,5 @@
-#ifndef GRP_H
-#define GRP_H
+#ifndef _GRP_H
+#define _GRP_H
 
 #include <features.h>
 
@@ -26,4 +26,4 @@ void endgrent(void);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !GRP_H */
+#endif /* !_GRP_H */

@@ -1,5 +1,5 @@
-#ifndef MACH_PORT_H
-#define MACH_PORT_H
+#ifndef _MACH_PORT_H
+#define _MACH_PORT_H
 
 #include <features.h>
 
@@ -139,4 +139,4 @@ __deprecated typedef mach_port_name_t *port_name_array_t; /* legacy names array 
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_PORT_H */
+#endif /* !_MACH_PORT_H */

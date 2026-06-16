@@ -1,5 +1,5 @@
-#ifndef MACH_VM_STATISTICS_H
-#define MACH_VM_STATISTICS_H
+#ifndef _MACH_VM_STATISTICS_H
+#define _MACH_VM_STATISTICS_H
 
 #include <features.h>
 
@@ -160,4 +160,4 @@ typedef struct vm_extmod_statistics vm_extmod_statistics_data_t;
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_VM_STATISTICS_H */
+#endif /* !_MACH_VM_STATISTICS_H */

@@ -1,5 +1,5 @@
-#ifndef MACH_ARM_VM_TYPES_H
-#define MACH_ARM_VM_TYPES_H
+#ifndef _MACH_ARM_VM_TYPES_H
+#define _MACH_ARM_VM_TYPES_H
 
 #include <features.h>
 
@@ -39,4 +39,4 @@ typedef vm_offset_t mach_port_context_t; /* pointer-sized token for port associa
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_ARM_VM_TYPES_H */
+#endif /* !_MACH_ARM_VM_TYPES_H */

@@ -1,5 +1,5 @@
-#ifndef SYS_IOCCOM_H
-#define SYS_IOCCOM_H
+#ifndef _SYS_IOCCOM_H
+#define _SYS_IOCCOM_H
 
 #include <features.h>
 
@@ -45,4 +45,4 @@
 
 #endif /* !_ANSI && (_DARWIN_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !SYS_IOCCOM_H */
+#endif /* !_SYS_IOCCOM_H */

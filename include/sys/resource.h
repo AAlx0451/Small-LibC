@@ -1,5 +1,5 @@
-#ifndef SYS_RESOURCE_H
-#define SYS_RESOURCE_H
+#ifndef _SYS_RESOURCE_H
+#define _SYS_RESOURCE_H
 
 #include <features.h>
 
@@ -32,4 +32,4 @@ int getrusage(int who, struct rusage *usage);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) */
 
-#endif /* !SYS_RESOURCE_H */
+#endif /* !_SYS_RESOURCE_H */

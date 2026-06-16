@@ -1,5 +1,5 @@
-#ifndef MACH_MESSAGE_H
-#define MACH_MESSAGE_H
+#ifndef _MACH_MESSAGE_H
+#define _MACH_MESSAGE_H
 
 #include <features.h>
 
@@ -388,4 +388,4 @@ extern mach_msg_return_t mach_msg(mach_msg_header_t *msg,
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_MESSAGE_H */
+#endif /* !_MACH_MESSAGE_H */

@@ -1,5 +1,5 @@
-#ifndef MACH_HOST_INFO_H
-#define MACH_HOST_INFO_H
+#ifndef _MACH_HOST_INFO_H
+#define _MACH_HOST_INFO_H
 
 #include <features.h>
 
@@ -139,4 +139,4 @@ typedef struct host_cpu_load_info *host_cpu_load_info_t;
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_HOST_INFO_H */
+#endif /* !_MACH_HOST_INFO_H */

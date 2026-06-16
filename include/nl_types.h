@@ -1,5 +1,5 @@
-#ifndef NL_TYPES_H
-#define NL_TYPES_H
+#ifndef _NL_TYPES_H
+#define _NL_TYPES_H
 
 #include <features.h>
 
@@ -20,4 +20,4 @@ int catclose(nl_catd);
 
 #endif /* !_ANSI && ((_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _XOPEN_SOURCE) */
 
-#endif /* !NL_TYPES_H */
+#endif /* !_NL_TYPES_H */

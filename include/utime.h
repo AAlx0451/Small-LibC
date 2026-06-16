@@ -1,6 +1,6 @@
 
-#ifndef UTIME_H
-#define UTIME_H
+#ifndef _UTIME_H
+#define _UTIME_H
 
 #include <features.h>
 
@@ -17,4 +17,4 @@ int utime(const char *path, const struct utimbuf *times);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE || _GNU_SOURCE || _DARWIN_C_SOURCE) */
 
-#endif /* !UTIME_H */
+#endif /* !_UTIME_H */

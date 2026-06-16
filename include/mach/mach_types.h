@@ -2,7 +2,7 @@
  * XXX: much is not implemwnted yet
  */
 
-#ifndef MACH_MACH_TYPES_H
+#ifndef _MACH_MACH_TYPES_H
 
 # include <mach/clock_types.h>
 # include <mach/host_info.h>
@@ -102,4 +102,4 @@ typedef char *labelstr_t;
 # define LEDGER_ITEM_INFINITY  ((ledger_item_t)(~0))
 # define LEDGER_LIMIT_INFINITY ((ledger_amount_t)(((uint64_t)1 << 63) - 1))
 
-#endif /* !MACH_MACH_TYPES_H */
+#endif /* !_MACH_MACH_TYPES_H */

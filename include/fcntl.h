@@ -1,5 +1,5 @@
-#ifndef FCNTL_H
-#define FCNTL_H
+#ifndef _FCNTL_H
+#define _FCNTL_H
 
 #include <features.h>
 
@@ -58,4 +58,4 @@ int fcntl(int fd, int cmd, ...);
 
 #endif /* !ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !FCNTL_H */
+#endif /* !_FCNTL_H */

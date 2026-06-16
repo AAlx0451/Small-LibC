@@ -1,5 +1,5 @@
-#ifndef PWD_H
-#define PWD_H
+#ifndef _PWD_H
+#define _PWD_H
 
 #include <features.h>
 
@@ -33,4 +33,4 @@ void endpwent(void);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !PWD_H */
+#endif /* !_PWD_H */

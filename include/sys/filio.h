@@ -1,5 +1,5 @@
-#ifndef SYS_FILIO_H
-#define SYS_FILIO_H
+#ifndef _SYS_FILIO_H
+#define _SYS_FILIO_H
 
 #include <features.h>
 
@@ -17,4 +17,4 @@
 
 #endif /* !_ANSI && (_DARWIN_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !SYS_FILIO_H */
+#endif /* !_SYS_FILIO_H */

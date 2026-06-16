@@ -1,5 +1,5 @@
-#ifndef WCHAR_H
-#define WCHAR_H
+#ifndef _WCHAR_H
+#define _WCHAR_H
 
 #include <features.h>
 
@@ -101,4 +101,4 @@ unsigned long long wcstoull(const wchar_t *restrict nptr, wchar_t **restrict end
 #endif /* !_ANSI && ((_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) || _XOPEN_SOURCE &&           \
           _XOPEN_SOURCE >= 600) || (__STDC_VERSION__ && __STDC_VERSION__ >= 199409L)) */
 
-#endif /* !WCHAR_H */
+#endif /* !_WCHAR_H */

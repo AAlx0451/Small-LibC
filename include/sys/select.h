@@ -1,5 +1,5 @@
-#ifndef SYS_SELECT_H
-#define SYS_SELECT_H
+#ifndef _SYS_SELECT_H
+#define _SYS_SELECT_H
 
 #include <features.h>
 
@@ -20,4 +20,4 @@ int select(int nfds, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struc
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 200112L) */
 
-#endif /* !SYS_SELECT_H */
+#endif /* !_SYS_SELECT_H */

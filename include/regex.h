@@ -1,5 +1,5 @@
-#ifndef REGEX_H
-#define REGEX_H
+#ifndef _REGEX_H
+#define _REGEX_H
 
 #include <features.h>
 
@@ -49,4 +49,4 @@ void regfree(regex_t *);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2) */
 
-#endif /* !REGEX_H */
+#endif /* !_REGEX_H */

@@ -1,5 +1,5 @@
-#ifndef SYS_TIMES_H
-#define SYS_TIMES_H
+#ifndef _SYS_TIMES_H
+#define _SYS_TIMES_H
 
 #include <features.h>
 
@@ -18,4 +18,4 @@ clock_t times(struct tms *buffer);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !SYS_TIMES_H */
+#endif /* !_SYS_TIMES_H */

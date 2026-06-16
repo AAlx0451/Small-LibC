@@ -1,5 +1,5 @@
-#ifndef MACH_ARM_VM_PARAM_H
-#define MACH_ARM_VM_PARAM_H
+#ifndef _MACH_ARM_VM_PARAM_H
+#define _MACH_ARM_VM_PARAM_H
 
 #include <features.h>
 
@@ -50,4 +50,4 @@
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_ARM_KERN_RETURN_H */
+#endif /* !_MACH_ARM_VM_PARAM_H */

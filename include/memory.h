@@ -1,5 +1,5 @@
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef _MEMORY_H
+#define _MEMORY_H
 
 #include <features.h>
 
@@ -16,4 +16,4 @@ void *memset(void *s, int c, size_t n);
 
 #endif /* !_ANSI && (_GNU_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !MEMORY_H */
+#endif /* !_MEMORY_H */

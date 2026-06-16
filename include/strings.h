@@ -1,5 +1,5 @@
-#ifndef STRINGS_H
-#define STRINGS_H
+#ifndef _STRINGS_H
+#define _STRINGS_H
 
 #include <features.h>
 
@@ -19,4 +19,4 @@ int strncasecmp(const char *s1, const char *s2, size_t n);
 
 #endif /* !_ANSI && (_GNU_SOURCE || _DARWIN_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !STRINGS_H */
+#endif /* !_STRINGS_H */

@@ -1,5 +1,5 @@
-#ifndef STDLIB_H
-#define STDLIB_H
+#ifndef _STDLIB_H
+#define _STDLIB_H
 
 #include <features.h>
 #include <stddef.h>
@@ -108,4 +108,4 @@ int mbtowc(wchar_t *pwc, const char *s, size_t n);
 size_t wcstombs(char *s, const wchar_t *pwcs, size_t n);
 int wctomb(char *s, wchar_t wchar);
 
-#endif /* !STDLIB_H */
+#endif /* !_STDLIB_H */

@@ -1,5 +1,5 @@
-#ifndef FEATURES_H
-#define FEATURES_H
+#ifndef _FEATURES_H
+#define _FEATURES_H
 
 #if defined(__GNUC__) || defined(__clang__)
 # define __always_inline          __attribute__((always_inline))
@@ -86,4 +86,4 @@
 # endif /* _POSIX_SOURCE && !_POSIX_C_SOURCE */
 #endif  /* _ANSI_SOURCE || __STRICT_ANSI__ */
 
-#endif /* !FEATURES_H */
+#endif /* !_FEATURES_H */

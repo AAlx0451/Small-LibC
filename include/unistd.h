@@ -1,5 +1,5 @@
-#ifndef UNISTD_H
-#define UNISTD_H
+#ifndef _UNISTD_H
+#define _UNISTD_H
 
 #include <features.h>
 
@@ -250,4 +250,4 @@ long syscall8(long number,
 
 #endif /* !_ANSI && _POSIX_C_SOURCE */
 
-#endif /* !UNISTD_H */
+#endif /* !_UNISTD_H */

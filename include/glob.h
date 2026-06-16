@@ -1,5 +1,5 @@
-#ifndef GLOB_H
-#define GLOB_H
+#ifndef _GLOB_H
+#define _GLOB_H
 
 #include <features.h>
 
@@ -33,4 +33,4 @@ void globfree(glob_t *pglob);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2) */
 
-#endif /* !GLOB_H */
+#endif /* !_GLOB_H */

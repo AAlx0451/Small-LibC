@@ -1,5 +1,5 @@
-#ifndef MACH_SEMAPHORE_H
-#define MACH_SEMAPHORE_H
+#ifndef _MACH_SEMAPHORE_H
+#define _MACH_SEMAPHORE_H
 
 #include <mach/kern_return.h>
 #include <mach/mach_types.h>
@@ -18,4 +18,4 @@ kern_return_t semaphore_timedwait_signal(semaphore_t wait_semaphore,
 
 kern_return_t semaphore_wait_signal(semaphore_t wait_semaphore, semaphore_t signal_semaphore);
 
-#endif /* !MACH_SEMAPHORE_H */
+#endif /* !_MACH_SEMAPHORE_H */

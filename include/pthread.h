@@ -1,21 +1,21 @@
-#ifndef PTHREAD_H
-# define PTHREAD_H
+#ifndef _PTHREAD_H
+#define _PTHREAD_H
 
-# include <features.h>
+#include <features.h>
 
-# if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199506L)
+#if !defined(_ANSI) && (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199506L)
 
-#  include <mach/port.h>
-#  include <mach/semaphore.h>
-#  include <sched.h>
-#  include <stddef.h>
-#  include <stdint.h>
+# include <mach/port.h>
+# include <mach/semaphore.h>
+# include <sched.h>
+# include <stddef.h>
+# include <stdint.h>
 
-#  define MAXTHREADNAMESIZE               64
-#  define _EXTERNAL_POSIX_THREAD_KEYS_MAX 256
-#  define _INTERNAL_POSIX_THREAD_KEYS_MAX 256
-#  define _INTERNAL_POSIX_THREAD_KEYS_END                                                          \
-         (_EXTERNAL_POSIX_THREAD_KEYS_MAX + _INTERNAL_POSIX_THREAD_KEYS_MAX)
+# define MAXTHREADNAMESIZE               64
+# define _EXTERNAL_POSIX_THREAD_KEYS_MAX 256
+# define _INTERNAL_POSIX_THREAD_KEYS_MAX 256
+# define _INTERNAL_POSIX_THREAD_KEYS_END                                                           \
+     (_EXTERNAL_POSIX_THREAD_KEYS_MAX + _INTERNAL_POSIX_THREAD_KEYS_MAX)
 
 typedef int pthread_lock_t;
 
@@ -89,6 +89,6 @@ struct _pthread {
 
 typedef struct _pthread *pthread_t;
 
-# endif /* !_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 199506L) */
+#endif /* !_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 199506L) */
 
-# endif /* !PTHREAD_H */
+#endif /* !_PTHREAD_H */

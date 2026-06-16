@@ -1,5 +1,5 @@
-#ifndef CPIO_H
-#define CPIO_H
+#ifndef _CPIO_H
+#define _CPIO_H
 
 #include <features.h>
 
@@ -30,4 +30,4 @@
 
 #endif /* !_ANSI && _POSIX_C_SOURCE */
 
-#endif /* !CPIO_H */
+#endif /* !_CPIO_H */

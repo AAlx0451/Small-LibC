@@ -1,5 +1,5 @@
-#ifndef SYS_MMAN_H
-#define SYS_MMAN_H
+#ifndef _SYS_MMAN_H
+#define _SYS_MMAN_H
 
 #include <features.h>
 
@@ -35,4 +35,4 @@ int shm_unlink(const char *name);
 #endif /* !_ANSI && ((_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 199309L) || (_XOPEN_SOURCE &&          \
           _XOPEN_SOURCE >= 500) || _GNU_SOURCE) */
 
-#endif /* !SYS_MMAN_H */
+#endif /* !_SYS_MMAN_H */

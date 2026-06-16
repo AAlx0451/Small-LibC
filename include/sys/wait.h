@@ -1,5 +1,5 @@
-#ifndef SYS_WAIT_H
-#define SYS_WAIT_H
+#ifndef _SYS_WAIT_H
+#define _SYS_WAIT_H
 
 #include <features.h>
 
@@ -71,4 +71,4 @@ pid_t wait4(pid_t pid, int *stat_loc, int options, struct rusage *rusage);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE || _XOPEN_SOURCE) */
 
-#endif /* !SYS_WAIT_H */
+#endif /* !_SYS_WAIT_H */

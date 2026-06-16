@@ -1,5 +1,5 @@
-#ifndef LIBC_H
-#define LIBC_H
+#ifndef _LIBC_H
+#define _LIBC_H
 
 // IWYU pragma: begin_exports
 #include <aio.h>
@@ -41,4 +41,4 @@
 #include <wordexp.h>
 // IWYU pragma: end_exports
 
-#endif /* !LIBC_H */
+#endif /* !_LIBC_H */

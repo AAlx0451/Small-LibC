@@ -1,5 +1,5 @@
-#ifndef MACH_ARM_BOOLEAN_H
-#define MACH_ARM_BOOLEAN_H
+#ifndef _MACH_ARM_BOOLEAN_H
+#define _MACH_ARM_BOOLEAN_H
 
 #include <features.h>
 
@@ -11,4 +11,4 @@ typedef int boolean_t;
 
 #endif /* _MACH_SOURCE */
 
-#endif /* !MACH_ARM_BOOLEAN_H */
+#endif /* !_MACH_ARM_BOOLEAN_H */

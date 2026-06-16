@@ -1,5 +1,5 @@
-#ifndef WORDEXP_H
-#define WORDEXP_H
+#ifndef _WORDEXP_H
+#define _WORDEXP_H
 
 #include <features.h>
 
@@ -31,4 +31,4 @@ void wordfree(wordexp_t *);
 
 #endif /* !_ANSI && (_POSIX_C_SOURCE && _POSIX_C_SOURCE >= 2) */
 
-#endif /* !WORDEXP_H */
+#endif /* !_WORDEXP_H */

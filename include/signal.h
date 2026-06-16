@@ -1,5 +1,5 @@
-#ifndef SIGNAL_H
-#define SIGNAL_H
+#ifndef _SIGNAL_H
+#define _SIGNAL_H
 
 #include <features.h>
 
@@ -165,4 +165,4 @@ int sigpending(sigset_t *set);
 int sigreturn(void *uctx, int infostyle);
 #endif /* _DARWIN_C_SOURCE */
 
-#endif /* !SIGNAL_H */
+#endif /* !_SIGNAL_H */

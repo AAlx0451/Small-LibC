@@ -1,5 +1,5 @@
-#ifndef STDIO_H
-#define STDIO_H
+#ifndef _STDIO_H
+#define _STDIO_H
 
 #include <_types.h>
 #include <features.h>
@@ -194,4 +194,4 @@ void _spin_lock(volatile int *lock);
 void _spin_unlock(volatile int *lock);
 #endif /* !_ANSI && SMALL_LIBC */
 
-#endif /* !STDIO_H */
+#endif /* !_STDIO_H */

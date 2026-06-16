@@ -1,5 +1,5 @@
-#ifndef STDINT_H
-#define STDINT_H
+#ifndef _STDINT_H
+#define _STDINT_H
 
 #include <features.h>
 
@@ -128,4 +128,4 @@ typedef __UINTMAX_TYPE__ uintmax_t;
 #endif /* !_ANSI && ((__STDC_VERSION__ && __STDC_VERSION__ >= 199901L) || (_POSIX_C_SOURCE &&      \
           _POSIX_C_SOURCE >= 200112L) || _DARWIN_C_SOURCE) */
 
-#endif /* !STDINT_H */
+#endif /* !_STDINT_H */

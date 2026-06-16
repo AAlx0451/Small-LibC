@@ -1,5 +1,5 @@
-#ifndef TERMIOS_H
-#define TERMIOS_H
+#ifndef _TERMIOS_H
+#define _TERMIOS_H
 
 #include <features.h>
 
@@ -155,4 +155,4 @@ int tcsetattr(int fd, int optional_actions, const struct termios *t);
 
 #endif /* !_ANSI && _POSIX_C_SOURCE */
 
-#endif /* !TERMIOS_H */
+#endif /* !_TERMIOS_H */
