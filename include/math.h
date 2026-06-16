@@ -11,20 +11,15 @@
 #endif /* !_ANSI && !_ANSI_SOURCE && !__STRICT_ANSI__ && (__STDC_VERSION__ && __STDC_VERSION__ >=  \
           199901L */
 
-/* By C99, the <math.h> header shall define at least the following types:
+#if !defined(_ANSI) && !defined(_ANSI_SOURCE) && !defined(__STRICT_ANSI__) &&                      \
+    (defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L)
+# define _C11
+#endif /* !_ANSI && !_ANSI_SOURCE && !__STRICT_ANSI__ && (__STDC_VERSION__ && __STDC_VERSION__ >=  \
+          201112L */
 
-   float_t
-       A real-floating type at least as wide as float.
-   double_t
-       A real-floating type at least as wide as double, and at least as wide
-       as float_t.
-
-   If FLT_EVAL_METHOD equals 0, float_t and double_t shall be float and
-   double, respectively; if FLT_EVAL_METHOD equals 1, they shall both be
-   double; if FLT_EVAL_METHOD equals 2, they shall both be long double;
-   for other values of FLT_EVAL_METHOD, they are otherwise implementation-
-   defined.
-*/
+#if defined(__GNUC__) || defined(__clang__)
+# define __gcclike
+#endif /* __GNUC__ || __clang__ */
 
 #ifdef _C99
 # if FLT_EVAL_METHOD == 0
@@ -43,31 +38,24 @@ typedef double double_t;
 # endif /* FLT_EVAL_METHOD */
 #endif  /* _C99 */
 
-/* By C99, the <math.h> header shall define the following macros, where real-floating
-   indicates that the argument shall be an expression of real-floating type:
-
-    int fpclassify(real-floating x);
-    int isfinite(real-floating x);
-    int isgreater(real-floating x, real-floating y);
-    int isgreaterequal(real-floating x, real-floating y);
-    int isinf(real-floating x);
-    int isless(real-floating x, real-floating y);
-    int islessequal(real-floating x, real-floating y);
-    int islessgreater(real-floating x, real-floating y);
-    int isnan(real-floating x);
-    int isnormal(real-floating x);
-    int isunordered(real-floating x, real-floating y);
-    int signbit(real-floating x);
-*/
-
 #ifdef _C99
 
-# define fpclassify(x)                                                                             \
-     _Generic((x),                                                                                 \
-         float: _Fpclassifyf(x),                                                                   \
-         double: _Fpclassify(x),                                                                   \
-         long double: _Fpclassifyl(x),                                                             \
-         default: _Fpclassify((double)(x)))
+# ifdef __gcclike
+#  define fpclassify(x)                                                                            \
+      __builtin_fpclassify(FP_NAN, FP_INFINITE, FP_NORMAL, FP_SUBNORMAL, FP_ZERO, (x))
+# elif _C11
+#  define fpclassify(x)                                                                            \
+      _Generic((x),                                                                                \
+          float: _Fpclassifyf(x),                                                                  \
+          double: _Fpclassify(x),                                                                  \
+          long double: _Fpclassifyl(x),                                                            \
+          default: _Fpclassify((double)(x)))
+# else
+#  define fpclassify(x)                                                                            \
+      (sizeof(x) == sizeof(float)         ? _Fpclassifyf(x)                                        \
+       : sizeof(x) == sizeof(long double) ? _Fpclassifyl(x)                                        \
+                                          : _Fpclassify((double)(x)))
+# endif /* __gcclike */
 
 # define isfinite(x) (fpclassify(x) <= 0)
 # define isnan(x)    (fpclassify(x) == FP_NAN)
@@ -82,12 +70,21 @@ typedef double double_t;
 # define islessequal(x, y)    (isunordered(x, y) ? 0 : ((x) <= (y)))
 # define islessgreater(x, y)  (isunordered(x, y) ? 0 : ((x) != (y)))
 
-# define signbit(x)                                                                                \
-     _Generic((x),                                                                                 \
-         float: _Signbitf(x),                                                                      \
-         double: _Signbit(x),                                                                      \
-         long double: _Signbitl(x),                                                                \
-         default: _Signbit((double)(x)))
+# if defined(__gcclike)
+#  define signbit(x) __builtin_signbit(x)
+# elif _C11
+#  define signbit(x)                                                                               \
+      _Generic((x),                                                                                \
+          float: _Signbitf(x),                                                                     \
+          double: _Signbit(x),                                                                     \
+          long double: _Signbitl(x),                                                               \
+          default: _Signbit((double)(x)))
+# else
+#  define signbit(x)                                                                               \
+      (sizeof(x) == sizeof(float)         ? _Signbitf(x)                                           \
+       : sizeof(x) == sizeof(long double) ? _Signbitl(x)                                           \
+                                          : _Signbit((double)(x)))
+# endif /* __gcclike */
 
 #endif /* _C99 */
 
@@ -141,10 +138,12 @@ typedef double double_t;
 # define MAXFLOAT FLT_MAX
 #endif /* _XOPEN_SOURCE && _XOPEN_SOURCE >= 700 */
 
-/* The <math.h> header shall define the following macros:
+/*
    [C99] INFINITY - A constant expression of type float representing
    positive or unsigned infinity, if available; else a positive
    constant of type float that overflows at translation time.
+
+   [C23] moved to <float.h>
 */
 
 #ifdef _C99
@@ -203,6 +202,8 @@ typedef double double_t;
 /* [C99] NAN - A constant expression of type float representing a quiet
    NaN. This macro is only defined if the implementation supports
    quiet NaNs for the float type.
+
+   [C23] move to <float.h>
 */
 
 #ifdef _C99
