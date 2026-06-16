@@ -4,14 +4,6 @@
 
 #define REG(name, val) register long name __asm__(#name) = (long)(val)
 
-#define _MSYS_GET_NTH_ARG(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N, ...) N
-#define _MSYS_COUNT_ARGS(...)                                              _MSYS_GET_NTH_ARG(0, ##__VA_ARGS__, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0)
-#define _MSYS_CONCAT_IMPL(name, count)                                     name##count
-#define _MSYS_CONCAT(name, count)                                          _MSYS_CONCAT_IMPL(name, count)
-
-#define mach_syscall(number, ...)                                                                  \
-    _MSYS_CONCAT(_mach_syscall, _MSYS_COUNT_ARGS(__VA_ARGS__))(number, ##__VA_ARGS__)
-
 /*
  * simple helper
  * aligns stack by 32 bytes (pushing 8 regs) and marks stack changes for CFI.
