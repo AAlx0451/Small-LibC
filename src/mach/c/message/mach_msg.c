@@ -10,7 +10,9 @@ mach_msg_return_t mach_msg(mach_msg_header_t *msg,
                            mach_msg_timeout_t timeout,
                            mach_port_t notify)
 {
+    mach_msg_option_t rcv_only_option;
     mach_msg_return_t mr;
+    mach_msg_size_t rcv_only_send_size;
 
     mr = mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, timeout, notify);
 
@@ -29,8 +31,8 @@ mach_msg_return_t mach_msg(mach_msg_header_t *msg,
             return MACH_RCV_INTERRUPTED;
         }
 
-        mach_msg_option_t rcv_only_option = option & ~MACH_SEND_MSG;
-        mach_msg_size_t rcv_only_send_size = 0;
+        rcv_only_option = option & ~MACH_SEND_MSG;
+        rcv_only_send_size = 0;
 
         do {
             mr = mach_msg_trap(
