@@ -148,17 +148,19 @@ typedef double double_t;
 */
 
 #ifdef _C99
-# if defined(__GNUC__) || defined(__clang__)
-#  define INFINITY __builtin_inff()
-# else
-#  define INFINITY                                                                                 \
-      (0x1.0p+128) /* IEEE754 +Inf: 01111111100000000000000000000000:                              \
-     positive signed bit,                                                                          \
-     all exp bit set                                                                               \
-     all mant bit zero  */
+# ifndef INFINITY
+#  if defined(__GNUC__) || defined(__clang__)
+#   define INFINITY __builtin_inff()
+#  else
+#   define INFINITY                                                                                \
+       (0x1.0p+128) /* IEEE754 +Inf: 01111111100000000000000000000000:                             \
+      positive signed bit,                                                                         \
+      all exp bit set                                                                              \
+      all mant bit zero  */
 
-# endif /* __GNUC__ || __clang__ */
-#endif  /* _C99 */
+#  endif /* __GNUC__ || __clang__ */
+# endif  /* !INFINITY */
+#endif   /* _C99 */
 
 /* HUGE_VAL - A positive double constant expression, not necessarily
    representable as a float. Used as an error value returned by the
@@ -204,18 +206,20 @@ typedef double double_t;
 */
 
 #ifdef _C99
-# if defined(__GNUC__) || defined(__clang__)
-#  define NAN __builtin_nanf("")
-# else
-#  define NAN                                                                                      \
-      (0.0f / 0.0f) /* WONTFIX:                                                                    \
-          by C99, NAN expands to a constant expression of type float                               \
-          representing a quiet NaN, which can't be defined                                         \
-          without compiler extensions (division is a runtime operation)                            \
-        */
+# ifndef NAN
+#  if defined(__GNUC__) || defined(__clang__)
+#   define NAN __builtin_nanf("")
+#  else
+#   define NAN                                                                                     \
+       (0.0f / 0.0f) /* WONTFIX:                                                                   \
+           by C99, NAN expands to a constant expression of type float                              \
+           representing a quiet NaN, which can't be defined                                        \
+           without compiler extensions (division is a runtime operation)                           \
+         */
 
-# endif /* __GNUC__ || __clang__ */
-#endif  /* _C99 */
+#  endif /* __GNUC__ || __clang__ */
+# endif  /* !NAN */
+#endif   /* _C99 */
 
 /* [C99] The following macros shall be defined for number classification.
    They represent the mutually-exclusive kinds of floating-point values.

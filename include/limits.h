@@ -98,7 +98,8 @@
 #  define _POSIX_SEM_VALUE_MAX  32767
 #  define _POSIX_SIGQUEUE_MAX   32
 #  define _POSIX_TIMER_MAX      32
-# endif /* (_POSIX_C_SOURCE >= 199309L) || (_XOPEN_SOURCE >= 500) || _GNU_SOURCE || _DARWIN_C_SOURCE */
+# endif /* (_POSIX_C_SOURCE >= 199309L) || (_XOPEN_SOURCE >= 500) || _GNU_SOURCE ||                \
+           _DARWIN_C_SOURCE */
 
 # if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 199506L) ||                                   \
      (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 500) || defined(_GNU_SOURCE) ||                   \
@@ -111,7 +112,8 @@
 #  define PTHREAD_DESTRUCTOR_ITERATIONS 4
 #  define PTHREAD_KEYS_MAX              512
 #  define PTHREAD_STACK_MIN             8192
-# endif /* (_POSIX_C_SOURCE >= 199506L) || (_XOPEN_SOURCE >= 500) || _GNU_SOURCE || _DARWIN_C_SOURCE */
+# endif /* (_POSIX_C_SOURCE >= 199506L) || (_XOPEN_SOURCE >= 500) || _GNU_SOURCE ||                \
+           _DARWIN_C_SOURCE */
 
 # if (defined(_POSIX_C_SOURCE) && _POSIX_C_SOURCE >= 200112L) ||                                   \
      (defined(_XOPEN_SOURCE) && _XOPEN_SOURCE >= 600) || defined(_GNU_SOURCE) ||                   \
@@ -134,7 +136,8 @@
 #  define CHARCLASS_NAME_MAX 14
 #  define COLL_WEIGHTS_MAX   2
 #  define NZERO              20
-# endif /* (_POSIX_C_SOURCE >= 200112L) || (_XOPEN_SOURCE >= 600) || _GNU_SOURCE || _DARWIN_C_SOURCE */
+# endif /* (_POSIX_C_SOURCE >= 200112L) || (_XOPEN_SOURCE >= 600) || _GNU_SOURCE ||                \
+           _DARWIN_C_SOURCE */
 
 #endif /* _POSIX_SOURCE || _POSIX_C_SOURCE || _XOPEN_SOURCE || _GNU_SOURCE || _DARWIN_C_SOURCE */
 
