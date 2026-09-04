@@ -38,25 +38,21 @@ Q = $(if $(filter 1,$(VERBOSE)),,@)
 all: $(TARGET_LIBC) $(TARGET_LIBRT) $(TARGET_LIBM) $(TARGET_LIBMACH)
 
 ifeq ($(CROSS), 1)
-  ifndef SDK
-    $(error SDK path must be set for cross-compilation when CROSS=1)
-  endif
-
   AR = llvm-ar
   LIPO = llvm-lipo
   comma := ,
-  ARCH_LIST = $(subst $(comma), ,$(ARCHES))
   ARCHES ?= armv7
+  ARCH_LIST = $(subst $(comma), ,$(ARCHES))
 
-  BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -isystem $(INCDIR) -fPIC -std=gnu11 -isysroot $(SDK)
+  BASE_CFLAGS = $(CPPFLAGS) $(CFLAGS) -nostdinc -isystem $(INCDIR) -fPIC -std=gnu11
 
   define BUILD_ARCH
     OBJS_$(1) := $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(C_SRCS) $(RT_SRCS) $(MATH_SRCS) $(MACH_SRCS))
-    
+
     $(OBJDIR)/$(1)/math/%.o: BASE_CFLAGS += $(MATH_CFLAGS)
 
     $(OBJDIR)/$(1)/%.o: %.c
-		@printf "\tCC\t[$(1)] %%s\n" "$$<"
+		@printf "\tCC\t[$(1)] %s\n" "$$<"
 		@mkdir -p $$(dir $$@)
 		$(Q)$(CC) $$(BASE_CFLAGS) -target $(1)-apple-ios6.1 -c $$< -o $$@
 
@@ -66,7 +62,7 @@ ifeq ($(CROSS), 1)
     $(OBJDIR)/$(1)/libmach.a: $(patsubst %.c,$(OBJDIR)/$(1)/%.o,$(MACH_SRCS))
 
     $(OBJDIR)/$(1)/%.a:
-		@printf "\tAR\t[$(1)] %%s\n" "$$@"
+		@printf "\tAR\t[$(1)] %s\n" "$$@"
 		@mkdir -p $$(dir $$@)
 		$(Q)$(AR) rcs $$@ $$^
 
@@ -136,8 +132,3 @@ endif
 clean:
 	@printf "\tCLEAN\n"
 	$(Q)rm -rf $(TARGET_LIBC) $(TARGET_LIBRT) $(TARGET_LIBM) $(TARGET_LIBMACH) $(TARGET_LIBM_DYLIB) $(OBJDIR)
-
-install: all
-	@echo "This lib can't be installed..."
-
-uninstall: clean
