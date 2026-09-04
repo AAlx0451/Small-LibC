@@ -1,8 +1,8 @@
 ## Welcome to Small-LibC!
-Small-LibC is a small iOS 6 LibC implementation in Public Domain.
+Small-LibC is a small iOS 6 Libc implementation in Public Domain.
 
 ## Get started
-If you're on iOS, just run `./make_all.sh`.
+If you're on iOS, just run `make` at `./src`.
 Also, this repo provides `mkfile` only for native compilation.
 
 <details>
@@ -15,8 +15,11 @@ If you're cross-compiling, go to ./src, then `make CROSS=1`. Supported Makefile 
 * POSIX.1-1990
 * POSIX.2-1992
 
+Are supported
+
 ## License
-This project is a Public Domain and licensed under The Unlicense. Note that 570161d commit and older are MIT-licensed
+This project is a Public Domain and licensed under The Unlicense.
+Note that 570161d commit and older are MIT-licensed.
  
 ## Structure
 
